@@ -67,7 +67,7 @@ class Woo_Scrape_Activator {
         first_crawl_timestamp datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
         latest_crawl_timestamp datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
         item_updated_timestamp datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
-        CONSTRAINT fk_woocommerce_scraper_pages_id FOREIGN KEY (category_id) REFERENCES $pages_list_table_name(id),
+        CONSTRAINT fk_woo_scrape_pages_id FOREIGN KEY (category_id) REFERENCES $pages_list_table_name(id),
         PRIMARY KEY (id)
         ) $charset_collate;";
 
@@ -83,7 +83,7 @@ class Woo_Scrape_Activator {
         first_crawl_timestamp datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
         latest_crawl_timestamp datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
         item_updated_timestamp datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
-        CONSTRAINT fk_woocommerce_scraper_variants_id FOREIGN KEY (product_id) REFERENCES $products_table_name(id),
+        CONSTRAINT fk_woo_scrape_variants_id FOREIGN KEY (product_id) REFERENCES $products_table_name(id),
         PRIMARY KEY (id)
         ) $charset_collate;";
 

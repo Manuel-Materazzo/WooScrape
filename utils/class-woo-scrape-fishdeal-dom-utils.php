@@ -1,9 +1,9 @@
 <?php
 
 
-require ABSPATH . 'wp-content/plugins/woo-scrape/dtos/class-woocommerce-scraper-product.php';
+require ABSPATH . 'wp-content/plugins/woo-scrape/dtos/class-woo-scrape-product.php';
 
-class Woocommerce_scraper_fishdeal_dom_utils {
+class Woo_scrape_fishdeal_dom_utils {
     
     /**
      * Parses an HTML and extracts the number of pages to crawl
@@ -46,10 +46,12 @@ class Woocommerce_scraper_fishdeal_dom_utils {
 
     /**
      * Parses a product object from an html product element from the category page
+     *
      * @param simple_html_dom_node $product_element the html product element to be parsed
-     * @return WooCommerceScraperProduct the parsed product
+     *
+     * @return WooScrapeProduct the parsed product
      */
-    private static function parse_category_product(simple_html_dom_node $product_element): WooCommerceScraperProduct
+    private static function parse_category_product(simple_html_dom_node $product_element ): WooScrapeProduct
     {
         // Extract infos
         $name_element = $product_element->find('.SC_DealTile-title', 0);
@@ -67,13 +69,13 @@ class Woocommerce_scraper_fishdeal_dom_utils {
         }
 
         // compose object
-        $product = new WooCommerceScraperProduct();
+        $product = new WooScrapeProduct();
         $product->setName(trim($name_element->innertext()));
         $product->setUrl($product_element->href);
         $product->setBrand($brand_element->alt);
         $product->setImageUrls(array($image_element->src));
-        $product->setSuggestedPrice(new Decimal($suggested_price_element->innertext()));
-        $product->setDiscountedPrice(new Decimal($discounted_price_element->innertext()));
+        $product->setSuggestedPrice(new WooScrapeDecimal($suggested_price_element->innertext()));
+        $product->setDiscountedPrice(new WooScrapeDecimal($discounted_price_element->innertext()));
 
         return $product;
     }
