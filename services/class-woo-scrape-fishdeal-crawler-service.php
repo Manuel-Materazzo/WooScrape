@@ -31,9 +31,9 @@ class Woo_scrape_fishdeal_crawler_service {
 		$pages = Woo_scrape_fishdeal_dom_utils::extract_pages( $html );
 
 		// crawl other pages
-		for ( $i = 1; $i < $pages; ++ $i ) {
+		for ( $i = 2; $i <= $pages; ++ $i ) {
 			try {
-				$page_response = $this->crawl( $url );
+				$page_response = $this->crawl( $url . "?order=Relevant%20-%20EnhancedGA4&scroll=deals&page=" . $i );
 				$page_html     = str_get_html( $page_response );
 				$page_products = Woo_scrape_fishdeal_dom_utils::extract_products( $page_html, $category_id );
 				$products      = array_merge( $products, $page_products );
@@ -73,6 +73,7 @@ class Woo_scrape_fishdeal_crawler_service {
 				$variation->setName( $variation_json->name );
 //                $variation->setSuggestedPrice(?); // TODO: not found on html, it's a websocket byproduct
 				$variation->setDiscountedPrice( $variation_json->offers->price );
+				//TODO: quantity
 
 				$images       = array_merge( $images, $variation_json->image );
 				$variations[] = $variation;
@@ -101,7 +102,15 @@ class Woo_scrape_fishdeal_crawler_service {
 	 * @return string a string containing the HTML body
 	 */
 	private function crawl( string $url ): string {
-		//TODO: implement
-		return "";
+		$response = wp_remote_post( "http://host.docker.internal:3004/", array(
+			'method'      => 'GET',
+			'headers'     => array( 'Accept' => 'application/json' ),
+			'timeout'     => 45,
+			'redirection' => 5,
+			'httpversion' => '1.0',
+			'blocking'    => true
+		) );
+
+		return $response["body"];
 	}
 }
