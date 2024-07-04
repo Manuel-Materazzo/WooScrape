@@ -19,11 +19,14 @@ class Woo_scrape_category_crawling_job {
 		$this->fetch_profitable_products();
 
 
-			// save the new products
-			$this->save_products( $profitable_products );
-		}
+		// recupera da db i prodotti non aggiornati (last crawl != oggi)
+		// out of stock su wordpress, con varianti
 
-
+		// recupera da db i prodotti (e le varianti) aggiornati (item_updated_timestamp = oggi)
+		// aggiungere weight, length, width, height tramite relazione con category
+		// crea i prodotti nuovi (item_updated_timestamp = oggi)
+		// e modifica quelli esistenti su wordpress (lo sku è composito di parte fissa + id)
+		// imposta weight, length, width, height
 
 	}
 
@@ -162,7 +165,7 @@ class Woo_scrape_category_crawling_job {
 		foreach ( $variations as $key => $variation ) {
 			// update variation already on table
 			$rows_updated = $wpdb->update(
-				$wpdb->prefix . 'woo_scrape_products',
+				$wpdb->prefix . 'woo_scrape_variations',
 				array(
 
 //					'quantity'                   => $variation->getName(),
@@ -208,7 +211,7 @@ class Woo_scrape_category_crawling_job {
 		foreach ( $variations as $variation ) {
 			// create the variation on db
 			$wpdb->insert(
-				$wpdb->prefix . 'woo_scrape_products',
+				$wpdb->prefix . 'woo_scrape_variations',
 				array(
 					'name'                   => $variation->getName(),
 					'product_id'             => $product_id,
