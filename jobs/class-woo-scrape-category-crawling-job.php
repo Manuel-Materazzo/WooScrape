@@ -12,6 +12,27 @@ class Woo_scrape_category_crawling_job {
 	public function run() {
 		global $wpdb;
 
+		$this->fetch_categories_for_profitable_products();
+
+			error_log( "The category " . $category->id . " has crawled " . count( $profitable_products ) . " items" );
+
+
+
+			// save the new products
+			$this->save_products( $profitable_products );
+		}
+
+
+
+	}
+
+	/**
+	 * Gets categories from DB and fetches them all to extract, update and save today's profitable products
+	 * @return void
+	 */
+	private function fetch_categories_for_profitable_products(): void {
+		global $wpdb;
+
 		// gets categories from DB
 		$categories_table_name = $wpdb->prefix . 'woo_scrape_pages';
 		$categories            = $wpdb->get_results( "SELECT id, url FROM $categories_table_name" );
@@ -23,7 +44,6 @@ class Woo_scrape_category_crawling_job {
 
 			error_log( "The category " . $category->id . " has crawled " . count( $profitable_products ) . " items" );
 
-			error_log( json_encode( $profitable_products ) );
 			// update existing products, and return "new" products
 			$profitable_products = $this->update_products( $profitable_products );
 
@@ -32,10 +52,9 @@ class Woo_scrape_category_crawling_job {
 			// save the new products
 			$this->save_products( $profitable_products );
 		}
-
-
-
 	}
+
+
 
 	/**
 	 * Updates on DB the products of the $profitable_products array, and returns the ones not found on DB.
