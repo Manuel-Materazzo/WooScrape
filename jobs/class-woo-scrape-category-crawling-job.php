@@ -27,8 +27,74 @@ class Woo_scrape_category_crawling_job {
 		// crea i prodotti nuovi (item_updated_timestamp = oggi)
 		// e modifica quelli esistenti su wordpress (lo sku è composito di parte fissa + id)
 		// imposta weight, length, width, height
+		$this->update_woocommerce_database();
 
 	}
+
+	private function update_woocommerce_database(): void {
+		//TODO: variations
+		global $wpdb;
+
+		$page                  = 0;
+		$products_table_name   = $wpdb->prefix . 'woo_scrape_products';
+		$pages_list_table_name = $wpdb->prefix . 'woo_scrape_pages';
+
+		// gets products crawled today
+		while ( true ) {
+			// get product page
+			$start            = $page * 30;
+			$crawled_products = $wpdb->get_results(
+				"SELECT $products_table_name.id, $products_table_name.name, suggested_price, description, weight, length, width, height, has_variations FROM $products_table_name
+    			INNER JOIN $pages_list_table_name
+            	ON $products_table_name.category_id = $pages_list_table_name.id
+                WHERE DATE(`item_updated_timestamp`) = CURDATE()
+                LIMIT $start,30"
+			);
+
+			error_log( "Fetched " . count( $crawled_products ) . " products to update on woocommerce." );
+
+			// if there are no products left, stop the cycle
+			if ( empty( $crawled_products ) ) {
+				error_log( "There are no more products to update on woocommerce" );
+				break;
+			}
+
+			$new_products = array();
+
+			// update each product on woocommerce
+			foreach ( $crawled_products as $crawled_product ) {
+				$product_id = wc_get_product_id_by_sku( 'kum-fd-' . $crawled_product->id );
+				// if there is no such product on woocommerce, queue it for creation and go on
+				if ( ! $product_id ) {
+					$new_products[] = $crawled_product;
+					continue;
+				}
+
+				$product = wc_get_product( $product_id );
+				$product->set_stock_status( 'instock' );
+				//TODO: update other things
+				$product->save();
+
+			}
+
+			error_log( "there are " . count( $crawled_products ) . " new products to create on woocommerce." );
+
+			foreach ( $new_products as $new_product ) {
+				$product = new WC_Product_Simple();
+				$product->set_sku( 'kum-fd-' . $new_product->id );
+				$product->set_name( $new_product->name );
+				$product->set_regular_price( $new_product->suggested_price );
+				$product->set_description( $new_product->description );
+//				TODO: $product->set_image_id( 90 );
+//				TODO: $product->set_category_ids( array( 19 ) );
+				$product->save();
+			}
+
+			$page += 1;
+		}
+	}
+
+
 
 	/**
 	 * Gets categories from DB and fetches them all to extract, update and save today's profitable products
