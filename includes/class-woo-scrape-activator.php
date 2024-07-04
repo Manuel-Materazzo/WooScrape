@@ -72,12 +72,10 @@ class Woo_Scrape_Activator {
         PRIMARY KEY (id)
         ) $charset_collate;";
 
-		$variants_table_name = $wpdb->prefix . 'woo_scrape_variants';
-		$variants_table_sql = "CREATE TABLE IF NOT EXISTS $variants_table_name (
+		$variations_table_name = $wpdb->prefix . 'woo_scrape_variations';
+		$variants_table_sql = "CREATE TABLE IF NOT EXISTS $variations_table_name (
         id mediumint(9) UNSIGNED NOT NULL AUTO_INCREMENT,
         name text NOT NULL,
-        image_urls text DEFAULT '' NOT NULL,
-        image_ids text DEFAULT NULL,
         product_id mediumint(9) UNSIGNED DEFAULT NULL,
         quantity mediumint(9) UNSIGNED DEFAULT NULL,
         suggested_price decimal(7,2) UNSIGNED NOT NULL,
