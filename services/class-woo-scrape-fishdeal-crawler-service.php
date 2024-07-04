@@ -74,7 +74,15 @@ class Woo_scrape_fishdeal_crawler_service {
 			$variations_element = $html->find( '.SC_DealInfo-description attribute-select-block', 0 );
 //			$variations_element-> data-deal-products-assignment, data-deal-options
 
+			// format description
 			$description_element = $html->find( '.SC_DealDescription-blocks', 0 );
+			$description         = preg_replace( '/[ \t]+/', ' ', $description_element->text() );
+			$description         = str_replace( 'Description', '', $description );
+			$description         = str_replace( 'Specifications', '', $description );
+			$description         = str_replace( 'Read more', '', $description );
+			$description         = str_replace( 'Read less', '', $description );
+			$description         = str_replace( 'Show more', '', $description );
+			$description         = str_replace( 'Show less', '', $description );
 
 			$variations = array();
 			$images     = array();
@@ -83,7 +91,7 @@ class Woo_scrape_fishdeal_crawler_service {
 				$variation = new WooScrapeProduct();
 				$variation->setName( $variation_json->name );
 //                $variation->setSuggestedPrice(?); // TODO: not found on html, it's a websocket byproduct
-				$variation->setDiscountedPrice( new WooScrapeDecimal($variation_json->offers->price) );
+				$variation->setDiscountedPrice( new WooScrapeDecimal( $variation_json->offers->price ) );
 				//TODO: quantity
 
 				$images       = array_merge( $images, $variation_json->image );
@@ -95,7 +103,7 @@ class Woo_scrape_fishdeal_crawler_service {
 			// set has_variations = false i f the product has only one variation.
 			$partial_product->setHasVariations( count( $variations_array_json ) > 1 );
 			// update main product
-			$partial_product->setDescription( $description_element->innertext() );
+			$partial_product->setDescription( $description );
 			$partial_product->setImageUrls( array_unique( $images ) );
 		} catch ( Exception $ex ) {
 			error_log( "Failed to crawl product " . $url );

@@ -44,7 +44,7 @@ class Woo_scrape_category_crawling_job {
 		// on each category
 		foreach ( $categories as $category ) {
 			// crawl all products
-			$partial_profitable_products = self::$crawler->crawl_category( $category->url);
+			$partial_profitable_products = self::$crawler->crawl_category( $category->url );
 
 			error_log( "The category " . $category->id . " has crawled " . count( $partial_profitable_products ) . " items" );
 
@@ -135,16 +135,22 @@ class Woo_scrape_category_crawling_job {
 	private function update_complete_product( string $now, int $product_id, WooScrapeProduct $complete_product ): void {
 		global $wpdb;
 
+		$columns = array(
+			'item_updated_timestamp' => $now,
+			'has_variations'         => $complete_product->hasVariations(),
+			'image_urls'             => json_encode( $complete_product->getImageUrls() ),
+			'description'            => $complete_product->getDescription()
+		);
+
+		// edit image ids only if there is something in the product
+		if ( count( $complete_product->getImageIds() ) > 0 ) {
+			$columns['image_ids'] = json_encode( $complete_product->getImageIds() );
+		}
+
 		// update products with the additional details
 		$rows_updated = $wpdb->update(
 			$wpdb->prefix . 'woo_scrape_products',
-			array(
-				'item_updated_timestamp' => $now,
-				'has_variations'         => $complete_product->hasVariations(),
-				'image_urls'             => json_encode( $complete_product->getImageUrls() ),
-				'image_ids'              => json_encode( $complete_product->getImageIds() ),
-				'description'            => $complete_product->getDescription()
-			),
+			$columns,
 			array( 'id' => $product_id )
 		);
 

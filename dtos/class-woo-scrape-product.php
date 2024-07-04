@@ -11,8 +11,8 @@ class WooScrapeProduct
     public bool $has_variations;
     public string $brand;
     public string $url;
-    public array $image_urls;
-    public array $image_ids;
+    public array $image_urls = array();
+    public array $image_ids = array();
     public int $category_id;
     public WooScrapeDecimal $suggested_price;
     public WooScrapeDecimal $discounted_price;
