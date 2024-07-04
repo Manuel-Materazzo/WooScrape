@@ -7,11 +7,11 @@ class Woo_scrape_category_crawling_job {
 	private static Woo_scrape_fishdeal_crawler_service $crawler;
 	private static string $date_format = 'Y-m-d H:i:s';
 
-	function __construct() {
+	public function __construct() {
 		self::$crawler = new Woo_scrape_fishdeal_crawler_service();
 	}
 
-	public function run() {
+	public function run(): void {
 		// crawl categories to get partial products
 		$this->fetch_categories_for_profitable_products();
 
@@ -41,7 +41,7 @@ class Woo_scrape_category_crawling_job {
 		// on each category
 		foreach ( $categories as $category ) {
 			// crawl all products
-			$partial_profitable_products = self::$crawler->crawl_category( $category->url, $category->id );
+			$partial_profitable_products = self::$crawler->crawl_category( $category->url);
 
 			error_log( "The category " . $category->id . " has crawled " . count( $partial_profitable_products ) . " items" );
 
@@ -51,7 +51,7 @@ class Woo_scrape_category_crawling_job {
 			error_log( "There are " . count( $partial_profitable_products ) . " new items to save" );
 
 			// save the new products
-			$this->save_partial_products( $partial_profitable_products );
+			$this->save_partial_products( $category->id, $partial_profitable_products );
 		}
 	}
 
@@ -74,7 +74,7 @@ class Woo_scrape_category_crawling_job {
 			$updated_products = $wpdb->get_results(
 				"SELECT id, url, image_urls, image_ids FROM $products_table_name
                 WHERE DATE(`latest_crawl_timestamp`) = CURDATE()
-                and latest_crawl_timestamp has_variations is not false
+                and has_variations is not false
                 LIMIT $start,30"
 			);
 
@@ -100,17 +100,17 @@ class Woo_scrape_category_crawling_job {
 					$image_ids = self::$crawler->crawl_images( $complete_product->getImageUrls() );
 					// add ids to the product
 					$complete_product->setImageIds( $image_ids );
-					error_log( "Crawled " . count($image_ids) . " images for " . $partial_product->url );
+					error_log( "Crawled " . count( $image_ids ) . " images for " . $partial_product->url );
 				}
 
 				// update the product on DB
 				$this->update_complete_product( $now, $partial_product->id, $complete_product );
 
 				if ( $complete_product->hasvariations() ) {
-					error_log( "The item " . $partial_product->url . "has " . count($complete_product->getVariations()) . " variations!");
+					error_log( "The item " . $partial_product->url . "has " . count( $complete_product->getVariations() ) . " variations!" );
 					// update variations on DB
 					$new_variations = $this->update_variations( $now, $partial_product->id, $complete_product->getVariations() );
-					error_log( "The item " . $partial_product->url . "has " . count($new_variations) . " new variations!");
+					error_log( "The item " . $partial_product->url . "has " . count( $new_variations ) . " new variations!" );
 					// create new variations on db
 					$this->save_variations( $now, $partial_product->id, $new_variations );
 				}
@@ -137,6 +137,7 @@ class Woo_scrape_category_crawling_job {
 			$wpdb->prefix . 'woo_scrape_products',
 			array(
 				'item_updated_timestamp' => $now,
+				'has_variations'         => $complete_product->hasVariations(),
 				'image_urls'             => json_encode( $complete_product->getImageUrls() ),
 				'image_ids'              => json_encode( $complete_product->getImageIds() ),
 				'description'            => $complete_product->getDescription()
@@ -282,9 +283,10 @@ class Woo_scrape_category_crawling_job {
 	/**
 	 * Creates on DB the products of the $profitable_products array.
 	 *
+	 * @param int $category_id id of the product's category
 	 * @param array $partial_products array of products to insert
 	 */
-	private function save_partial_products( array $partial_products ): void {
+	private function save_partial_products( int $category_id, array $partial_products ): void {
 		global $wpdb;
 
 		$now = date( self::$date_format );
@@ -299,6 +301,7 @@ class Woo_scrape_category_crawling_job {
 					'first_crawl_timestamp'  => $now,
 					'latest_crawl_timestamp' => $now,
 					'brand'                  => $partial_product->getBrand(),
+					'category_id'            => $category_id,
 					'suggested_price'        => strval( $partial_product->getSuggestedPrice() ),
 					'discounted_price'       => strval( $partial_product->getDiscountedPrice() ),
 				)

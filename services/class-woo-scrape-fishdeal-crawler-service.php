@@ -8,18 +8,17 @@ class Woo_scrape_fishdeal_crawler_service {
 	 * Crawls a category and all its sub pages and returns a list of profitable products
 	 *
 	 * @param string $url url of the category to crawl
-	 * @param int $category_id id of the category to crawl
 	 *
 	 * @return array array of profitable products
 	 */
-	public function crawl_category( string $url, int $category_id ): array {
+	public function crawl_category( string $url ): array {
 		$html = null;
 
 		// crawl first page
 		try {
 			$response = $this->crawl( $url );
 			$html     = str_get_html( $response );
-			$products = Woo_scrape_fishdeal_dom_utils::extract_products( $html, $category_id );
+			$products = Woo_scrape_fishdeal_dom_utils::extract_products( $html );
 		} catch ( Exception $ex ) {
 			error_log( "Failed to crawl category " . $url );
 			error_log( $ex );
@@ -50,6 +49,7 @@ class Woo_scrape_fishdeal_crawler_service {
 
 	/**
 	 * Crawls a product and extracts a standardized WooScrapeProduct
+	 *
 	 * @param string $url url of the product to crawl
 	 *
 	 * @return WooScrapeProduct standardized product
@@ -66,8 +66,13 @@ class Woo_scrape_fishdeal_crawler_service {
 			$variations_json_element = $html->find( 'body script[type=application/ld+json]', 0 );
 			$variations_array_json   = json_decode( $variations_json_element->innertext() );
 
-			$variations_element  = $html->find( '.SC_DealInfo-description attribute-select-block', 0 );
-			$variations_element-> // data-deal-products-assignment, data-deal-options
+			// must always be an array
+			if ( is_object( $variations_array_json ) ) {
+				$variations_array_json = array( $variations_array_json );
+			}
+
+			$variations_element = $html->find( '.SC_DealInfo-description attribute-select-block', 0 );
+//			$variations_element-> data-deal-products-assignment, data-deal-options
 
 			$description_element = $html->find( '.SC_DealDescription-blocks', 0 );
 
@@ -78,7 +83,7 @@ class Woo_scrape_fishdeal_crawler_service {
 				$variation = new WooScrapeProduct();
 				$variation->setName( $variation_json->name );
 //                $variation->setSuggestedPrice(?); // TODO: not found on html, it's a websocket byproduct
-				$variation->setDiscountedPrice( $variation_json->offers->price );
+				$variation->setDiscountedPrice( new WooScrapeDecimal($variation_json->offers->price) );
 				//TODO: quantity
 
 				$images       = array_merge( $images, $variation_json->image );
@@ -102,6 +107,7 @@ class Woo_scrape_fishdeal_crawler_service {
 
 	/**
 	 * Crawls a list of images (if not already crawled), and returns their id
+	 *
 	 * @param array $urls array of url to crawl for images
 	 *
 	 * @return array array of image ids
@@ -115,13 +121,13 @@ class Woo_scrape_fishdeal_crawler_service {
 			//TODO: search for duplicate images and avoid crawling them again
 
 			// generate file name
-			$exploded = explode('/', getimagesize($url)['mime']);
-			$imagetype = end($exploded);
-			$uniq_name = date('dmY').''.(int) microtime(true);
-			$filename = $uniq_name.'.'.$imagetype;
+			$exploded  = explode( '/', getimagesize( $url )['mime'] );
+			$imagetype = end( $exploded );
+			$uniq_name = date( 'dmY' ) . '' . (int) microtime( true );
+			$filename  = $uniq_name . '.' . $imagetype;
 
 			// download and save file
-			$uploaddir = wp_upload_dir();
+			$uploaddir  = wp_upload_dir();
 			$uploadfile = $uploaddir['path'] . '/' . $filename;
 			$contents= file_get_contents($url);
 			$savefile = fopen($uploadfile, 'w');
@@ -129,19 +135,19 @@ class Woo_scrape_fishdeal_crawler_service {
 			fclose($savefile);
 
 			// prepare file
-			$wp_filetype = wp_check_filetype(basename($filename), null );
-			$attachment = array(
+			$wp_filetype = wp_check_filetype( basename( $filename ), null );
+			$attachment  = array(
 				'post_mime_type' => $wp_filetype['type'],
-				'post_title' => $filename,
-				'post_content' => '',
-				'post_status' => 'inherit'
+				'post_title'     => $filename,
+				'post_content'   => '',
+				'post_status'    => 'inherit'
 			);
 
 			// save on media library
-			$attach_id = wp_insert_attachment( $attachment, $uploadfile );
-			$imagenew = get_post( $attach_id );
+			$attach_id    = wp_insert_attachment( $attachment, $uploadfile );
+			$imagenew     = get_post( $attach_id );
 			$fullsizepath = get_attached_file( $imagenew->ID );
-			$attach_data = wp_generate_attachment_metadata( $attach_id, $fullsizepath );
+			$attach_data  = wp_generate_attachment_metadata( $attach_id, $fullsizepath );
 			wp_update_attachment_metadata( $attach_id, $attach_data );
 			// add the id to the list
 			$ids[] = $attach_id;

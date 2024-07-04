@@ -29,11 +29,11 @@ class Woo_Scrape_Activator {
 	 *
 	 * @since    1.0.0
 	 */
-	public static function activate() {
+	public static function activate(): void {
 		self::create_database_tables();
 	}
 
-	private static function create_database_tables()
+	private static function create_database_tables(): void
 	{
 		global $wpdb;
 
