@@ -40,7 +40,7 @@ class Woo_Scrape_Activator {
 		$charset_collate = $wpdb->get_charset_collate();
 
 		$pages_list_table_name = $wpdb->prefix . 'woo_scrape_pages';
-		$pages_list_table_sql = "CREATE TABLE $pages_list_table_name (
+		$pages_list_table_sql = "CREATE TABLE IF NOT EXISTS $pages_list_table_name (
         id mediumint(9) UNSIGNED NOT NULL AUTO_INCREMENT,
         name tinytext NOT NULL,
         url varchar(250) DEFAULT '' NOT NULL,
@@ -52,7 +52,7 @@ class Woo_Scrape_Activator {
         ) $charset_collate;";
 
 		$products_table_name = $wpdb->prefix . 'woo_scrape_products';
-		$products_table_sql = "CREATE TABLE $products_table_name (
+		$products_table_sql = "CREATE TABLE IF NOT EXISTS $products_table_name (
         id mediumint(9) UNSIGNED NOT NULL AUTO_INCREMENT,
         name text NOT NULL,
         description text NOT NULL,
@@ -62,6 +62,7 @@ class Woo_Scrape_Activator {
         image_urls text DEFAULT '' NOT NULL,
         image_ids text DEFAULT NULL,
         category_id mediumint(9) UNSIGNED DEFAULT NULL,
+        quantity mediumint(9) UNSIGNED DEFAULT NULL,
         suggested_price decimal(7,2) UNSIGNED NOT NULL,
         discounted_price decimal(7,2) UNSIGNED NOT NULL,
         first_crawl_timestamp datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
@@ -72,12 +73,13 @@ class Woo_Scrape_Activator {
         ) $charset_collate;";
 
 		$variants_table_name = $wpdb->prefix . 'woo_scrape_variants';
-		$variants_table_sql = "CREATE TABLE $variants_table_name (
+		$variants_table_sql = "CREATE TABLE IF NOT EXISTS $variants_table_name (
         id mediumint(9) UNSIGNED NOT NULL AUTO_INCREMENT,
         name text NOT NULL,
         image_urls text DEFAULT '' NOT NULL,
         image_ids text DEFAULT NULL,
         product_id mediumint(9) UNSIGNED DEFAULT NULL,
+        quantity mediumint(9) UNSIGNED DEFAULT NULL,
         suggested_price decimal(7,2) UNSIGNED NOT NULL,
         discounted_price decimal(7,2) UNSIGNED NOT NULL,
         first_crawl_timestamp datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
