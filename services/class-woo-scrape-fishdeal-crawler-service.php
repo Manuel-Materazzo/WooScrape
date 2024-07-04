@@ -48,6 +48,12 @@ class Woo_scrape_fishdeal_crawler_service {
 		return $products;
 	}
 
+	/**
+	 * Crawls a product and extracts a standardized WooScrapeProduct
+	 * @param string $url url of the product to crawl
+	 *
+	 * @return WooScrapeProduct standardized product
+	 */
 	public function crawl_product( string $url ): WooScrapeProduct {
 		$html            = null;
 		$partial_product = new WooScrapeProduct();
@@ -92,6 +98,56 @@ class Woo_scrape_fishdeal_crawler_service {
 		}
 
 		return $partial_product;
+	}
+
+	/**
+	 * Crawls a list of images (if not already crawled), and returns their id
+	 * @param array $urls array of url to crawl for images
+	 *
+	 * @return array array of image ids
+	 */
+	public function crawl_images( array $urls ): array {
+
+		include_once ABSPATH . 'wp-admin/includes/image.php';
+		$ids = array();
+
+		foreach ( $urls as $url ) {
+			//TODO: search for duplicate images and avoid crawling them again
+
+			// generate file name
+			$exploded = explode('/', getimagesize($url)['mime']);
+			$imagetype = end($exploded);
+			$uniq_name = date('dmY').''.(int) microtime(true);
+			$filename = $uniq_name.'.'.$imagetype;
+
+			// download and save file
+			$uploaddir = wp_upload_dir();
+			$uploadfile = $uploaddir['path'] . '/' . $filename;
+			$contents= file_get_contents($url);
+			$savefile = fopen($uploadfile, 'w');
+			fwrite($savefile, $contents);
+			fclose($savefile);
+
+			// prepare file
+			$wp_filetype = wp_check_filetype(basename($filename), null );
+			$attachment = array(
+				'post_mime_type' => $wp_filetype['type'],
+				'post_title' => $filename,
+				'post_content' => '',
+				'post_status' => 'inherit'
+			);
+
+			// save on media library
+			$attach_id = wp_insert_attachment( $attachment, $uploadfile );
+			$imagenew = get_post( $attach_id );
+			$fullsizepath = get_attached_file( $imagenew->ID );
+			$attach_data = wp_generate_attachment_metadata( $attach_id, $fullsizepath );
+			wp_update_attachment_metadata( $attach_id, $attach_data );
+			// add the id to the list
+			$ids[] = $attach_id;
+		}
+
+		return $ids;
 	}
 
 	/**
