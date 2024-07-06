@@ -18,24 +18,19 @@ class Woo_scrape_category_crawling_job {
 		// crawl each partial product to complete informations
 		$this->fetch_profitable_products();
 
+		// get from database outdated products, and set them out of stock
+		$this->update_out_of_stock();
 
-		// recupera da db i prodotti non aggiornati (last crawl != oggi)
-		// out of stock su wordpress, con varianti
-
-		// recupera da db i prodotti (e le varianti) aggiornati (item_updated_timestamp = oggi)
-		// aggiungere weight, length, width, height tramite relazione con category
-		// crea i prodotti nuovi (item_updated_timestamp = oggi)
-		// e modifica quelli esistenti su wordpress (lo sku è composito di parte fissa + id)
-		// imposta weight, length, width, height
+		// extracts from DB today's crawled products and variants, and persists them on woocomerce
 		$this->update_woocommerce_database();
 
 	}
 
 	private function update_woocommerce_database(): void {
-		//TODO: variations
 		global $wpdb;
 
-		$page                  = 0;
+		$page = 0;
+
 		$products_table_name   = $wpdb->prefix . 'woo_scrape_products';
 		$pages_list_table_name = $wpdb->prefix . 'woo_scrape_pages';
 
@@ -51,7 +46,7 @@ class Woo_scrape_category_crawling_job {
                 LIMIT $start,30"
 			);
 
-			error_log( "Fetched " . count( $crawled_products ) . " products to update on woocommerce." );
+			error_log( "Fetched " . count( $crawled_products ) . " products to store on woocommerce." );
 
 			// if there are no products left, stop the cycle
 			if ( empty( $crawled_products ) ) {
@@ -70,21 +65,36 @@ class Woo_scrape_category_crawling_job {
 					continue;
 				}
 
-				$product = wc_get_product( $product_id );
-				$product->set_stock_status( 'instock' );
-				//TODO: update other things
-				$product->save();
+				// update the product on woocommerce
+				$woocommerce_product = $this->update_woocommerce_product( $product_id, $crawled_product );
+
+				// if the product has no variations, update them
+				if ( $crawled_product->has_variations ) {
+					$this->update_woocommerce_vatiarions( $crawled_product->id );
+				}
+
 
 			}
 
-			error_log( "there are " . count( $crawled_products ) . " new products to create on woocommerce." );
+			error_log( "there are " . count( $new_products ) . " new products to create on woocommerce." );
 
+			// save new products on woocommerce
 			foreach ( $new_products as $new_product ) {
-				$product = new WC_Product_Simple();
+				if ( ! $new_product->has_variations ) {
+					$product = new WC_Product_Simple();
+				} else {
+					$product    = $this->save_woocommerce_variations($new_product->id);
+				}
+
 				$product->set_sku( 'kum-fd-' . $new_product->id );
 				$product->set_name( $new_product->name );
 				$product->set_regular_price( $new_product->suggested_price );
 				$product->set_description( $new_product->description );
+				$product->set_stock_status( 'instock' );
+				$product->set_weight( $new_product->weight );
+				$product->set_length( $new_product->length );
+				$product->set_width( $new_product->width );
+				$product->set_height( $new_product->height );
 //				TODO: $product->set_image_id( 90 );
 //				TODO: $product->set_category_ids( array( 19 ) );
 				$product->save();
@@ -94,7 +104,48 @@ class Woo_scrape_category_crawling_job {
 		}
 	}
 
+	private function update_out_of_stock(): void {
+		global $wpdb;
 
+		$page                = 0;
+		$products_table_name = $wpdb->prefix . 'woo_scrape_products';
+
+		// gets products not crawled today
+		while ( true ) {
+			// get product page
+			$start             = $page * 30;
+			$outdated_products = $wpdb->get_results(
+				"SELECT id, has_variations FROM $products_table_name
+                WHERE DATE(`latest_crawl_timestamp`) != CURDATE()
+                LIMIT $start,30"
+			);
+
+			error_log( "Fetched " . count( $outdated_products ) . " outdated products to set out of stock." );
+
+			// if there are no outdated products left, stop the cycle
+			if ( empty( $outdated_products ) ) {
+				error_log( "There are no more outdated products" );
+				break;
+			}
+
+			// set each product as out of stock
+			foreach ( $outdated_products as $outdated_product ) {
+				$product_id = wc_get_product_id_by_sku( 'kum-fd-' . $outdated_product->id );
+				$product    = wc_get_product( $product_id );
+				$product->set_stock_status( 'outofstock' );
+				$product->save();
+				if ( $outdated_product->has_variations() ) {
+					$variation_ids = $product->get_children();
+					foreach ( $variation_ids as $variation_id ) {
+						$variation = wc_get_product( $variation_id );
+						$variation->set_stock_status( 'outofstock' );
+						$variation->save();
+					}
+				}
+			}
+			$page += 1;
+		}
+	}
 
 	/**
 	 * Gets categories from DB and fetches them all to extract, update and save today's profitable products
@@ -187,6 +238,113 @@ class Woo_scrape_category_crawling_job {
 			}
 			$page += 1;
 		}
+	}
+
+	private function update_woocommerce_product( int $product_id, $crawled_product ): WC_Product {
+		$product = wc_get_product( $product_id );
+		$product->set_stock_status( 'instock' );
+		$product->set_weight( $crawled_product->weight );
+		$product->set_length( $crawled_product->length );
+		$product->set_width( $crawled_product->width );
+		$product->set_height( $crawled_product->height );
+		//TODO: update other things
+
+		// if the product has no variations, set the price
+		if ( ! $crawled_product->has_variations ) {
+			$product->set_price( $crawled_product->suggested_price );
+		}
+
+		$product->save();
+
+		return $product;
+	}
+
+	private function update_woocommerce_vatiarions( int $product_id, WC_Product $woocommerce_product, $crawled_product ): void {
+		global $wpdb;
+
+		$variations_table_name = $wpdb->prefix . 'woo_scrape_variations';
+
+		// get crawled variation for this product from DB
+		$crawled_variations = $wpdb->get_results(
+			"SELECT id, name, suggested_price FROM $variations_table_name
+                					WHERE DATE(`item_updated_timestamp`) = CURDATE() AND product_id = $product_id"
+		);
+		// extract product variations
+		$variation_ids = $woocommerce_product->get_children();
+
+		error_log( "Updating " . count( $crawled_variations ) . " variations..." );
+
+		// update each variation
+		foreach ( $variation_ids as $variation_id ) {
+			// get the variation reference
+			$variation = wc_get_product( $variation_id );
+
+			// find the correct DB variation
+			$current_crawled_variation = null;
+			foreach ( $crawled_variations as $variation_key => $crawled_variation ) {
+				if ( $crawled_variation->name == $variation->get_name() ) {
+					$current_crawled_variation = $crawled_variation;
+					// remove existing variation from list
+					unset( $crawled_variations[ $variation_key ] );
+				}
+			}
+
+			// update variation if crawled
+			if ( $current_crawled_variation ) {
+				$variation->set_stock_status( 'instock' );
+				$variation->set_price( $current_crawled_variation->suggested_price );
+				$variation->set_weight( $crawled_product->weight );
+				$variation->set_length( $crawled_product->length );
+				$variation->set_width( $crawled_product->width );
+				$variation->set_height( $crawled_product->height );
+
+				$variation->save();
+			}
+
+		}
+
+		//TODO: insert new variations, they are all contained into $crawled_variations
+	}
+
+	private function save_woocommerce_variations(int $product_id): WC_Product_Variable {
+		global $wpdb;
+
+		$variations_table_name = $wpdb->prefix . 'woo_scrape_variations';
+
+		$product    = new WC_Product_Variable();
+		$variations = $wpdb->get_results(
+			"SELECT id, name, suggested_price FROM $variations_table_name
+                				WHERE product_id = " . $product_id
+		);
+
+		$variation_options = array();
+
+		foreach ( $variations as $variation ) {
+			$variation_options[] = $variation->name;
+		}
+
+		$attribute = new WC_Product_Attribute();
+		$attribute->set_name( 'Variant' );
+		$attribute->set_options( $variation_options );
+		$attribute->set_position( 0 );
+		$attribute->set_visible( true );
+		$attribute->set_variation( true );
+
+		$product->set_attributes( array( $attribute ) );
+		$product->save();
+
+		foreach ( $variations as $variation ) {
+			$variation_name      = $variation->name;
+			$variation_price     = $variation->suggested_price;
+			$variation_options[] = $variation_name;
+			$variation           = new WC_Product_Variation();
+			$variation->set_parent_id( $product->get_id() );
+			$variation->set_attributes( array( 'variant' => $variation_name ) );
+			$variation->set_regular_price( $variation_price );
+			$variation->save();
+		}
+
+		return $product;
 	}
 
 	/**
