@@ -6,6 +6,23 @@ class Woo_Scrape_Variation_Service {
 	private static string $variations_table_name = 'woo_scrape_variations';
 
 	/**
+	 * Get a list of updated variations (id, name, suggested_price) by product id
+	 * @param int $product_id
+	 *
+	 * @return array
+	 */
+	public function get_updated_variations_by_product_id(int $product_id): array {
+		global $wpdb;
+
+		$variations_table_name = $wpdb->prefix . self::$variations_table_name;
+
+		return $wpdb->get_results(
+			"SELECT id, name, suggested_price FROM $variations_table_name
+                					WHERE DATE(`item_updated_timestamp`) = CURDATE() AND product_id = $product_id"
+		);
+	}
+
+	/**
 	 * Creates a list of variations on DB
 	 *
 	 * @param int $parent_product_id
@@ -59,13 +76,14 @@ class Woo_Scrape_Variation_Service {
 
 	/**
 	 * Updates a variation on DB, using using parent id and name as index, and returns the ones not found on DB.
+	 *
 	 * @param int $parent_product_id
 	 * @param array $variations
 	 * @param int|null $date
 	 *
 	 * @return array
 	 */
-	public function update_all_by_parent_id_and_name( int $parent_product_id, array $variations, int $date = null ): array {
+	public function update_all_by_product_id_and_name( int $parent_product_id, array $variations, int $date = null ): array {
 
 		// initialize date, if not given
 		if ( is_null( $date ) ) {
@@ -74,7 +92,7 @@ class Woo_Scrape_Variation_Service {
 
 		foreach ( $variations as $key => $variation ) {
 			// update variation already on table
-			$updated = $this->update_by_parent_id_and_name($parent_product_id, $variation, $date);
+			$updated = $this->update_by_product_id_and_name( $parent_product_id, $variation, $date );
 
 			// if the the product got updated, remove it from the array
 			if ( $updated >= 1 ) {
@@ -95,7 +113,7 @@ class Woo_Scrape_Variation_Service {
 	 *
 	 * @return bool
 	 */
-	public function update_by_parent_id_and_name( int $parent_product_id, WooScrapeProduct $variation, int $date = null ): bool {
+	public function update_by_product_id_and_name( int $parent_product_id, WooScrapeProduct $variation, int $date = null ): bool {
 		global $wpdb;
 
 		// initialize date, if not given

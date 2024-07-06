@@ -43,6 +43,7 @@ class Woo_Scrape_Activator {
 		$pages_list_table_sql = "CREATE TABLE IF NOT EXISTS $pages_list_table_name (
         id mediumint(9) UNSIGNED NOT NULL AUTO_INCREMENT,
         name tinytext NOT NULL,
+        provider tinytext NOT NULL,
         url varchar(250) DEFAULT '' NOT NULL,
         weight decimal(4,2) NOT NULL,
         length TINYINT UNSIGNED NOT NULL,

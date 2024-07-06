@@ -205,7 +205,7 @@ class Woo_scrape_category_crawling_job {
 				if ( $complete_product->hasvariations() ) {
 					error_log( "The item " . $partial_product->url . "has " . count( $complete_product->getVariations() ) . " variations!" );
 					// update variations on DB
-					$new_variations = self::$variation_service->update_all_by_parent_id_and_name( $partial_product->id, $complete_product->getVariations(), $now );
+					$new_variations = self::$variation_service->update_all_by_product_id_and_name( $partial_product->id, $complete_product->getVariations(), $now );
 					error_log( "The item " . $partial_product->url . "has " . count( $new_variations ) . " new variations!" );
 					// create new variations on db
 					self::$variation_service->create_all( $partial_product->id, $new_variations, $now );
@@ -236,15 +236,9 @@ class Woo_scrape_category_crawling_job {
 	}
 
 	private function update_woocommerce_vatiarions( int $product_id, WC_Product $woocommerce_product, $crawled_product ): void {
-		global $wpdb;
-
-		$variations_table_name = $wpdb->prefix . 'woo_scrape_variations';
 
 		// get crawled variation for this product from DB
-		$crawled_variations = $wpdb->get_results(
-			"SELECT id, name, suggested_price FROM $variations_table_name
-                					WHERE DATE(`item_updated_timestamp`) = CURDATE() AND product_id = $product_id"
-		);
+		$crawled_variations = self::$variation_service->get_updated_variations_by_product_id($product_id);
 		// extract product variations
 		$variation_ids = $woocommerce_product->get_children();
 
@@ -283,15 +277,8 @@ class Woo_scrape_category_crawling_job {
 	}
 
 	private function save_woocommerce_variations( int $product_id ): WC_Product_Variable {
-		global $wpdb;
-
-		$variations_table_name = $wpdb->prefix . 'woo_scrape_variations';
-
 		$product    = new WC_Product_Variable();
-		$variations = $wpdb->get_results(
-			"SELECT id, name, suggested_price FROM $variations_table_name
-                				WHERE product_id = " . $product_id
-		);
+		$variations = self::$variation_service->get_updated_variations_by_product_id($product_id);
 
 		$variation_options = array();
 
@@ -312,7 +299,6 @@ class Woo_scrape_category_crawling_job {
 		foreach ( $variations as $variation ) {
 			$variation_name      = $variation->name;
 			$variation_price     = $variation->suggested_price;
-			$variation_options[] = $variation_name;
 			$variation           = new WC_Product_Variation();
 			$variation->set_parent_id( $product->get_id() );
 			$variation->set_attributes( array( 'variant' => $variation_name ) );
