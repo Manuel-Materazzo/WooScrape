@@ -29,24 +29,12 @@ class Woo_scrape_category_crawling_job {
 	}
 
 	private function update_woocommerce_database(): void {
-		global $wpdb;
-
 		$page = 0;
-
-		$products_table_name   = $wpdb->prefix . 'woo_scrape_products';
-		$pages_list_table_name = $wpdb->prefix . 'woo_scrape_pages';
 
 		// gets products crawled today
 		while ( true ) {
 			// get product page
-			$start            = $page * 30;
-			$crawled_products = $wpdb->get_results(
-				"SELECT $products_table_name.id, $products_table_name.name, suggested_price, description, weight, length, width, height, has_variations FROM $products_table_name
-    			INNER JOIN $pages_list_table_name
-            	ON $products_table_name.category_id = $pages_list_table_name.id
-                WHERE DATE(`item_updated_timestamp`) = CURDATE()
-                LIMIT $start,30"
-			);
+			$crawled_products = self::$product_service->get_products_with_package_paged( $page );
 
 			error_log( "Fetched " . count( $crawled_products ) . " products to store on woocommerce." );
 
@@ -85,7 +73,7 @@ class Woo_scrape_category_crawling_job {
 				if ( ! $new_product->has_variations ) {
 					$product = new WC_Product_Simple();
 				} else {
-					$product    = $this->save_woocommerce_variations($new_product->id);
+					$product = $this->save_woocommerce_variations( $new_product->id );
 				}
 
 				$product->set_sku( 'kum-fd-' . $new_product->id );
@@ -107,20 +95,12 @@ class Woo_scrape_category_crawling_job {
 	}
 
 	private function update_out_of_stock(): void {
-		global $wpdb;
-
-		$page                = 0;
-		$products_table_name = $wpdb->prefix . 'woo_scrape_products';
+		$page = 0;
 
 		// gets products not crawled today
 		while ( true ) {
 			// get product page
-			$start             = $page * 30;
-			$outdated_products = $wpdb->get_results(
-				"SELECT id, has_variations FROM $products_table_name
-                WHERE DATE(`latest_crawl_timestamp`) != CURDATE()
-                LIMIT $start,30"
-			);
+			$outdated_products = self::$product_service->get_outdated_products_paged( $page );
 
 			error_log( "Fetched " . count( $outdated_products ) . " outdated products to set out of stock." );
 
@@ -182,23 +162,14 @@ class Woo_scrape_category_crawling_job {
 	 * @return void
 	 */
 	private function fetch_profitable_products(): void {
-		global $wpdb;
-
 		$page                = 0;
-		$products_table_name = $wpdb->prefix . 'woo_scrape_products';
 		$now                 = date( self::$date_format );
 
 		// gets profitable products crawled today. Does not crawl products that have has_variants = false
 		// (already crawled once, and found no variants. using the categpry price is fine)
 		while ( true ) {
 			// get product page
-			$start            = $page * 30;
-			$updated_products = $wpdb->get_results(
-				"SELECT id, url, image_urls, image_ids FROM $products_table_name
-                WHERE DATE(`latest_crawl_timestamp`) = CURDATE()
-                and has_variations is not false
-                LIMIT $start,30"
-			);
+			$updated_products = self::$product_service->get_updated_products_with_variations_paged($page);
 
 			error_log( "Fetched " . count( $updated_products ) . " products to crawl and update." );
 
@@ -211,7 +182,7 @@ class Woo_scrape_category_crawling_job {
 			// crawl each product to get the complete informations
 			foreach ( $updated_products as $partial_product ) {
 				$complete_product = self::$crawler->crawl_product( $partial_product->url );
-				$complete_product->setId($partial_product->id);
+				$complete_product->setId( $partial_product->id );
 
 				error_log( "Crawled " . $partial_product->url );
 
@@ -227,7 +198,7 @@ class Woo_scrape_category_crawling_job {
 				}
 
 				// update the product on DB
-				self::$product_service->update_by_id($complete_product, true, $now);
+				self::$product_service->update_by_id( $complete_product, true, $now );
 
 				if ( $complete_product->hasvariations() ) {
 					error_log( "The item " . $partial_product->url . "has " . count( $complete_product->getVariations() ) . " variations!" );
@@ -309,7 +280,7 @@ class Woo_scrape_category_crawling_job {
 		//TODO: insert new variations, they are all contained into $crawled_variations
 	}
 
-	private function save_woocommerce_variations(int $product_id): WC_Product_Variable {
+	private function save_woocommerce_variations( int $product_id ): WC_Product_Variable {
 		global $wpdb;
 
 		$variations_table_name = $wpdb->prefix . 'woo_scrape_variations';

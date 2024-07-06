@@ -3,9 +3,71 @@
 class Woo_scrape_product_service {
 
 	private static string $date_format = 'Y-m-d H:i:s';
+	private static string $products_table_name = 'woo_scrape_products';
+	private static string $pages_list_table_name = 'woo_scrape_pages';
 
-	public function get_products() {
+	/**
+	 * Gets a paged list of products joined with package information from DB
+	 *
+	 * @param int $page
+	 *
+	 * @return array|object|stdClass[]|null
+	 */
+	public function get_products_with_package_paged( int $page ): array {
+		global $wpdb;
+		$products_table_name   = $wpdb->prefix . self::$products_table_name;
+		$pages_list_table_name = $wpdb->prefix . self::$pages_list_table_name;
 
+		$start = $page * 30;
+
+		return $wpdb->get_results(
+			"SELECT $products_table_name.id, $products_table_name.name, suggested_price, description, weight, length, width, height, has_variations
+				FROM $products_table_name INNER JOIN $pages_list_table_name
+            	ON $products_table_name.category_id = $pages_list_table_name.id
+                WHERE DATE(`item_updated_timestamp`) = CURDATE()
+                LIMIT $start,30"
+		);
+	}
+
+	/**
+	 * Gets a paged list of products (id, has_variations) not updated today
+	 *
+	 * @param int $page
+	 *
+	 * @return array|object|stdClass[]|null
+	 */
+	public function get_outdated_products_paged( int $page ): array {
+		global $wpdb;
+		$products_table_name = $wpdb->prefix . self::$products_table_name;
+
+		$start = $page * 30;
+
+		return $wpdb->get_results(
+			"SELECT id, has_variations FROM $products_table_name
+                WHERE DATE(`latest_crawl_timestamp`) != CURDATE()
+                LIMIT $start,30"
+		);
+	}
+
+	/**
+	 * Gets a paged list of products (id, url, image_urls, image_ids) updated today that have variations
+	 *
+	 * @param int $page
+	 *
+	 * @return array|object|stdClass[]|null
+	 */
+	public function get_updated_products_with_variations_paged( int $page ): array {
+		global $wpdb;
+		$products_table_name = $wpdb->prefix . self::$products_table_name;
+
+		$start = $page * 30;
+
+		return $wpdb->get_results(
+			"SELECT id, url, image_urls, image_ids FROM $products_table_name
+                WHERE DATE(`latest_crawl_timestamp`) = CURDATE()
+                and has_variations is not false
+                LIMIT $start,30"
+		);
 	}
 
 	/**
