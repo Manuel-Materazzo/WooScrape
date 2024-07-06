@@ -34,7 +34,7 @@ class Woo_scrape_fishdeal_crawler_service {
 			try {
 				$page_response = $this->crawl( $url . "?order=Relevant%20-%20EnhancedGA4&scroll=deals&page=" . $i );
 				$page_html     = str_get_html( $page_response );
-				$page_products = Woo_scrape_fishdeal_dom_utils::extract_products( $page_html, $category_id );
+				$page_products = Woo_scrape_fishdeal_dom_utils::extract_products( $page_html );
 				$products      = array_merge( $products, $page_products );
 			} catch ( Exception $ex ) {
 				error_log( "Failed to crawl page " . $i . " of the category " . $url );

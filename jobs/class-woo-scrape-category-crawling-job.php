@@ -6,11 +6,13 @@ require ABSPATH . 'wp-content/plugins/woo-scrape/services/class-woo-scrape-fishd
 class Woo_scrape_category_crawling_job {
 	private static Woo_scrape_fishdeal_crawler_service $crawler;
 	private static Woo_scrape_product_service $product_service;
+	private static Woo_scrape_variation_service $variation_service;
 	private static string $date_format = 'Y-m-d H:i:s';
 
 	public function __construct() {
-		self::$crawler         = new Woo_scrape_fishdeal_crawler_service();
-		self::$product_service = new Woo_scrape_product_service();
+		self::$crawler           = new Woo_scrape_fishdeal_crawler_service();
+		self::$product_service   = new Woo_scrape_product_service();
+		self::$variation_service = new Woo_scrape_variation_service();
 	}
 
 	public function run(): void {
@@ -162,14 +164,14 @@ class Woo_scrape_category_crawling_job {
 	 * @return void
 	 */
 	private function fetch_profitable_products(): void {
-		$page                = 0;
-		$now                 = date( self::$date_format );
+		$page = 0;
+		$now  = date( self::$date_format );
 
 		// gets profitable products crawled today. Does not crawl products that have has_variants = false
 		// (already crawled once, and found no variants. using the categpry price is fine)
 		while ( true ) {
 			// get product page
-			$updated_products = self::$product_service->get_updated_products_with_variations_paged($page);
+			$updated_products = self::$product_service->get_updated_products_with_variations_paged( $page );
 
 			error_log( "Fetched " . count( $updated_products ) . " products to crawl and update." );
 
@@ -203,10 +205,10 @@ class Woo_scrape_category_crawling_job {
 				if ( $complete_product->hasvariations() ) {
 					error_log( "The item " . $partial_product->url . "has " . count( $complete_product->getVariations() ) . " variations!" );
 					// update variations on DB
-					$new_variations = $this->update_variations( $now, $partial_product->id, $complete_product->getVariations() );
+					$new_variations = self::$variation_service->update_all_by_parent_id_and_name( $partial_product->id, $complete_product->getVariations(), $now );
 					error_log( "The item " . $partial_product->url . "has " . count( $new_variations ) . " new variations!" );
 					// create new variations on db
-					$this->save_variations( $now, $partial_product->id, $new_variations );
+					self::$variation_service->create_all( $partial_product->id, $new_variations, $now );
 				}
 
 			}
@@ -319,81 +321,6 @@ class Woo_scrape_category_crawling_job {
 		}
 
 		return $product;
-	}
-
-	/**
-	 * Updates on DB the variations of the $variations array, and returns the ones not found on DB.
-	 *
-	 * @param string $now the variation update timestamp
-	 * @param int $product_id the id of the variation's base product
-	 * @param array $variations array of product variations
-	 *
-	 * @return array array of variations not updated
-	 */
-	private function update_variations( string $now, int $product_id, array $variations ): array {
-		global $wpdb;
-
-		foreach ( $variations as $key => $variation ) {
-			// update variation already on table
-			$rows_updated = $wpdb->update(
-				$wpdb->prefix . 'woo_scrape_variations',
-				array(
-
-//					'quantity'                   => $variation->getName(),
-					'latest_crawl_timestamp' => $now,
-					'item_updated_timestamp' => $now,
-//					'suggested_price'        => strval( $variation->getSuggestedPrice() ),
-					'discounted_price'       => strval( $variation->getDiscountedPrice() ),
-				),
-				array(
-					'product_id' => $product_id,
-					'name'       => $variation->getName(),
-				)
-			);
-
-			// if the the product got updated, remove it from the array
-			if ( $rows_updated >= 1 ) {
-				unset( $variations[ $key ] );
-			}
-			// there shouldn't be more than one row updated
-			if ( $rows_updated > 1 ) {
-				error_log(
-					"There is more than one variation on database for the product" . $product_id . "  with name "
-					. $variation->getName()
-				);
-			}
-		}
-
-		// returns variations that didn't update
-		return $variations;
-	}
-
-	/**
-	 * Creates on DB the variations of the $variations array.
-	 *
-	 * @param string $now the variation update timestamp
-	 * @param int $product_id the id of the variation's base product
-	 * @param array $variations array of product variations
-	 *
-	 */
-	private function save_variations( string $now, int $product_id, array $variations ): void {
-		global $wpdb;
-
-		foreach ( $variations as $variation ) {
-			// create the variation on db
-			$wpdb->insert(
-				$wpdb->prefix . 'woo_scrape_variations',
-				array(
-					'name'                   => $variation->getName(),
-					'product_id'             => $product_id,
-					'first_crawl_timestamp'  => $now,
-					'latest_crawl_timestamp' => $now,
-					'item_updated_timestamp' => $now,
-//					'suggested_price'        => strval( $profitable_product->getSuggestedPrice() ),
-					'discounted_price'       => strval( $variation->getDiscountedPrice() ),
-				)
-			);
-		}
 	}
 
 }

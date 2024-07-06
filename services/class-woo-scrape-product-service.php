@@ -206,7 +206,7 @@ class Woo_scrape_product_service {
 		// ignore the $set_updated flag and set the item as updated anyway to avoid additional crawlings
 		if ( ! $set_updated_time ) {
 			$single_items_updated = $wpdb->update(
-				$wpdb->prefix . 'woo_scrape_products',
+				$wpdb->prefix . self::$products_table_name,
 				array(
 					'item_updated_timestamp' => $date,
 				),
