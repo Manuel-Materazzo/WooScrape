@@ -8,12 +8,13 @@ class WooScrapeProduct
     public int $id;
     public string $name;
     public string $description;
-    public bool $has_variations;
+    public ?bool $has_variations = null;
     public string $brand;
     public string $url;
     public array $image_urls = array();
     public array $image_ids = array();
     public int $category_id;
+	public int $quantity;
     public WooScrapeDecimal $suggested_price;
     public WooScrapeDecimal $discounted_price;
     public DateTime $first_crawl_timestamp;
@@ -41,6 +42,14 @@ class WooScrapeProduct
 	    // (profit * 100 / suggested_price) > 10
         return $profit->multiply(100)->divide($this->suggested_price)->greater_than(10);
     }
+
+	public function getQuantity(): int {
+		return $this->quantity;
+	}
+
+	public function set_quantity( int $quantity ): void {
+		$this->quantity = $quantity;
+	}
 
     public function hasVariations(): bool
     {

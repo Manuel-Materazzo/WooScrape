@@ -5,10 +5,12 @@ require ABSPATH . 'wp-content/plugins/woo-scrape/services/class-woo-scrape-fishd
 
 class Woo_scrape_category_crawling_job {
 	private static Woo_scrape_fishdeal_crawler_service $crawler;
+	private static Woo_scrape_product_service $product_service;
 	private static string $date_format = 'Y-m-d H:i:s';
 
 	public function __construct() {
-		self::$crawler = new Woo_scrape_fishdeal_crawler_service();
+		self::$crawler         = new Woo_scrape_fishdeal_crawler_service();
+		self::$product_service = new Woo_scrape_product_service();
 	}
 
 	public function run(): void {
@@ -166,12 +168,12 @@ class Woo_scrape_category_crawling_job {
 			error_log( "The category " . $category->id . " has crawled " . count( $partial_profitable_products ) . " items" );
 
 			// update existing products, and return "new" products
-			$partial_profitable_products = $this->update_partial_products( $partial_profitable_products );
+			$partial_profitable_products = self::$product_service->update_all_by_url( $partial_profitable_products );
 
 			error_log( "There are " . count( $partial_profitable_products ) . " new items to save" );
 
 			// save the new products
-			$this->save_partial_products( $category->id, $partial_profitable_products );
+			self::$product_service->create_all( $category->id, $partial_profitable_products );
 		}
 	}
 
@@ -209,6 +211,7 @@ class Woo_scrape_category_crawling_job {
 			// crawl each product to get the complete informations
 			foreach ( $updated_products as $partial_product ) {
 				$complete_product = self::$crawler->crawl_product( $partial_product->url );
+				$complete_product->setId($partial_product->id);
 
 				error_log( "Crawled " . $partial_product->url );
 
@@ -224,7 +227,7 @@ class Woo_scrape_category_crawling_job {
 				}
 
 				// update the product on DB
-				$this->update_complete_product( $now, $partial_product->id, $complete_product );
+				self::$product_service->update_by_id($complete_product, true, $now);
 
 				if ( $complete_product->hasvariations() ) {
 					error_log( "The item " . $partial_product->url . "has " . count( $complete_product->getVariations() ) . " variations!" );
@@ -348,39 +351,6 @@ class Woo_scrape_category_crawling_job {
 	}
 
 	/**
-	 * Updates on DB partial products to enrich and complete their metadata.
-	 *
-	 * @param string $now the product update timestamp
-	 * @param int $product_id the DB product id
-	 * @param WooScrapeProduct $complete_product the complete product object
-	 *
-	 * @return void
-	 */
-	private function update_complete_product( string $now, int $product_id, WooScrapeProduct $complete_product ): void {
-		global $wpdb;
-
-		$columns = array(
-			'item_updated_timestamp' => $now,
-			'has_variations'         => $complete_product->hasVariations(),
-			'image_urls'             => json_encode( $complete_product->getImageUrls() ),
-			'description'            => $complete_product->getDescription()
-		);
-
-		// edit image ids only if there is something in the product
-		if ( count( $complete_product->getImageIds() ) > 0 ) {
-			$columns['image_ids'] = json_encode( $complete_product->getImageIds() );
-		}
-
-		// update products with the additional details
-		$rows_updated = $wpdb->update(
-			$wpdb->prefix . 'woo_scrape_products',
-			$columns,
-			array( 'id' => $product_id )
-		);
-
-	}
-
-	/**
 	 * Updates on DB the variations of the $variations array, and returns the ones not found on DB.
 	 *
 	 * @param string $now the variation update timestamp
@@ -450,93 +420,6 @@ class Woo_scrape_category_crawling_job {
 					'item_updated_timestamp' => $now,
 //					'suggested_price'        => strval( $profitable_product->getSuggestedPrice() ),
 					'discounted_price'       => strval( $variation->getDiscountedPrice() ),
-				)
-			);
-		}
-	}
-
-	/**
-	 * Updates on DB the products of the $profitable_products array, and returns the ones not found on DB.
-	 * Products without variations (with has_variation=false, uncrawled products have has_variation=null) are directly
-	 * set as updated.
-	 *
-	 * @param array $partial_products array of products to update
-	 *
-	 * @return array array of products not updated
-	 */
-	private function update_partial_products( array $partial_products ): array {
-		global $wpdb;
-
-		$now = date( self::$date_format );
-
-		foreach ( $partial_products as $key => $partial_product ) {
-			// update products already on the table
-			$rows_updated = $wpdb->update(
-				$wpdb->prefix . 'woo_scrape_products',
-				array(
-					'name'                   => $partial_product->getName(),
-					'latest_crawl_timestamp' => $now,
-					'brand'                  => $partial_product->getBrand(),
-					'suggested_price'        => strval( $partial_product->getSuggestedPrice() ),
-					'discounted_price'       => strval( $partial_product->getDiscountedPrice() ),
-				),
-				array( 'url' => $partial_product->getUrl() )
-			);
-
-			// if the product has no variations (and was already crawled once) this is all the data we need
-			// set the item as updated to avoid additional crawlings
-			$single_items_updated = $wpdb->update(
-				$wpdb->prefix . 'woo_scrape_products',
-				array(
-					'item_updated_timestamp' => $now,
-				),
-				array(
-					'url'            => $partial_product->getUrl(),
-					'has_variations' => false,
-				)
-			);
-
-			// if the the product got updated, remove it from the array
-			if ( $rows_updated >= 1 ) {
-				unset( $partial_products[ $key ] );
-			}
-			// there shouldn't be more than one row updated
-			if ( $rows_updated > 1 ) {
-				error_log(
-					"There is more than one woo_scrape_product on database with url "
-					. $partial_product->url
-				);
-			}
-		}
-
-		// returns product that didn't update
-		return $partial_products;
-	}
-
-	/**
-	 * Creates on DB the products of the $profitable_products array.
-	 *
-	 * @param int $category_id id of the product's category
-	 * @param array $partial_products array of products to insert
-	 */
-	private function save_partial_products( int $category_id, array $partial_products ): void {
-		global $wpdb;
-
-		$now = date( self::$date_format );
-
-		foreach ( $partial_products as $partial_product ) {
-			$wpdb->insert(
-				$wpdb->prefix . 'woo_scrape_products',
-				array(
-					'name'                   => $partial_product->getName(),
-					'url'                    => $partial_product->getUrl(),
-					'image_urls'             => json_encode( $partial_product->getImageUrls() ),
-					'first_crawl_timestamp'  => $now,
-					'latest_crawl_timestamp' => $now,
-					'brand'                  => $partial_product->getBrand(),
-					'category_id'            => $category_id,
-					'suggested_price'        => strval( $partial_product->getSuggestedPrice() ),
-					'discounted_price'       => strval( $partial_product->getDiscountedPrice() ),
 				)
 			);
 		}
