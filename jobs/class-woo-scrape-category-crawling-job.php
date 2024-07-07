@@ -7,12 +7,14 @@ class Woo_scrape_category_crawling_job {
 	private static Woo_scrape_fishdeal_crawler_service $crawler;
 	private static Woo_scrape_product_service $product_service;
 	private static Woo_scrape_variation_service $variation_service;
+	private static Woo_Scrape_WooCommerce_Service $woocommerce_service;
 	private static string $date_format = 'Y-m-d H:i:s';
 
 	public function __construct() {
-		self::$crawler           = new Woo_scrape_fishdeal_crawler_service();
-		self::$product_service   = new Woo_scrape_product_service();
-		self::$variation_service = new Woo_scrape_variation_service();
+		self::$crawler             = new Woo_scrape_fishdeal_crawler_service();
+		self::$product_service     = new Woo_scrape_product_service();
+		self::$variation_service   = new Woo_scrape_variation_service();
+		self::$woocommerce_service = new Woo_Scrape_WooCommerce_Service();
 	}
 
 	public function run(): void {
@@ -58,11 +60,11 @@ class Woo_scrape_category_crawling_job {
 				}
 
 				// update the product on woocommerce
-				$woocommerce_product = $this->update_woocommerce_product( $product_id, $crawled_product );
+				$woocommerce_product = self::$woocommerce_service->update_product( $product_id, $crawled_product );
 
 				// if the product has no variations, update them
 				if ( $crawled_product->has_variations ) {
-					$this->update_woocommerce_vatiarions( $crawled_product->id );
+					$this->update_woocommerce_vatiarions( $crawled_product->id, $woocommerce_product, $crawled_product );
 				}
 
 
@@ -72,6 +74,7 @@ class Woo_scrape_category_crawling_job {
 
 			// save new products on woocommerce
 			foreach ( $new_products as $new_product ) {
+
 				if ( ! $new_product->has_variations ) {
 					$product = new WC_Product_Simple();
 				} else {
@@ -79,6 +82,7 @@ class Woo_scrape_category_crawling_job {
 				}
 
 				$product->set_sku( 'kum-fd-' . $new_product->id );
+
 				$product->set_name( $new_product->name );
 				$product->set_regular_price( $new_product->suggested_price );
 				$product->set_description( $new_product->description );
@@ -114,16 +118,17 @@ class Woo_scrape_category_crawling_job {
 
 			// set each product as out of stock
 			foreach ( $outdated_products as $outdated_product ) {
-				$product_id = wc_get_product_id_by_sku( 'kum-fd-' . $outdated_product->id );
-				$product    = wc_get_product( $product_id );
-				$product->set_stock_status( 'outofstock' );
-				$product->save();
+
+				$product_id                 = wc_get_product_id_by_sku( 'kum-fd-' . $outdated_product->id );
+				$outdated_product->quantity = 0;
+				$product                    = self::$woocommerce_service->update_product( $product_id, $outdated_product );
+
+				// if the product has variations, set them out of stock
 				if ( $outdated_product->has_variations() ) {
 					$variation_ids = $product->get_children();
 					foreach ( $variation_ids as $variation_id ) {
-						$variation = wc_get_product( $variation_id );
-						$variation->set_stock_status( 'outofstock' );
-						$variation->save();
+						// $outdated_product has only the quantity, and it's 0
+						self::$woocommerce_service->update_product( $variation_id, $outdated_product );
 					}
 				}
 			}
@@ -216,29 +221,10 @@ class Woo_scrape_category_crawling_job {
 		}
 	}
 
-	private function update_woocommerce_product( int $product_id, $crawled_product ): WC_Product {
-		$product = wc_get_product( $product_id );
-		$product->set_stock_status( 'instock' );
-		$product->set_weight( $crawled_product->weight );
-		$product->set_length( $crawled_product->length );
-		$product->set_width( $crawled_product->width );
-		$product->set_height( $crawled_product->height );
-		//TODO: update other things
-
-		// if the product has no variations, set the price
-		if ( ! $crawled_product->has_variations ) {
-			$product->set_price( $crawled_product->suggested_price );
-		}
-
-		$product->save();
-
-		return $product;
-	}
-
 	private function update_woocommerce_vatiarions( int $product_id, WC_Product $woocommerce_product, $crawled_product ): void {
 
 		// get crawled variation for this product from DB
-		$crawled_variations = self::$variation_service->get_updated_variations_by_product_id($product_id);
+		$crawled_variations = self::$variation_service->get_updated_variations_by_product_id( $product_id );
 		// extract product variations
 		$variation_ids = $woocommerce_product->get_children();
 
@@ -261,52 +247,22 @@ class Woo_scrape_category_crawling_job {
 
 			// update variation if crawled
 			if ( $current_crawled_variation ) {
-				$variation->set_stock_status( 'instock' );
-				$variation->set_price( $current_crawled_variation->suggested_price );
-				$variation->set_weight( $crawled_product->weight );
-				$variation->set_length( $crawled_product->length );
-				$variation->set_width( $crawled_product->width );
-				$variation->set_height( $crawled_product->height );
-
-				$variation->save();
+				self::$woocommerce_service->update_product( $variation_id, $current_crawled_variation );
 			}
 
+		}
+
+		if ( count( $crawled_variations ) > 0 ) {
+			error_log( "There are " . count( $crawled_variations ) . " new variations to create for $product_id." );
 		}
 
 		//TODO: insert new variations, they are all contained into $crawled_variations
 	}
 
 	private function save_woocommerce_variations( int $product_id ): WC_Product_Variable {
-		$product    = new WC_Product_Variable();
-		$variations = self::$variation_service->get_updated_variations_by_product_id($product_id);
+		$variations = self::$variation_service->get_updated_variations_by_product_id( $product_id );
 
-		$variation_options = array();
-
-		foreach ( $variations as $variation ) {
-			$variation_options[] = $variation->name;
-		}
-
-		$attribute = new WC_Product_Attribute();
-		$attribute->set_name( 'Variant' );
-		$attribute->set_options( $variation_options );
-		$attribute->set_position( 0 );
-		$attribute->set_visible( true );
-		$attribute->set_variation( true );
-
-		$product->set_attributes( array( $attribute ) );
-		$product->save();
-
-		foreach ( $variations as $variation ) {
-			$variation_name      = $variation->name;
-			$variation_price     = $variation->suggested_price;
-			$variation           = new WC_Product_Variation();
-			$variation->set_parent_id( $product->get_id() );
-			$variation->set_attributes( array( 'variant' => $variation_name ) );
-			$variation->set_regular_price( $variation_price );
-			$variation->save();
-		}
-
-		return $product;
+		return self::$woocommerce_service->create_variable_product( $variations );
 	}
 
 }

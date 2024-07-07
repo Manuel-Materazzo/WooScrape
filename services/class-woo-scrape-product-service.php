@@ -30,7 +30,7 @@ class Woo_scrape_product_service {
 	}
 
 	/**
-	 * Gets a paged list of products (id, has_variations) not updated today
+	 * Gets a paged list of products (id) not updated today
 	 *
 	 * @param int $page
 	 *
@@ -43,7 +43,7 @@ class Woo_scrape_product_service {
 		$start = $page * 30;
 
 		return $wpdb->get_results(
-			"SELECT id, has_variations FROM $products_table_name
+			"SELECT id FROM $products_table_name
                 WHERE DATE(`latest_crawl_timestamp`) != CURDATE()
                 LIMIT $start,30"
 		);
