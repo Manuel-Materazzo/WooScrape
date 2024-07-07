@@ -28,7 +28,7 @@ class WooScrapeProduct
      */
     public function isProfitable(): bool
     {
-        $supplier_price = $this->discounted_price;
+        $supplier_price = $this->discounted_price->clone();
 
         // add shipping if the product is lower than 100€
         if ($supplier_price->lower_than(100)) {
@@ -36,11 +36,12 @@ class WooScrapeProduct
         }
 
         // calculate profit
-        $profit = $this->suggested_price->clone()->subtract($supplier_price);
+//        $profit = $this->suggested_price->clone()->subtract($supplier_price);
 
         // the item is profitable only if the profit is at least 10% of the selling price
 	    // (profit * 100 / suggested_price) > 10
-        return $profit->multiply(100)->divide($this->suggested_price)->greater_than(10);
+//        return $profit->multiply(100)->divide($this->suggested_price)->greater_than(10);
+	    return $supplier_price->lower_than($this->suggested_price);
     }
 
 	public function getQuantity(): int | null {

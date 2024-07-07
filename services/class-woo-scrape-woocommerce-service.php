@@ -113,7 +113,22 @@ class Woo_Scrape_WooCommerce_Service {
 
 		// if the product has no variations, set the price
 		if ( ! $crawled_product->has_variations ) {
-			$product->set_regular_price( $crawled_product->suggested_price );
+
+			$profitable_price = new WooScrapeDecimal( $crawled_product->discounted_price );
+			$profitable_price->add( 7 )->multiply( '1.2' );
+
+			$suggested_price = new WooScrapeDecimal( $crawled_product->suggested_price ?? 0 );
+
+			// if the product has a suggested price and it's greater than the profitable price
+			if ( $suggested_price->greater_than( $profitable_price ) ) {
+				// display a discount
+				$product->set_regular_price( $suggested_price );
+				$product->set_sale_price( $profitable_price );
+			} else {
+				// otherwise, just the price
+				$product->set_regular_price( $profitable_price );
+			}
+
 		}
 
 		$product->save();

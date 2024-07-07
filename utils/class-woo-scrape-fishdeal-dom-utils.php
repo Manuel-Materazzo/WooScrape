@@ -58,7 +58,6 @@ class Woo_scrape_fishdeal_dom_utils {
 		// Extract infos
 		$name_element  = $product_element->find( '.SC_DealTile-title', 0 );
 		$brand_element = $product_element->find( '.SC_Manufacturer img', 0 );
-		$image_element = $product_element->find( 'img.SC_DealTile-image[srcset]', 0 );
 
 		$suggested_price_element  = $product_element->find( '.SC_DealTile-value', 0 );
 		$discounted_price_element = $product_element->find( '.SC_DealTile-price', 0 );
@@ -75,7 +74,6 @@ class Woo_scrape_fishdeal_dom_utils {
 		$product->setName( trim( $name_element->innertext() ) );
 		$product->setUrl( $product_element->href );
 		$product->setBrand( $brand_element->alt );
-		$product->setImageUrls( array( $image_element->src ) );
 		$product->setSuggestedPrice( new WooScrapeDecimal( $suggested_price_element->innertext() ) );
 		$product->setDiscountedPrice( new WooScrapeDecimal( $discounted_price_element->innertext() ) );
 

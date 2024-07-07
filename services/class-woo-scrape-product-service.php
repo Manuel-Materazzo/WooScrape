@@ -21,7 +21,7 @@ class Woo_scrape_product_service {
 		$start = $page * 30;
 
 		return $wpdb->get_results(
-			"SELECT $products_table_name.id, $products_table_name.name, suggested_price, description, weight,
+			"SELECT $products_table_name.id, $products_table_name.name, suggested_price, discounted_price, description, weight,
        						length, width, height, has_variations, image_ids
 				FROM $products_table_name INNER JOIN $pages_list_table_name
             	ON $products_table_name.category_id = $pages_list_table_name.id
