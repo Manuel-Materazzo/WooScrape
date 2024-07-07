@@ -60,7 +60,7 @@ class Woo_scrape_category_crawling_job {
 				}
 
 				// update the product on woocommerce
-				$woocommerce_product = self::$woocommerce_service->update_product( $product_id, $crawled_product );
+				$woocommerce_product = self::$woocommerce_service->update_product_by_id( $product_id, $crawled_product );
 
 				// if the product has no variations, update them
 				if ( $crawled_product->has_variations ) {
@@ -83,17 +83,7 @@ class Woo_scrape_category_crawling_job {
 
 				$product->set_sku( 'kum-fd-' . $new_product->id );
 
-				$product->set_name( $new_product->name );
-				$product->set_regular_price( $new_product->suggested_price );
-				$product->set_description( $new_product->description );
-				$product->set_stock_status( 'instock' );
-				$product->set_weight( $new_product->weight );
-				$product->set_length( $new_product->length );
-				$product->set_width( $new_product->width );
-				$product->set_height( $new_product->height );
-//				TODO: $product->set_image_id( 90 );
-//				TODO: $product->set_category_ids( array( 19 ) );
-				$product->save();
+				self::$woocommerce_service->update_product($product, $new_product);
 			}
 
 			$page += 1;
@@ -121,14 +111,14 @@ class Woo_scrape_category_crawling_job {
 
 				$product_id                 = wc_get_product_id_by_sku( 'kum-fd-' . $outdated_product->id );
 				$outdated_product->quantity = 0;
-				$product                    = self::$woocommerce_service->update_product( $product_id, $outdated_product );
+				$product                    = self::$woocommerce_service->update_product_by_id( $product_id, $outdated_product );
 
 				// if the product has variations, set them out of stock
 				if ( $outdated_product->has_variations() ) {
 					$variation_ids = $product->get_children();
 					foreach ( $variation_ids as $variation_id ) {
 						// $outdated_product has only the quantity, and it's 0
-						self::$woocommerce_service->update_product( $variation_id, $outdated_product );
+						self::$woocommerce_service->update_product_by_id( $variation_id, $outdated_product );
 					}
 				}
 			}
@@ -247,7 +237,7 @@ class Woo_scrape_category_crawling_job {
 
 			// update variation if crawled
 			if ( $current_crawled_variation ) {
-				self::$woocommerce_service->update_product( $variation_id, $current_crawled_variation );
+				self::$woocommerce_service->update_product_by_id( $variation_id, $current_crawled_variation );
 			}
 
 		}

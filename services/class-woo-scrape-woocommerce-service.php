@@ -42,15 +42,38 @@ class Woo_Scrape_WooCommerce_Service {
 	}
 
 	/**
-	 * Updates a product, saves, and returns it.
+	 * Updates a product by id, saves, and returns it.
 	 * Does not set the price on variable products.
+	 *
 	 * @param int $product_id
 	 * @param $crawled_product
 	 *
 	 * @return WC_Product
 	 */
-	public function update_product( int $product_id, $crawled_product ): WC_Product {
+	public function update_product_by_id( int $product_id, $crawled_product ): WC_Product {
 		$product = wc_get_product( $product_id );
+
+		return $this->update_product( $product, $crawled_product );
+	}
+
+	/**
+	 * Updates a product, saves, and returns it.
+	 * Does not set the price on variable products.
+	 *
+	 * @param WC_Product $product
+	 * @param $crawled_product
+	 *
+	 * @return WC_Product
+	 */
+	public function update_product( WC_Product $product, $crawled_product ): WC_Product {
+
+		if ( $crawled_product->name ) {
+			$product->set_name( $crawled_product->name );
+		}
+
+		if ( $crawled_product->description ) {
+			$product->set_description( $crawled_product->description );
+		}
 
 		// if the quantity is not specified, set the item in stock
 		if ( is_null( $crawled_product->quantity ) ) {
@@ -80,7 +103,13 @@ class Woo_Scrape_WooCommerce_Service {
 			$product->set_weight( $crawled_product->height );
 		}
 
-		//				TODO: $product->set_image_id( 90 );
+		if ( $crawled_product->image_ids ) {
+			$product_images = json_decode( $crawled_product->image_ids );
+			$product->set_image_id( $product_images[0] );
+			array_shift( $product_images );
+			$product->set_gallery_image_ids( $product_images );
+		}
+
 //				TODO: $product->set_category_ids( array( 19 ) );
 
 		//TODO: update other things
