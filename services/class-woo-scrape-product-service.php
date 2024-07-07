@@ -235,28 +235,28 @@ class Woo_scrape_product_service {
 	 * @return array array of pre-existing parameters
 	 */
 	private function add_standard_parameters( array $parameters, WooScrapeProduct $product ): array {
-		if ( ! is_null( $product->getName() ) ) {
+		if ( ! empty( $product->getName() ) ) {
 			$parameters['name'] = $product->getName();
 		}
-		if ( ! is_null( $product->getDescription() ) ) {
+		if ( ! empty( $product->getDescription() ) ) {
 			$parameters['description'] = $product->getDescription();
 		}
-		if ( ! is_null( $product->getBrand() ) ) {
+		if ( ! empty( $product->getBrand() ) ) {
 			$parameters['brand'] = $product->getBrand();
 		}
 		if ( ! is_null( $product->hasVariations() ) ) {
 			$parameters['has_variations'] = $product->hasVariations();
 		}
-		if ( ! is_null( $product->getUrl() ) ) {
+		if ( ! empty( $product->getUrl() ) ) {
 			$parameters['url'] = $product->getUrl();
 		}
 		if ( ! empty( $product->getImageUrls() ) ) {
-			$parameters['image_urls'] = $product->getImageUrls();
+			$parameters['image_urls'] = json_encode($product->getImageUrls());
 		}
 		if ( ! empty( $product->getImageIds() ) ) {
-			$parameters['image_ids'] = $product->getImageIds();
+			$parameters['image_ids'] = json_encode($product->getImageIds());
 		}
-		if ( ! is_null( $product->getQuantity() ) ) {
+		if ( ! empty( $product->getQuantity() ) ) {
 			$parameters['quantity'] = strval( $product->getQuantity() );
 		}
 		if ( ! is_null( $product->getSuggestedPrice() ) ) {

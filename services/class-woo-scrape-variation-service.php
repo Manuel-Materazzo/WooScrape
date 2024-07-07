@@ -83,7 +83,7 @@ class Woo_Scrape_Variation_Service {
 	 *
 	 * @return array
 	 */
-	public function update_all_by_product_id_and_name( int $parent_product_id, array $variations, int $date = null ): array {
+	public function update_all_by_product_id_and_name( int $parent_product_id, array $variations, string $date = null ): array {
 
 		// initialize date, if not given
 		if ( is_null( $date ) ) {
@@ -113,7 +113,7 @@ class Woo_Scrape_Variation_Service {
 	 *
 	 * @return bool
 	 */
-	public function update_by_product_id_and_name( int $parent_product_id, WooScrapeProduct $variation, int $date = null ): bool {
+	public function update_by_product_id_and_name( int $parent_product_id, WooScrapeProduct $variation, string $date = null ): bool {
 		global $wpdb;
 
 		// initialize date, if not given

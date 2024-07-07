@@ -78,10 +78,7 @@ class Woo_Scrape_WooCommerce_Service {
 		// if the quantity is not specified, set the item in stock
 		if ( is_null( $crawled_product->quantity ) ) {
 			$product->set_stock_status( 'instock' );
-		}
-
-		// if the quantity is specified, set stock
-		if ( $crawled_product->quantity ) {
+		} else {
 			$product->set_manage_stock( true );
 			$product->set_stock_quantity( $crawled_product->quantity );
 			$product->set_low_stock_amount( 0 );
@@ -116,7 +113,7 @@ class Woo_Scrape_WooCommerce_Service {
 
 		// if the product has no variations, set the price
 		if ( ! $crawled_product->has_variations ) {
-			$product->set_price( $crawled_product->suggested_price );
+			$product->set_regular_price( $crawled_product->suggested_price );
 		}
 
 		$product->save();

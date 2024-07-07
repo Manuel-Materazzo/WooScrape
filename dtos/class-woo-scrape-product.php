@@ -6,20 +6,20 @@ class WooScrapeProduct
 {
 	//TODO: private
     public int $id;
-    public string $name;
-    public string $description;
+    public string $name = '';
+    public string $description = '';
     public ?bool $has_variations = null;
-    public string $brand;
-    public string $url;
+    public string $brand = '';
+    public string $url = '';
     public array $image_urls = array();
     public array $image_ids = array();
     public int $category_id;
-	public int $quantity;
-    public WooScrapeDecimal $suggested_price;
-    public WooScrapeDecimal $discounted_price;
-    public DateTime $first_crawl_timestamp;
-    public DateTime $latest_crawl_timestamp;
-    public DateTime $item_updated_timestamp;
+	public ?int $quantity = null;
+    public ?WooScrapeDecimal $suggested_price = null;
+    public ?WooScrapeDecimal $discounted_price = null;
+    public ?DateTime $first_crawl_timestamp = null;
+    public ?DateTime $latest_crawl_timestamp = null;
+    public ?DateTime $item_updated_timestamp = null;
     public array $variations;
 
     /**
@@ -43,7 +43,7 @@ class WooScrapeProduct
         return $profit->multiply(100)->divide($this->suggested_price)->greater_than(10);
     }
 
-	public function getQuantity(): int {
+	public function getQuantity(): int | null {
 		return $this->quantity;
 	}
 
@@ -51,7 +51,7 @@ class WooScrapeProduct
 		$this->quantity = $quantity;
 	}
 
-    public function hasVariations(): bool
+    public function hasVariations(): bool | null
     {
         return $this->has_variations;
     }
@@ -141,7 +141,7 @@ class WooScrapeProduct
         $this->category_id = $category_id;
     }
 
-    public function getSuggestedPrice(): WooScrapeDecimal
+    public function getSuggestedPrice(): WooScrapeDecimal | null
     {
         return $this->suggested_price;
     }
@@ -151,7 +151,7 @@ class WooScrapeProduct
         $this->suggested_price = $suggested_price;
     }
 
-    public function getDiscountedPrice(): WooScrapeDecimal
+    public function getDiscountedPrice(): WooScrapeDecimal | null
     {
         return $this->discounted_price;
     }
@@ -161,7 +161,7 @@ class WooScrapeProduct
         $this->discounted_price = $discounted_price;
     }
 
-    public function getFirstCrawlTimestamp(): DateTime
+    public function getFirstCrawlTimestamp(): DateTime | null
     {
         return $this->first_crawl_timestamp;
     }
@@ -171,7 +171,7 @@ class WooScrapeProduct
         $this->first_crawl_timestamp = $first_crawl_timestamp;
     }
 
-    public function getLatestCrawlTimestamp(): DateTime
+    public function getLatestCrawlTimestamp(): DateTime | null
     {
         return $this->latest_crawl_timestamp;
     }
@@ -181,7 +181,7 @@ class WooScrapeProduct
         $this->latest_crawl_timestamp = $latest_crawl_timestamp;
     }
 
-    public function getItemUpdatedTimestamp(): DateTime
+    public function getItemUpdatedTimestamp(): DateTime | null
     {
         return $this->item_updated_timestamp;
     }

@@ -2,6 +2,9 @@
 
 require ABSPATH . 'wp-content/plugins/woo-scrape/vendor/simple_html_dom.php';
 require ABSPATH . 'wp-content/plugins/woo-scrape/services/class-woo-scrape-fishdeal-crawler-service.php';
+require ABSPATH . 'wp-content/plugins/woo-scrape/services/class-woo-scrape-product-service.php';
+require ABSPATH . 'wp-content/plugins/woo-scrape/services/class-woo-scrape-variation-service.php';
+require ABSPATH . 'wp-content/plugins/woo-scrape/services/class-woo-scrape-woocommerce-service.php';
 
 class Woo_scrape_category_crawling_job {
 	private static Woo_scrape_fishdeal_crawler_service $crawler;
