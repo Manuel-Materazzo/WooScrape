@@ -46,6 +46,7 @@ class Woo_Scrape_Admin
      *
      * @param string $plugin_name The name of this plugin.
      * @param string $version The version of this plugin.
+     *
      * @since    1.0.0
      */
     public function __construct($plugin_name, $version)
@@ -56,7 +57,8 @@ class Woo_Scrape_Admin
 
     }
 
-    function run_my_job() {
+    function run_my_job(): void
+    {
         include plugin_dir_path(__FILE__) . '../../jobs/class-woo-scrape-category-crawling-job.php';
         error_log("job started");
         $job = new Woo_scrape_category_crawling_job();
@@ -64,19 +66,48 @@ class Woo_Scrape_Admin
         wp_die(); // this is required to terminate immediately and return a proper response
     }
 
-    public function display_admin_menu()
+    public function display_plugin_dashboard(): void
     {
-        include 'partials/woo-scrape-admin-display.php';
+        include 'partials/woo-scrape-admin-dashboard.php';
     }
 
-    public function add_menus()
+    public function display_plugin_settings(): void
+    {
+        include 'partials/woo-scrape-admin-settings.php';
+    }
+
+    public function add_menus(): void
     {
         add_menu_page(
-            'Hello World',// page title
-            'Hello World',// menu title
-            'manage_options',// capability
-            'hello-world',// menu slug
-            [$this, 'display_admin_menu']
+            'Woo Scrape - Dashboard',// page title
+            'Woo Scrape',// menu title
+            'manage_options',// capability of user that can see the menu
+            'woo-scrape-dashboard',// menu slug
+            [$this, 'display_plugin_dashboard']
+        );
+
+        add_submenu_page(
+            'woo-scrape-dashboard', // parent slug
+            'Woo Scrape - Settings',// page title
+            'Settings',// menu title
+            'manage_options',// capability of user that can see the menu
+            'woo-scrape-settings',// menu slug
+            [$this, 'display_plugin_settings']
+        );
+
+        $this->register_settings();
+    }
+
+    public function register_settings(): void
+    {
+        register_setting(
+            'woo-scrape-import-settings-group',
+            'price_multiplier',
+            array(
+                'type' => 'number',
+//                'sanitize_callback' => 'sanitize_text_field',
+                'default' => 1.2,
+            )
         );
     }
 

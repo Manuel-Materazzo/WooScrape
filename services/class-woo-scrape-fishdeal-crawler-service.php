@@ -71,13 +71,13 @@ class Woo_scrape_fishdeal_crawler_service {
 				$variations_array_json = array( $variations_array_json );
 			}
 
-			$variations_element = $html->find( '.SC_DealInfo-description attribute-select-block', 0 );
+//			$variations_element = $html->find( '.SC_DealInfo-description attribute-select-block', 0 );
 //			$variations_element-> data-deal-products-assignment, data-deal-options
 
 			// format description
 			$description_element = $html->find( '.SC_DealDescription-blocks', 0 );
 			$description         = preg_replace( '/[ \t]+/', ' ', $description_element->text() );
-			$description         = str_replace( 'Description', '', $description );
+			$description         = str_replace( 'Caratteristiche', '', $description );
 			$description         = str_replace( 'Specifications', '', $description );
 			$description         = str_replace( 'Read more', '', $description );
 			$description         = str_replace( 'Read less', '', $description );
@@ -90,7 +90,7 @@ class Woo_scrape_fishdeal_crawler_service {
 			foreach ( $variations_array_json as $variation_json ) {
 				$variation = new WooScrapeProduct();
 				$variation->setName( $variation_json->name );
-//                $variation->setSuggestedPrice(?); // TODO: not found on html, it's a websocket byproduct
+//                $variation->setSuggestedPrice(?); // not found on html, it's a websocket byproduct
 				$variation->setDiscountedPrice( new WooScrapeDecimal( $variation_json->offers->price ) );
 				//TODO: quantity
 
@@ -137,10 +137,11 @@ class Woo_scrape_fishdeal_crawler_service {
 			// download and save file
 			$uploaddir  = wp_upload_dir();
 			$uploadfile = $uploaddir['path'] . '/' . $filename;
-			$contents= file_get_contents($url);
-			$savefile = fopen($uploadfile, 'w');
-			fwrite($savefile, $contents);
-			fclose($savefile);
+			//TODO: real implementation
+			$contents = file_get_contents( "http://host.docker.internal:3004/" . $url );
+			$savefile = fopen( $uploadfile, 'w' );
+			fwrite( $savefile, $contents );
+			fclose( $savefile );
 
 			// prepare file
 			$wp_filetype = wp_check_filetype( basename( $filename ), null );
@@ -172,7 +173,8 @@ class Woo_scrape_fishdeal_crawler_service {
 	 * @return string a string containing the HTML body
 	 */
 	private function crawl( string $url ): string {
-		$response = wp_remote_post( "http://host.docker.internal:3004/", array(
+		//TODO: real implementation
+		$response = wp_remote_post( "http://host.docker.internal:3004/" . $url, array(
 			'method'      => 'GET',
 			'headers'     => array( 'Accept' => 'application/json' ),
 			'timeout'     => 45,
