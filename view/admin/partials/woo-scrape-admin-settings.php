@@ -23,6 +23,25 @@
     </nav>
     <div id="scraping" class="woo-scrape-tab">
         <h3>Scraping</h3>
+        <form method="post" action="options.php">
+            <?php settings_fields('woo-scrape-import-scraping-group'); ?>
+            <?php do_settings_sections('woo-scrape-import-scraping-group'); ?>
+            <table class="form-table">
+                <tr>
+                    <th scope="row">
+                        Proxy url
+                    </th>
+                    <td>
+                        <input type="text" name="proxy_url"
+                               value="<?php echo esc_attr(get_option('proxy_url')); ?>"/>
+                        <p class="description">
+                            Every crawl request will pass from this proxy. The request URL will be appended at the end.
+                        </p>
+                    </td>
+                </tr>
+            </table>
+            <?php submit_button(); ?>
+        </form>
     </div>
 
     <div id="provider" class="woo-scrape-tab" style="display:none">
@@ -82,7 +101,7 @@
             <table class="form-table">
                 <tr>
                     <th scope="row">
-                        Sku Prefix
+                        Sku prefix
                     </th>
                     <td>
                         <input type="text" name="sku_prefix"

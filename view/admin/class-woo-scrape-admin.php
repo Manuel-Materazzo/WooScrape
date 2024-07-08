@@ -100,6 +100,16 @@ class Woo_Scrape_Admin
 
     public function register_settings(): void
     {
+        // scraping
+        register_setting(
+            'woo-scrape-import-scraping-group',
+            'proxy_url',
+            array(
+                'type' => 'text',
+                'default' => 'http://localhost:3000/',
+            )
+        );
+
         // provider
         register_setting(
             'woo-scrape-provider-settings-group',
