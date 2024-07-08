@@ -5,12 +5,14 @@ require ABSPATH . 'wp-content/plugins/woo-scrape/services/class-woo-scrape-fishd
 require ABSPATH . 'wp-content/plugins/woo-scrape/services/class-woo-scrape-product-service.php';
 require ABSPATH . 'wp-content/plugins/woo-scrape/services/class-woo-scrape-variation-service.php';
 require ABSPATH . 'wp-content/plugins/woo-scrape/services/class-woo-scrape-woocommerce-service.php';
+require ABSPATH . 'wp-content/plugins/woo-scrape/services/class-woo-scrape-job-log-service.php';
 
 class Woo_scrape_category_crawling_job {
 	private static Woo_scrape_fishdeal_crawler_service $crawler;
 	private static Woo_scrape_product_service $product_service;
 	private static Woo_scrape_variation_service $variation_service;
 	private static Woo_Scrape_WooCommerce_Service $woocommerce_service;
+	private static Woo_Scrape_Job_Log_Service $log_service;
 	private static string $date_format = 'Y-m-d H:i:s';
 
 	public function __construct() {
@@ -18,21 +20,31 @@ class Woo_scrape_category_crawling_job {
 		self::$product_service     = new Woo_scrape_product_service();
 		self::$variation_service   = new Woo_scrape_variation_service();
 		self::$woocommerce_service = new Woo_Scrape_WooCommerce_Service();
+        self::$log_service = new Woo_Scrape_Job_Log_Service();
 	}
 
 	public function run(): void {
+        self::$log_service->job_start();
+
 		// crawl categories to get partial products
 		$this->fetch_categories_for_profitable_products();
+
+        self::$log_service->categories_crawl_end();
 
 		// crawl each partial product to complete informations
 		$this->fetch_profitable_products();
 
+        self::$log_service->product_crawl_end();
+
 		// get from database outdated products, and set them out of stock
 		$this->update_out_of_stock();
+
+        self::$log_service->woocommerce_out_of_stock_end();
 
 		// extracts from DB today's crawled products and variants, and persists them on woocomerce
 		$this->update_woocommerce_database();
 
+        self::$log_service->job_end();
 	}
 
 	private function update_woocommerce_database(): void {
@@ -56,38 +68,47 @@ class Woo_scrape_category_crawling_job {
 
 			// update each product on woocommerce
 			foreach ( $crawled_products as $crawled_product ) {
-				$product_id = wc_get_product_id_by_sku( $sku_prefix . $crawled_product->id );
-				// if there is no such product on woocommerce, queue it for creation and go on
-				if ( ! $product_id ) {
-					$new_products[] = $crawled_product;
-					continue;
-				}
+                try {
+                    $product_id = wc_get_product_id_by_sku( $sku_prefix . $crawled_product->id );
+                    // if there is no such product on woocommerce, queue it for creation and go on
+                    if ( ! $product_id ) {
+                        $new_products[] = $crawled_product;
+                        continue;
+                    }
 
-				// update the product on woocommerce
-				$woocommerce_product = self::$woocommerce_service->update_product_by_id( $product_id, $crawled_product );
+                    // update the product on woocommerce
+                    $woocommerce_product = self::$woocommerce_service->update_product_by_id( $product_id, $crawled_product );
 
-				// if the product has no variations, update them
-				if ( $crawled_product->has_variations ) {
-					$this->update_woocommerce_vatiarions( $crawled_product->id, $woocommerce_product, $crawled_product );
-				}
-
-
+                    // if the product has no variations, update them
+                    if ( $crawled_product->has_variations ) {
+                        $this->update_woocommerce_vatiarions( $crawled_product->id, $woocommerce_product, $crawled_product );
+                    }
+                    self::$log_service->increase_woocommerce_updated_products();
+                } catch (Exception $e) {
+                    error_log( $e );
+                    self::$log_service->increase_failed_woocommerce_updated_products();
+                }
 			}
 
 			error_log( "there are " . count( $new_products ) . " new products to create on woocommerce." );
 
 			// save new products on woocommerce
 			foreach ( $new_products as $new_product ) {
+                try {
+                    if ( ! $new_product->has_variations ) {
+                        $product = new WC_Product_Simple();
+                    } else {
+                        $product = $this->save_woocommerce_variations( $new_product->id );
+                    }
 
-				if ( ! $new_product->has_variations ) {
-					$product = new WC_Product_Simple();
-				} else {
-					$product = $this->save_woocommerce_variations( $new_product->id );
-				}
+                    $product->set_sku( $sku_prefix . $new_product->id );
 
-				$product->set_sku( $sku_prefix . $new_product->id );
-
-				self::$woocommerce_service->update_product($product, $new_product);
+                    self::$woocommerce_service->update_product($product, $new_product);
+                    self::$log_service->increase_woocommerce_created_products();
+                } catch (Exception $e) {
+                    error_log( $e );
+                    self::$log_service->increase_failed_woocommerce_created_products();
+                }
 			}
 
 			$page += 1;
@@ -114,18 +135,25 @@ class Woo_scrape_category_crawling_job {
 			// set each product as out of stock
 			foreach ( $outdated_products as $outdated_product ) {
 
-				$product_id                 = wc_get_product_id_by_sku( $sku_prefix . $outdated_product->id );
-				$outdated_product->quantity = 0;
-				$product                    = self::$woocommerce_service->update_product_by_id( $product_id, $outdated_product );
+                try {
 
-				// if the product has variations, set them out of stock
-				if ( $outdated_product->has_variations() ) {
-					$variation_ids = $product->get_children();
-					foreach ( $variation_ids as $variation_id ) {
-						// $outdated_product has only the quantity, and it's 0
-						self::$woocommerce_service->update_product_by_id( $variation_id, $outdated_product );
-					}
-				}
+                    $product_id                 = wc_get_product_id_by_sku( $sku_prefix . $outdated_product->id );
+                    $outdated_product->quantity = 0;
+                    $product                    = self::$woocommerce_service->update_product_by_id( $product_id, $outdated_product );
+
+                    // if the product has variations, set them out of stock
+                    if ( $outdated_product->has_variations() ) {
+                        $variation_ids = $product->get_children();
+                        foreach ( $variation_ids as $variation_id ) {
+                            // $outdated_product has only the quantity, and it's 0
+                            self::$woocommerce_service->update_product_by_id( $variation_id, $outdated_product );
+                        }
+                    }
+                    self::$log_service->increase_out_of_stock_products();
+                } catch (Exception $e) {
+                    error_log($e);
+                    self::$log_service->increase_failed_out_of_stock_products();
+                }
 			}
 			$page += 1;
 		}
@@ -144,18 +172,27 @@ class Woo_scrape_category_crawling_job {
 
 		// on each category
 		foreach ( $categories as $category ) {
-			// crawl all products
-			$partial_profitable_products = self::$crawler->crawl_category( $category->url );
+            try {
 
-			error_log( "The category " . $category->id . " has crawled " . count( $partial_profitable_products ) . " items" );
 
-			// update existing products, and return "new" products
-			$partial_profitable_products = self::$product_service->update_all_by_url( $partial_profitable_products );
+                // crawl all products
+                $partial_profitable_products = self::$crawler->crawl_category( $category->url );
 
-			error_log( "There are " . count( $partial_profitable_products ) . " new items to save" );
+                error_log( "The category " . $category->id . " has crawled " . count( $partial_profitable_products ) . " items" );
+
+                // update existing products, and return "new" products
+                $partial_profitable_products = self::$product_service->update_all_by_url( $partial_profitable_products );
+
+                error_log( "There are " . count( $partial_profitable_products ) . " new items to save" );
+                self::$log_service->increase_crawled_categories();
+            } catch (Exception $e) {
+                error_log($e);
+                self::$log_service->increase_failed_categories();
+            }
 
 			// save the new products
 			self::$product_service->create_all( $category->id, $partial_profitable_products );
+
 		}
 	}
 
@@ -183,34 +220,40 @@ class Woo_scrape_category_crawling_job {
 
 			// crawl each product to get the complete informations
 			foreach ( $updated_products as $partial_product ) {
-				$complete_product = self::$crawler->crawl_product( $partial_product->url );
-				$complete_product->setId( $partial_product->id );
+                try {
+                    $complete_product = self::$crawler->crawl_product( $partial_product->url );
+                    $complete_product->setId( $partial_product->id );
 
-				error_log( "Crawled " . $partial_product->url );
+                    error_log( "Crawled " . $partial_product->url );
 
-				// if the product has no crawled images, or the images changed
-				if ( ! $partial_product->image_ids ||
-				     json_encode( $complete_product->getImageUrls() ) !== $partial_product->image_urls ) {
-					error_log( "Found new images for " . $partial_product->url . " : " . json_encode( $complete_product->getImageUrls() ) );
-					// crawl images and save them
-					$image_ids = self::$crawler->crawl_images( $complete_product->getImageUrls() );
-					// add ids to the product
-					$complete_product->setImageIds( $image_ids );
-					error_log( "Crawled " . count( $image_ids ) . " images for " . $partial_product->url );
-				}
+                    // if the product has no crawled images, or the images changed
+                    if ( ! $partial_product->image_ids ||
+                         json_encode( $complete_product->getImageUrls() ) !== $partial_product->image_urls ) {
+                        error_log( "Found new images for " . $partial_product->url . " : " . json_encode( $complete_product->getImageUrls() ) );
+                        // crawl images and save them
+                        $image_ids = self::$crawler->crawl_images( $complete_product->getImageUrls() );
+                        // add ids to the product
+                        $complete_product->setImageIds( $image_ids );
+                        error_log( "Crawled " . count( $image_ids ) . " images for " . $partial_product->url );
+                        self::$log_service->increase_crawled_images();
+                    }
 
-				// update the product on DB
-				self::$product_service->update_by_id( $complete_product, true, $now );
+                    // update the product on DB
+                    self::$product_service->update_by_id( $complete_product, true, $now );
 
-				if ( $complete_product->hasvariations() ) {
-					error_log( "The item " . $partial_product->url . "has " . count( $complete_product->getVariations() ) . " variations!" );
-					// update variations on DB
-					$new_variations = self::$variation_service->update_all_by_product_id_and_name( $partial_product->id, $complete_product->getVariations(), $now );
-					error_log( "The item " . $partial_product->url . "has " . count( $new_variations ) . " new variations!" );
-					// create new variations on db
-					self::$variation_service->create_all( $partial_product->id, $new_variations, $now );
-				}
-
+                    if ( $complete_product->hasvariations() ) {
+                        error_log( "The item " . $partial_product->url . "has " . count( $complete_product->getVariations() ) . " variations!" );
+                        // update variations on DB
+                        $new_variations = self::$variation_service->update_all_by_product_id_and_name( $partial_product->id, $complete_product->getVariations(), $now );
+                        error_log( "The item " . $partial_product->url . "has " . count( $new_variations ) . " new variations!" );
+                        // create new variations on db
+                        self::$variation_service->create_all( $partial_product->id, $new_variations, $now );
+                    }
+                    self::$log_service->increase_crawled_products();
+                } catch (Exception $e) {
+                    error_log($e);
+                    self::$log_service->increase_failed_products();
+                }
 			}
 			$page += 1;
 		}
