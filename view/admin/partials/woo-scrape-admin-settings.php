@@ -37,7 +37,7 @@
                     </th>
                     <td>
                         <input type="number" name="provider_free_shipping_threshold" step="0.1"
-                               value="<?php echo esc_attr(get_option('provider_free_shipping_threshold')); ?>"/>€
+                               value="<?php echo esc_attr(get_option('provider_free_shipping_threshold')); ?>"/>
                         <p class="description">
                             When the cart value on provider's website is greater than this amount, the shipping is free.
                         </p>
@@ -49,10 +49,23 @@
                     </th>
                     <td>
                         <input type="number" name="provider_shipping_addendum" step="0.1"
-                               value="<?php echo esc_attr(get_option('provider_shipping_addendum')); ?>"/>€
+                               value="<?php echo esc_attr(get_option('provider_shipping_addendum')); ?>"/>
                         <p class="description">
                             Shipping cost on provider's carts that do not surpass the "Free shipping threshold".
                             This will be added on every product's price before the "Price multiplier" is applied
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">
+                        Currency conversion multiplier
+                    </th>
+                    <td>
+                        <input type="number" name="currency_conversion_multiplier" step="0.1"
+                               value="<?php echo esc_attr(get_option('currency_conversion_multiplier')); ?>"/>x
+                        <p class="description">
+                            Every product's price will be multiplied for this value before saving it on woocommerce to
+                            correctly match its eur value.
                         </p>
                     </td>
                 </tr>

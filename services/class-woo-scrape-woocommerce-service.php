@@ -117,6 +117,7 @@ class Woo_Scrape_WooCommerce_Service {
             // get options from settings
             $price_multiplier = get_option('price_multiplier');
             $provider_shipping_addendum = get_option('provider_shipping_addendum');
+            $currency_conversion_multiplier = get_option('currency_conversion_multiplier');
 
             $profitable_price = new WooScrapeDecimal( $crawled_product->discounted_price );
 			$profitable_price->add( $provider_shipping_addendum )->multiply( $price_multiplier );
@@ -126,11 +127,11 @@ class Woo_Scrape_WooCommerce_Service {
 			// if the product has a suggested price and it's greater than the profitable price
 			if ( $suggested_price->greater_than( $profitable_price ) ) {
 				// display a discount
-				$product->set_regular_price( $suggested_price );
-				$product->set_sale_price( $profitable_price );
+				$product->set_regular_price( $suggested_price->multiply($currency_conversion_multiplier) );
+				$product->set_sale_price( $profitable_price->multiply($currency_conversion_multiplier) );
 			} else {
 				// otherwise, just the price
-				$product->set_regular_price( $profitable_price );
+				$product->set_regular_price( $profitable_price->multiply($currency_conversion_multiplier) );
 			}
 
 		}

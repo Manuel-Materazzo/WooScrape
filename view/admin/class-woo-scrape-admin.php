@@ -117,6 +117,14 @@ class Woo_Scrape_Admin
                 'default' => 7,
             )
         );
+        register_setting(
+            'woo-scrape-provider-settings-group',
+            'currency_conversion_multiplier',
+            array(
+                'type' => 'number',
+                'default' => 1,
+            )
+        );
 
         // product import
         register_setting(
