@@ -30,9 +30,13 @@ class WooScrapeProduct
     {
         $supplier_price = $this->discounted_price->clone();
 
+        // get options from settings
+        $provider_free_shipping_threshold = get_option('provider_free_shipping_threshold');
+        $provider_shipping_addendum = get_option('provider_shipping_addendum');
+
         // add shipping if the product is lower than 100€
-        if ($supplier_price->lower_than(100)) {
-            $supplier_price->add(7);
+        if ($supplier_price->lower_than($provider_free_shipping_threshold)) {
+            $supplier_price->add($provider_shipping_addendum);
         }
 
         // calculate profit

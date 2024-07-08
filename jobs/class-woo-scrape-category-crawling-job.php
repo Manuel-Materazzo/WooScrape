@@ -37,6 +37,7 @@ class Woo_scrape_category_crawling_job {
 
 	private function update_woocommerce_database(): void {
 		$page = 0;
+        $sku_prefix = get_option('sku_prefix');
 
 		// gets products crawled today
 		while ( true ) {
@@ -55,7 +56,7 @@ class Woo_scrape_category_crawling_job {
 
 			// update each product on woocommerce
 			foreach ( $crawled_products as $crawled_product ) {
-				$product_id = wc_get_product_id_by_sku( 'kum-fd-' . $crawled_product->id );
+				$product_id = wc_get_product_id_by_sku( $sku_prefix . $crawled_product->id );
 				// if there is no such product on woocommerce, queue it for creation and go on
 				if ( ! $product_id ) {
 					$new_products[] = $crawled_product;
@@ -84,7 +85,7 @@ class Woo_scrape_category_crawling_job {
 					$product = $this->save_woocommerce_variations( $new_product->id );
 				}
 
-				$product->set_sku( 'kum-fd-' . $new_product->id );
+				$product->set_sku( $sku_prefix . $new_product->id );
 
 				self::$woocommerce_service->update_product($product, $new_product);
 			}
@@ -95,6 +96,7 @@ class Woo_scrape_category_crawling_job {
 
 	private function update_out_of_stock(): void {
 		$page = 0;
+        $sku_prefix = get_option('sku_prefix');
 
 		// gets products not crawled today
 		while ( true ) {
@@ -112,7 +114,7 @@ class Woo_scrape_category_crawling_job {
 			// set each product as out of stock
 			foreach ( $outdated_products as $outdated_product ) {
 
-				$product_id                 = wc_get_product_id_by_sku( 'kum-fd-' . $outdated_product->id );
+				$product_id                 = wc_get_product_id_by_sku( $sku_prefix . $outdated_product->id );
 				$outdated_product->quantity = 0;
 				$product                    = self::$woocommerce_service->update_product_by_id( $product_id, $outdated_product );
 

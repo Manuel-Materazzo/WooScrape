@@ -114,8 +114,12 @@ class Woo_Scrape_WooCommerce_Service {
 		// if the product has no variations, set the price
 		if ( ! $crawled_product->has_variations ) {
 
-			$profitable_price = new WooScrapeDecimal( $crawled_product->discounted_price );
-			$profitable_price->add( 7 )->multiply( '1.2' );
+            // get options from settings
+            $price_multiplier = get_option('price_multiplier');
+            $provider_shipping_addendum = get_option('provider_shipping_addendum');
+
+            $profitable_price = new WooScrapeDecimal( $crawled_product->discounted_price );
+			$profitable_price->add( $provider_shipping_addendum )->multiply( $price_multiplier );
 
 			$suggested_price = new WooScrapeDecimal( $crawled_product->suggested_price ?? 0 );
 

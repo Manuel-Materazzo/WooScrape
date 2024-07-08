@@ -77,7 +77,7 @@ class Woo_scrape_fishdeal_crawler_service {
 			// format description
 			$description_element = $html->find( '.SC_DealDescription-blocks', 0 );
 			$description         = preg_replace( '/[ \t]+/', ' ', $description_element->text() );
-			$description         = str_replace( 'Caratteristiche', '', $description );
+			$description         = str_replace( 'Description', '', $description );
 			$description         = str_replace( 'Specifications', '', $description );
 			$description         = str_replace( 'Read more', '', $description );
 			$description         = str_replace( 'Read less', '', $description );

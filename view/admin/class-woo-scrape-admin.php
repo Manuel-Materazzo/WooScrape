@@ -100,6 +100,25 @@ class Woo_Scrape_Admin
 
     public function register_settings(): void
     {
+        // provider
+        register_setting(
+            'woo-scrape-provider-settings-group',
+            'provider_free_shipping_threshold',
+            array(
+                'type' => 'number',
+                'default' => 100,
+            )
+        );
+        register_setting(
+            'woo-scrape-provider-settings-group',
+            'provider_shipping_addendum',
+            array(
+                'type' => 'number',
+                'default' => 7,
+            )
+        );
+
+        // product import
         register_setting(
             'woo-scrape-import-settings-group',
             'price_multiplier',
@@ -107,6 +126,14 @@ class Woo_Scrape_Admin
                 'type' => 'number',
 //                'sanitize_callback' => 'sanitize_text_field',
                 'default' => 1.2,
+            )
+        );
+        register_setting(
+            'woo-scrape-import-settings-group',
+            'sku_prefix',
+            array(
+                'type' => 'text',
+                'default' => 'sku-1-',
             )
         );
     }
