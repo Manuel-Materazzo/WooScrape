@@ -55,7 +55,7 @@ class Woo_scrape_fishdeal_crawler_service extends Woo_Scrape_Abstract_Crawler_Se
 	 *
 	 * @return WooScrapeProduct standardized product
 	 */
-	public function crawl_product( string $url ): WooScrapeProduct {
+	public function crawl_product( string $url, WooScrapeDecimal $suggested_price_multiplier ): WooScrapeProduct {
         $partial_product = new WooScrapeProduct();
 		$partial_product->setUrl( $url );
 		// crawl product page
@@ -90,7 +90,8 @@ class Woo_scrape_fishdeal_crawler_service extends Woo_Scrape_Abstract_Crawler_Se
 			foreach ( $variations_array_json as $variation_json ) {
 				$variation = new WooScrapeProduct();
 				$variation->setName( $variation_json->name );
-//                $variation->setSuggestedPrice(?); // not found on html, it's a websocket byproduct
+				// the suggested price is not on html, it's a websocket byproduct, so i'll approximate it
+                $variation->setSuggestedPrice($suggested_price_multiplier->clone()->multiply($variation_json->offers->price));
 				$variation->setDiscountedPrice( new WooScrapeDecimal( $variation_json->offers->price ) );
 				//TODO: quantity
 

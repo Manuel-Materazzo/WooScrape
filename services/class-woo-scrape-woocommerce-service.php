@@ -5,17 +5,17 @@ class Woo_Scrape_WooCommerce_Service {
 	/**
 	 * Creates a variable product for the provided variations, saves,  and returns it
 	 *
-	 * @param array $variations
+	 * @param array $crawled_variations
 	 *
 	 * @return WC_Product_Variable
 	 */
-	public function create_variable_product( array $variations ): WC_Product_Variable {
+	public function create_variable_product( array $crawled_variations ): WC_Product_Variable {
 		$product = new WC_Product_Variable();
 
 		$variation_options = array();
 
-		foreach ( $variations as $variation ) {
-			$variation_options[] = $variation->name;
+		foreach ( $crawled_variations as $crawled_variation ) {
+			$variation_options[] = $crawled_variation->name;
 		}
 
 		$attribute = new WC_Product_Attribute();
@@ -28,13 +28,31 @@ class Woo_Scrape_WooCommerce_Service {
 		$product->set_attributes( array( $attribute ) );
 		$product->save();
 
-		foreach ( $variations as $variation ) {
-			$variation_name  = $variation->name;
-			$variation_price = $variation->suggested_price;
-			$variation       = new WC_Product_Variation();
+		foreach ( $crawled_variations as $crawled_variation ) {
+			$variation_name = $crawled_variation->name;
+			$variation      = new WC_Product_Variation();
 			$variation->set_parent_id( $product->get_id() );
 			$variation->set_attributes( array( 'variant' => $variation_name ) );
-			$variation->set_regular_price( $variation_price );
+
+			// get options from settings
+			$price_multiplier               = get_option( 'price_multiplier', 1.2 );
+			$provider_shipping_addendum     = get_option( 'provider_shipping_addendum', 7 );
+			$currency_conversion_multiplier = get_option( 'currency_conversion_multiplier', 1 );
+
+			$profitable_price = new WooScrapeDecimal( $crawled_variation->discounted_price );
+			$profitable_price->add( $provider_shipping_addendum )->multiply( $price_multiplier );
+			$suggested_price = new WooScrapeDecimal( $crawled_variation->suggested_price ?? 0 );
+
+			// if the product has a suggested price and it's greater than the profitable price
+			if ( $suggested_price->greater_than( $profitable_price ) ) {
+				// display a discount
+				$variation->set_regular_price( $suggested_price->multiply( $currency_conversion_multiplier ) );
+				$variation->set_sale_price( $profitable_price->multiply( $currency_conversion_multiplier ) );
+			} else {
+				// otherwise, just the price
+				$variation->set_regular_price( $profitable_price->multiply( $currency_conversion_multiplier ) );
+			}
+
 			$variation->save();
 		}
 
@@ -114,25 +132,23 @@ class Woo_Scrape_WooCommerce_Service {
 		// if the product has no variations, set the price
 		if ( ! $crawled_product->has_variations ) {
 
-            // get options from settings
-            $price_multiplier = get_option('price_multiplier', 1.2);
-            $provider_shipping_addendum = get_option('provider_shipping_addendum', 7);
-            $currency_conversion_multiplier = get_option('currency_conversion_multiplier', 1);
+			// get options from settings
+			$price_multiplier               = get_option( 'price_multiplier', 1.2 );
+			$provider_shipping_addendum     = get_option( 'provider_shipping_addendum', 7 );
+			$currency_conversion_multiplier = get_option( 'currency_conversion_multiplier', 1 );
 
-            $profitable_price = new WooScrapeDecimal( $crawled_product->discounted_price );
+			$profitable_price = new WooScrapeDecimal( $crawled_product->discounted_price );
 			$profitable_price->add( $provider_shipping_addendum )->multiply( $price_multiplier );
 			$suggested_price = new WooScrapeDecimal( $crawled_product->suggested_price ?? 0 );
-
-
 
 			// if the product has a suggested price and it's greater than the profitable price
 			if ( $suggested_price->greater_than( $profitable_price ) ) {
 				// display a discount
-				$product->set_regular_price( $suggested_price->multiply($currency_conversion_multiplier) );
-				$product->set_sale_price( $profitable_price->multiply($currency_conversion_multiplier) );
+				$product->set_regular_price( $suggested_price->multiply( $currency_conversion_multiplier ) );
+				$product->set_sale_price( $profitable_price->multiply( $currency_conversion_multiplier ) );
 			} else {
 				// otherwise, just the price
-				$product->set_regular_price( $profitable_price->multiply($currency_conversion_multiplier) );
+				$product->set_regular_price( $profitable_price->multiply( $currency_conversion_multiplier ) );
 			}
 
 		}

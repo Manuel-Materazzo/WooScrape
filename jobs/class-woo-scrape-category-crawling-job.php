@@ -79,9 +79,9 @@ class Woo_scrape_category_crawling_job {
                     // update the product on woocommerce
                     $woocommerce_product = self::$woocommerce_service->update_product_by_id( $product_id, $crawled_product );
 
-                    // if the product has no variations, update them
+                    // if the product has variations, update them
                     if ( $crawled_product->has_variations ) {
-                        $this->update_woocommerce_vatiarions( $crawled_product->id, $woocommerce_product, $crawled_product );
+                        $this->update_woocommerce_vatiarions( $crawled_product->id, $woocommerce_product );
                     }
                     self::$log_service->increase_woocommerce_updated_products();
                 } catch (Exception $e) {
@@ -221,7 +221,11 @@ class Woo_scrape_category_crawling_job {
 			// crawl each product to get the complete informations
 			foreach ( $updated_products as $partial_product ) {
                 try {
-                    $complete_product = self::$crawler->crawl_product( $partial_product->url );
+					// calculate price multiplier to get suggested price from discounted
+					$suggested_price_multiplier = new WooScrapeDecimal($partial_product->suggested_price);
+					$suggested_price_multiplier = $suggested_price_multiplier->divide($partial_product->discounted_price);
+
+                    $complete_product = self::$crawler->crawl_product( $partial_product->url, $suggested_price_multiplier);
                     $complete_product->setId( $partial_product->id );
 
                     error_log( "Crawled " . $partial_product->url );
@@ -259,7 +263,7 @@ class Woo_scrape_category_crawling_job {
 		}
 	}
 
-	private function update_woocommerce_vatiarions( int $product_id, WC_Product $woocommerce_product, $crawled_product ): void {
+	private function update_woocommerce_vatiarions( int $product_id, WC_Product $woocommerce_product ): void {
 
 		// get crawled variation for this product from DB
 		$crawled_variations = self::$variation_service->get_updated_variations_by_product_id( $product_id );
@@ -272,11 +276,13 @@ class Woo_scrape_category_crawling_job {
 		foreach ( $variation_ids as $variation_id ) {
 			// get the variation reference
 			$variation = wc_get_product( $variation_id );
+			// extract the variation name from woocommerce title
+			$variation_name = explode(' - ', $variation->get_name())[1];
 
 			// find the correct DB variation
 			$current_crawled_variation = null;
 			foreach ( $crawled_variations as $variation_key => $crawled_variation ) {
-				if ( $crawled_variation->name == $variation->get_name() ) {
+				if ( $crawled_variation->name == $variation_name ) {
 					$current_crawled_variation = $crawled_variation;
 					// remove existing variation from list
 					unset( $crawled_variations[ $variation_key ] );
@@ -302,5 +308,4 @@ class Woo_scrape_category_crawling_job {
 
 		return self::$woocommerce_service->create_variable_product( $variations );
 	}
-
 }

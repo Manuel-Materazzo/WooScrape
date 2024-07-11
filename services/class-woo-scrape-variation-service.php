@@ -7,17 +7,18 @@ class Woo_Scrape_Variation_Service {
 
 	/**
 	 * Get a list of updated variations (id, name, suggested_price) by product id
+	 *
 	 * @param int $product_id
 	 *
 	 * @return array
 	 */
-	public function get_updated_variations_by_product_id(int $product_id): array {
+	public function get_updated_variations_by_product_id( int $product_id ): array {
 		global $wpdb;
 
 		$variations_table_name = $wpdb->prefix . self::$variations_table_name;
 
 		return $wpdb->get_results(
-			"SELECT id, name, suggested_price FROM $variations_table_name
+			"SELECT id, name, suggested_price, discounted_price FROM $variations_table_name
                 					WHERE DATE(`item_updated_timestamp`) = CURDATE() AND product_id = $product_id"
 		);
 	}
@@ -134,8 +135,8 @@ class Woo_Scrape_Variation_Service {
 			$wpdb->prefix . self::$variations_table_name,
 			$parameters,
 			array(
-				'product_id' => $parent_product_id,
-				'name'       => $variation->getName(),
+				'product_id'       => $parent_product_id,
+				'name'             => $variation->getName(),
 			)
 		);
 
