@@ -35,7 +35,7 @@ class Woo_Scrape_Job_Log_Service
         global $wpdb;
         $table = $wpdb->prefix . self::$job_logs_table_name;
 
-        $wpdb->query("UPDATE {$table} SET SET categories_crawled = categories_crawled + {$quantity} order by id desc limit 1;");
+        $wpdb->query("UPDATE {$table} SET categories_crawled = categories_crawled + {$quantity} order by id desc limit 1;");
     }
 
     public function increase_failed_categories(int $quantity = 1): void
@@ -43,7 +43,7 @@ class Woo_Scrape_Job_Log_Service
         global $wpdb;
         $table = $wpdb->prefix . self::$job_logs_table_name;
 
-        $wpdb->query("UPDATE {$table} SET SET categories_crawl_fails = categories_crawl_fails + {$quantity} order by id desc limit 1;");
+        $wpdb->query("UPDATE {$table} SET categories_crawl_fails = categories_crawl_fails + {$quantity} order by id desc limit 1;");
     }
 
 
@@ -66,7 +66,7 @@ class Woo_Scrape_Job_Log_Service
         global $wpdb;
         $table = $wpdb->prefix . self::$job_logs_table_name;
 
-        $wpdb->query("UPDATE {$table} SET SET products_crawled = products_crawled + {$quantity} order by id desc limit 1;");
+        $wpdb->query("UPDATE {$table} SET products_crawled = products_crawled + {$quantity} order by id desc limit 1;");
     }
 
     public function increase_crawled_images(int $quantity = 1): void
@@ -74,7 +74,7 @@ class Woo_Scrape_Job_Log_Service
         global $wpdb;
         $table = $wpdb->prefix . self::$job_logs_table_name;
 
-        $wpdb->query("UPDATE {$table} SET SET image_crawls = image_crawls + {$quantity} order by id desc limit 1;");
+        $wpdb->query("UPDATE {$table} SET image_crawls = image_crawls + {$quantity} order by id desc limit 1;");
     }
 
     public function increase_failed_products(int $quantity = 1): void
@@ -82,7 +82,7 @@ class Woo_Scrape_Job_Log_Service
         global $wpdb;
         $table = $wpdb->prefix . self::$job_logs_table_name;
 
-        $wpdb->query("UPDATE {$table} SET SET products_crawl_fails = products_crawl_fails + {$quantity} order by id desc limit 1;");
+        $wpdb->query("UPDATE {$table} SET products_crawl_fails = products_crawl_fails + {$quantity} order by id desc limit 1;");
     }
 
     public function product_crawl_end(): void
@@ -104,7 +104,7 @@ class Woo_Scrape_Job_Log_Service
         global $wpdb;
         $table = $wpdb->prefix . self::$job_logs_table_name;
 
-        $wpdb->query("UPDATE {$table} SET SET woo_out_of_stock_products = woo_out_of_stock_products + {$quantity} order by id desc limit 1;");
+        $wpdb->query("UPDATE {$table} SET woo_out_of_stock_products = woo_out_of_stock_products + {$quantity} order by id desc limit 1;");
     }
 
     public function increase_failed_out_of_stock_products(int $quantity = 1): void
@@ -112,7 +112,7 @@ class Woo_Scrape_Job_Log_Service
         global $wpdb;
         $table = $wpdb->prefix . self::$job_logs_table_name;
 
-        $wpdb->query("UPDATE {$table} SET SET woo_out_of_stock_products_fails = woo_out_of_stock_products_fails + {$quantity} order by id desc limit 1;");
+        $wpdb->query("UPDATE {$table} SET woo_out_of_stock_products_fails = woo_out_of_stock_products_fails + {$quantity} order by id desc limit 1;");
     }
 
     public function woocommerce_out_of_stock_end(): void
@@ -134,7 +134,7 @@ class Woo_Scrape_Job_Log_Service
         global $wpdb;
         $table = $wpdb->prefix . self::$job_logs_table_name;
 
-        $wpdb->query("UPDATE {$table} SET SET woo_updated_products = woo_updated_products + {$quantity} order by id desc limit 1;");
+        $wpdb->query("UPDATE {$table} SET woo_updated_products = woo_updated_products + {$quantity} order by id desc limit 1;");
     }
 
     public function increase_failed_woocommerce_updated_products(int $quantity = 1): void
@@ -142,7 +142,7 @@ class Woo_Scrape_Job_Log_Service
         global $wpdb;
         $table = $wpdb->prefix . self::$job_logs_table_name;
 
-        $wpdb->query("UPDATE {$table} SET SET woo_updated_products_fails = woo_updated_products_fails + {$quantity} order by id desc limit 1;");
+        $wpdb->query("UPDATE {$table} SET woo_updated_products_fails = woo_updated_products_fails + {$quantity} order by id desc limit 1;");
     }
 
     public function increase_woocommerce_created_products(int $quantity = 1): void
@@ -150,7 +150,7 @@ class Woo_Scrape_Job_Log_Service
         global $wpdb;
         $table = $wpdb->prefix . self::$job_logs_table_name;
 
-        $wpdb->query("UPDATE {$table} SET SET woo_created_products = woo_created_products + {$quantity} order by id desc limit 1;");
+        $wpdb->query("UPDATE {$table} SET woo_created_products = woo_created_products + {$quantity} order by id desc limit 1;");
     }
 
     public function increase_failed_woocommerce_created_products(int $quantity = 1): void
@@ -158,7 +158,7 @@ class Woo_Scrape_Job_Log_Service
         global $wpdb;
         $table = $wpdb->prefix . self::$job_logs_table_name;
 
-        $wpdb->query("UPDATE {$table} SET SET woo_created_products_fails = woo_created_products_fails + {$quantity} order by id desc limit 1;");
+        $wpdb->query("UPDATE {$table} SET woo_created_products_fails = woo_created_products_fails + {$quantity} order by id desc limit 1;");
     }
 
     public function job_end(): void

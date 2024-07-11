@@ -11,7 +11,7 @@ abstract class Woo_Scrape_Abstract_Crawler_Service
      */
     public function crawl_images( array $urls ): array {
         include_once ABSPATH . 'wp-admin/includes/image.php';
-        $proxy_url = get_option('proxy_url');
+        $proxy_url = get_option('proxy_url', 'http://localhost:3000/');
         $ids = array();
 
         foreach ( $urls as $url ) {
@@ -62,7 +62,7 @@ abstract class Woo_Scrape_Abstract_Crawler_Service
      * @return string a string containing the HTML body
      */
     protected function crawl(string $url ): string {
-        $proxy_url = get_option('proxy_url');
+        $proxy_url = get_option('proxy_url', 'http://localhost:3000/');
         $response = wp_remote_post( $proxy_url . $url, array(
             'method'      => 'GET',
             'headers'     => array( 'Accept' => 'application/json' ),

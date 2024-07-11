@@ -115,14 +115,15 @@ class Woo_Scrape_WooCommerce_Service {
 		if ( ! $crawled_product->has_variations ) {
 
             // get options from settings
-            $price_multiplier = get_option('price_multiplier');
-            $provider_shipping_addendum = get_option('provider_shipping_addendum');
-            $currency_conversion_multiplier = get_option('currency_conversion_multiplier');
+            $price_multiplier = get_option('price_multiplier', 1.2);
+            $provider_shipping_addendum = get_option('provider_shipping_addendum', 7);
+            $currency_conversion_multiplier = get_option('currency_conversion_multiplier', 1);
 
             $profitable_price = new WooScrapeDecimal( $crawled_product->discounted_price );
 			$profitable_price->add( $provider_shipping_addendum )->multiply( $price_multiplier );
-
 			$suggested_price = new WooScrapeDecimal( $crawled_product->suggested_price ?? 0 );
+
+
 
 			// if the product has a suggested price and it's greater than the profitable price
 			if ( $suggested_price->greater_than( $profitable_price ) ) {

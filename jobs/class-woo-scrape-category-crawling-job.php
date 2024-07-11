@@ -49,7 +49,7 @@ class Woo_scrape_category_crawling_job {
 
 	private function update_woocommerce_database(): void {
 		$page = 0;
-        $sku_prefix = get_option('sku_prefix');
+        $sku_prefix = get_option('sku_prefix','sku-1-');
 
 		// gets products crawled today
 		while ( true ) {
@@ -117,7 +117,7 @@ class Woo_scrape_category_crawling_job {
 
 	private function update_out_of_stock(): void {
 		$page = 0;
-        $sku_prefix = get_option('sku_prefix');
+        $sku_prefix = get_option('sku_prefix','sku-1-');
 
 		// gets products not crawled today
 		while ( true ) {
