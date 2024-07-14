@@ -79,7 +79,11 @@ class Woo_Scrape_Activator {
 		$products_table_sql = "CREATE TABLE IF NOT EXISTS $products_table_name (
         id mediumint(9) UNSIGNED NOT NULL AUTO_INCREMENT,
         name text NOT NULL,
+        translated_name text DEFAULT NULL,
+        specifications text NOT NULL,
+        translated_specifications text DEFAULT NULL,
         description text NOT NULL,
+        translated_description text DEFAULT NULL,
         brand tinytext NOT NULL,
         has_variations boolean DEFAULT NULL,
         url varchar(250) DEFAULT '' NOT NULL,

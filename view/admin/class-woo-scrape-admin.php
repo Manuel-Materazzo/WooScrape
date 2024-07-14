@@ -1,5 +1,7 @@
 <?php
 
+require ABSPATH . 'wp-content/plugins/woo-scrape/utils/class-woo-scrape-settings-utils.php';
+
 /**
  * The admin-specific functionality of the plugin.
  *
@@ -154,6 +156,42 @@ class Woo_Scrape_Admin
                 'default' => 'sku-1-',
             )
         );
+	    Woo_scrape_setting_utils::register_boolean_true(
+		    'woo-scrape-import-settings-group',
+		    'woocommerce_auto_import'
+	    );
+	    Woo_scrape_setting_utils::register_boolean_true(
+		    'woo-scrape-import-settings-group',
+		    'woocommerce_stock_management'
+	    );
+	    register_setting(
+		    'woo-scrape-import-settings-group',
+		    'translation_language',
+		    array(
+			    'type' => 'text',
+			    'default' => 'en',
+		    )
+	    );
+	    Woo_scrape_setting_utils::register_boolean_true(
+			'woo-scrape-import-settings-group',
+			'automatic_description_translation'
+	    );
+	    Woo_scrape_setting_utils::register_boolean_true(
+		    'woo-scrape-import-settings-group',
+		    'automatic_title_translation'
+	    );
+	    Woo_scrape_setting_utils::register_boolean_true(
+		    'woo-scrape-import-settings-group',
+		    'translation_ignore_brands'
+	    );
+	    Woo_scrape_setting_utils::register_boolean_true(
+		    'woo-scrape-import-settings-group',
+		    'specification_google_translation'
+	    );
+	    Woo_scrape_setting_utils::register_boolean_true(
+		    'woo-scrape-import-settings-group',
+		    'title_google_translation'
+	    );
     }
 
 

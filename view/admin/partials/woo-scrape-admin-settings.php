@@ -24,8 +24,8 @@
     <div id="scraping" class="woo-scrape-tab">
         <h3>Scraping</h3>
         <form method="post" action="options.php">
-            <?php settings_fields('woo-scrape-import-scraping-group'); ?>
-            <?php do_settings_sections('woo-scrape-import-scraping-group'); ?>
+			<?php settings_fields( 'woo-scrape-import-scraping-group' ); ?>
+			<?php do_settings_sections( 'woo-scrape-import-scraping-group' ); ?>
             <table class="form-table">
                 <tr>
                     <th scope="row">
@@ -33,22 +33,22 @@
                     </th>
                     <td>
                         <input type="text" name="proxy_url"
-                               value="<?php echo esc_attr(get_option('proxy_url')); ?>"/>
+                               value="<?php echo esc_attr( get_option( 'proxy_url' ) ); ?>"/>
                         <p class="description">
                             Every crawl request will pass from this proxy. The request URL will be appended at the end.
                         </p>
                     </td>
                 </tr>
             </table>
-            <?php submit_button(); ?>
+			<?php submit_button(); ?>
         </form>
     </div>
 
     <div id="provider" class="woo-scrape-tab" style="display:none">
         <h3>Provider</h3>
         <form method="post" action="options.php">
-            <?php settings_fields('woo-scrape-provider-settings-group'); ?>
-            <?php do_settings_sections('woo-scrape-provider-settings-group'); ?>
+			<?php settings_fields( 'woo-scrape-provider-settings-group' ); ?>
+			<?php do_settings_sections( 'woo-scrape-provider-settings-group' ); ?>
             <table class="form-table">
                 <tr>
                     <th scope="row">
@@ -56,7 +56,7 @@
                     </th>
                     <td>
                         <input type="number" name="provider_free_shipping_threshold" step="0.1"
-                               value="<?php echo esc_attr(get_option('provider_free_shipping_threshold')); ?>"/>
+                               value="<?php echo esc_attr( get_option( 'provider_free_shipping_threshold' ) ); ?>"/>
                         <p class="description">
                             When the cart value on provider's website is greater than this amount, the shipping is free.
                         </p>
@@ -68,7 +68,7 @@
                     </th>
                     <td>
                         <input type="number" name="provider_shipping_addendum" step="0.1"
-                               value="<?php echo esc_attr(get_option('provider_shipping_addendum')); ?>"/>
+                               value="<?php echo esc_attr( get_option( 'provider_shipping_addendum' ) ); ?>"/>
                         <p class="description">
                             Shipping cost on provider's carts that do not surpass the "Free shipping threshold".
                             This will be added on every product's price before the "Price multiplier" is applied
@@ -81,7 +81,7 @@
                     </th>
                     <td>
                         <input type="number" name="currency_conversion_multiplier" step="0.1"
-                               value="<?php echo esc_attr(get_option('currency_conversion_multiplier')); ?>"/>x
+                               value="<?php echo esc_attr( get_option( 'currency_conversion_multiplier' ) ); ?>"/>x
                         <p class="description">
                             Every product's price will be multiplied for this value before saving it on woocommerce to
                             correctly match its eur value.
@@ -89,15 +89,15 @@
                     </td>
                 </tr>
             </table>
-            <?php submit_button(); ?>
+			<?php submit_button(); ?>
         </form>
     </div>
 
     <div id="product-import" class="woo-scrape-tab" style="display:none">
         <h3>Product import</h3>
         <form method="post" action="options.php">
-            <?php settings_fields('woo-scrape-import-settings-group'); ?>
-            <?php do_settings_sections('woo-scrape-import-settings-group'); ?>
+			<?php settings_fields( 'woo-scrape-import-settings-group' ); ?>
+			<?php do_settings_sections( 'woo-scrape-import-settings-group' ); ?>
             <table class="form-table">
                 <tr>
                     <th scope="row">
@@ -105,7 +105,7 @@
                     </th>
                     <td>
                         <input type="text" name="sku_prefix"
-                               value="<?php echo esc_attr(get_option('sku_prefix')); ?>"/>
+                               value="<?php echo esc_attr( get_option( 'sku_prefix' ) ); ?>"/>
                         <p class="description">
                             Every product imported by this plugin will have this prefix.
                             Must be different from your standard woocommerce prefix.
@@ -118,14 +118,111 @@
                     </th>
                     <td>
                         <input type="number" name="price_multiplier" step="0.1"
-                               value="<?php echo esc_attr(get_option('price_multiplier')); ?>"/>x
+                               value="<?php echo esc_attr( get_option( 'price_multiplier' ) ); ?>"/>x
                         <p class="description">
                             Every product's price will be multiplied for this value before saving it on woocommerce.
                         </p>
                     </td>
                 </tr>
+                <tr>
+                    <th scope="row">
+                        Woocommerce stock management
+                    </th>
+                    <td>
+                        <input type="checkbox" id="woocommerce_auto_import" name="woocommerce_auto_import"
+                               value="1" <?php checked( 1, get_option( 'woocommerce_stock_management' ), true ); ?> />
+                        <label for="woocommerce_auto_import">Enable automatic Woocommerce in stock and out of
+                            stock</label>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">
+                        Woocommerce auto import/update
+                    </th>
+                    <td>
+                        <input type="checkbox" id="woocommerce_auto_import" name="woocommerce_auto_import"
+                               value="1" <?php checked( 1, get_option( 'woocommerce_auto_import' ), true ); ?> />
+                        <label for="woocommerce_auto_import">Enable automatic Woocommerce database update after product
+                            crawling</label>
+                    </td>
+                </tr>
             </table>
-            <?php submit_button(); ?>
+            <h3>Translation</h3>
+            <table class="form-table">
+                <tr>
+                    <th scope="row">
+                        Target language code
+                    </th>
+                    <td>
+                        <input type="text" name="translation_language"
+                               value="<?php echo esc_attr( get_option( 'translation_language' ) ); ?>"/>
+                        <p class="description">
+                            Every product's title and description will be translated to this language code.
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">
+                        Automatic Title translation
+                    </th>
+                    <td>
+                        <input type="checkbox" id="automatic_translation" name="automatic_title_translation"
+                               value="1" <?php checked( 1, get_option( 'automatic_title_translation' ), true ); ?> />
+                        <label for="woocommerce_auto_import">Enable automatic translation of the title for new products</label>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">
+                        Automatic Description translation
+                    </th>
+                    <td>
+                        <input type="checkbox" id="automatic_translation" name="automatic_description_translation"
+                               value="1" <?php checked( 1, get_option( 'automatic_description_translation' ), true ); ?> />
+                        <label for="woocommerce_auto_import">Enable automatic translation of  the description for new products</label>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">
+                        Automatic Specification translation
+                    </th>
+                    <td>
+                        <input type="checkbox" id="automatic_translation" name="automatic_specification_translation"
+                               value="1" <?php checked( 1, get_option( 'automatic_specification_translation' ), true ); ?> />
+                        <label for="woocommerce_auto_import">Enable automatic translation of the specifications for new products</label>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">
+                        Use Google translate for titles
+                    </th>
+                    <td>
+                        <input type="checkbox" id="automatic_translation" name="title_google_translation"
+                               value="1" <?php checked( 1, get_option( 'title_google_translation' ), true ); ?> />
+                        <label for="woocommerce_auto_import">Save Deepl credits by using google translate for titles</label>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">
+                        Use Google translate for specifications
+                    </th>
+                    <td>
+                        <input type="checkbox" id="automatic_translation" name="specification_google_translation"
+                               value="1" <?php checked( 1, get_option( 'specification_google_translation' ), true ); ?> />
+                        <label for="woocommerce_auto_import">Save Deepl credits by using google translate for specifications</label>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">
+                        Ignore brands during translation
+                    </th>
+                    <td>
+                        <input type="checkbox" id="automatic_translation" name="translation_ignore_brands"
+                               value="1" <?php checked( 1, get_option( 'translation_ignore_brands' ), true ); ?> />
+                        <label for="woocommerce_auto_import">Try to ignore brand names while translating</label>
+                    </td>
+                </tr>
+            </table>
+			<?php submit_button(); ?>
         </form>
     </div>
 </div>

@@ -5,6 +5,8 @@ require ABSPATH . 'wp-content/plugins/woo-scrape/dtos/class-woo-scrape-product.p
 
 class Woo_scrape_fishdeal_dom_utils {
 
+	private function __construct() {}
+
 	/**
 	 * Parses an HTML and extracts the number of pages to crawl
 	 *
