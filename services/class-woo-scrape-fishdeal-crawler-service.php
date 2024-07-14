@@ -3,7 +3,7 @@
 require ABSPATH . 'wp-content/plugins/woo-scrape/utils/class-woo-scrape-fishdeal-dom-utils.php';
 require ABSPATH . 'wp-content/plugins/woo-scrape/services/class-woo-scrape-abstract-crawler-service.php';
 
-class Woo_scrape_fishdeal_crawler_service extends Woo_Scrape_Abstract_Crawler_Service{
+class Woo_scrape_fishdeal_crawler_service extends Woo_Scrape_Abstract_Crawler_Service {
 
 	/**
 	 * Crawls a category and all its sub pages and returns a list of profitable products
@@ -56,7 +56,7 @@ class Woo_scrape_fishdeal_crawler_service extends Woo_Scrape_Abstract_Crawler_Se
 	 * @return WooScrapeProduct standardized product
 	 */
 	public function crawl_product( string $url, WooScrapeDecimal $suggested_price_multiplier ): WooScrapeProduct {
-        $partial_product = new WooScrapeProduct();
+		$partial_product = new WooScrapeProduct();
 		$partial_product->setUrl( $url );
 		// crawl product page
 		try {
@@ -75,14 +75,12 @@ class Woo_scrape_fishdeal_crawler_service extends Woo_Scrape_Abstract_Crawler_Se
 //			$variations_element-> data-deal-products-assignment, data-deal-options
 
 			// format description
-			$description_element = $html->find( '.SC_DealDescription-blocks', 0 );
-			$description         = preg_replace( '/[ \t]+/', ' ', $description_element->text() );
-			$description         = str_replace( 'Description', '', $description );
-			$description         = str_replace( 'Specifications', '', $description );
-			$description         = str_replace( 'Read more', '', $description );
-			$description         = str_replace( 'Read less', '', $description );
-			$description         = str_replace( 'Show more', '', $description );
-			$description         = str_replace( 'Show less', '', $description );
+			$specification_element = $html->find( '.SC_DealDescription-block .SC_DealDescription-description', 0 );
+			$specification         = $this->sanitize_text( $specification_element->text() );
+
+			$description_element = $html->find( '.SC_DealDescription-block .SC_DealDescription-description', 1 );
+			$description         = $this->sanitize_text( $description_element->text() );
+
 
 			$variations = array();
 			$images     = array();
@@ -91,7 +89,7 @@ class Woo_scrape_fishdeal_crawler_service extends Woo_Scrape_Abstract_Crawler_Se
 				$variation = new WooScrapeProduct();
 				$variation->setName( $variation_json->name );
 				// the suggested price is not on html, it's a websocket byproduct, so i'll approximate it
-                $variation->setSuggestedPrice($suggested_price_multiplier->clone()->multiply($variation_json->offers->price));
+				$variation->setSuggestedPrice( $suggested_price_multiplier->clone()->multiply( $variation_json->offers->price ) );
 				$variation->setDiscountedPrice( new WooScrapeDecimal( $variation_json->offers->price ) );
 				//TODO: quantity
 
@@ -105,6 +103,7 @@ class Woo_scrape_fishdeal_crawler_service extends Woo_Scrape_Abstract_Crawler_Se
 			$partial_product->setHasVariations( count( $variations_array_json ) > 1 );
 			// update main product
 			$partial_product->setDescription( $description );
+			$partial_product->setSpecification( $specification );
 			$partial_product->setImageUrls( array_unique( $images ) );
 		} catch ( Exception $ex ) {
 			error_log( "Failed to crawl product " . $url );
@@ -114,5 +113,16 @@ class Woo_scrape_fishdeal_crawler_service extends Woo_Scrape_Abstract_Crawler_Se
 		return $partial_product;
 	}
 
+	private function sanitize_text( string $text ): string {
+		$text = preg_replace( '/[ \t]+/', ' ', $text );
+		$text = str_replace( 'Descrizione', '', $text );
+		$text = str_replace( 'Caratteristiche', '', $text );
+		$text = str_replace( 'Vedere di più', '', $text );
+		$text = str_replace( 'Chiudi lista', '', $text );
+		$text = str_replace( 'Mostra di più', '', $text );
+		$text = str_replace( 'Riduci', '', $text );
+
+		return $text;
+	}
 
 }

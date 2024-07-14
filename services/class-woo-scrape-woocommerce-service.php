@@ -86,11 +86,13 @@ class Woo_Scrape_WooCommerce_Service {
 	public function update_product( WC_Product $product, $crawled_product ): WC_Product {
 
 		if ( $crawled_product->name ) {
-			$product->set_name( $crawled_product->name );
+			$product->set_name( $crawled_product->translated_name ?? $crawled_product->name );
 		}
 
 		if ( $crawled_product->description ) {
-			$product->set_description( $crawled_product->description );
+			$description = $crawled_product->translated_description ?? $crawled_product->description;
+			$specifications = $crawled_product->translated_specifications ?? $crawled_product->specifications;
+			$product->set_description( $specifications . $description );
 		}
 
 		// if the quantity is not specified, set the item in stock

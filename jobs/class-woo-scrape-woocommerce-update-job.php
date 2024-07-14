@@ -167,7 +167,8 @@ class Woo_scrape_woocommerce_update_job {
 			// find the correct DB variation
 			$current_crawled_variation = null;
 			foreach ( $crawled_variations as $variation_key => $crawled_variation ) {
-				if ( $crawled_variation->name == $variation_name ) {
+				$crawled_variation_name = $crawled_variation->translated_name ?? $crawled_variation->name;
+				if ( $crawled_variation_name == $variation_name ) {
 					$current_crawled_variation = $crawled_variation;
 					// remove existing variation from list
 					unset( $crawled_variations[ $variation_key ] );

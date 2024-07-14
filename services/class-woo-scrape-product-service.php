@@ -21,8 +21,9 @@ class Woo_scrape_product_service {
 		$start = $page * 30;
 
 		return $wpdb->get_results(
-			"SELECT $products_table_name.id, $products_table_name.name, suggested_price, discounted_price, description, weight,
-       						length, width, height, has_variations, image_ids
+			"SELECT $products_table_name.id, $products_table_name.name, translated_name, description,
+       						translated_description, specifications, translated_specifications, suggested_price,
+       						discounted_price, weight, length, width, height, has_variations, image_ids
 				FROM $products_table_name INNER JOIN $pages_list_table_name
             	ON $products_table_name.category_id = $pages_list_table_name.id
                 WHERE DATE(`item_updated_timestamp`) = CURDATE()
@@ -238,8 +239,20 @@ class Woo_scrape_product_service {
 		if ( ! empty( $product->getName() ) ) {
 			$parameters['name'] = $product->getName();
 		}
+		if ( ! empty( $product->getSpecification() ) ) {
+			$parameters['specifications'] = $product->getSpecification();
+		}
 		if ( ! empty( $product->getDescription() ) ) {
 			$parameters['description'] = $product->getDescription();
+		}
+		if ( ! empty( $product->getTranslatedName() ) ) {
+			$parameters['translated_name'] = $product->getTranslatedName();
+		}
+		if ( ! empty( $product->getTranslatedSpecification() ) ) {
+			$parameters['translated_specifications'] = $product->getTranslatedSpecification();
+		}
+		if ( ! empty( $product->getTranslatedDescription() ) ) {
+			$parameters['translated_description'] = $product->getTranslatedDescription();
 		}
 		if ( ! empty( $product->getBrand() ) ) {
 			$parameters['brand'] = $product->getBrand();
