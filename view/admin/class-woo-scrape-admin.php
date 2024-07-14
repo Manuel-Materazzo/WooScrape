@@ -61,10 +61,9 @@ class Woo_Scrape_Admin
 
     function run_my_job(): void
     {
-        include plugin_dir_path(__FILE__) . '../../jobs/class-woo-scrape-category-crawling-job.php';
+        include plugin_dir_path( __FILE__ ) . '../../jobs/class-woo-scrape-orchestrator.php';
         error_log("job started");
-        $job = new Woo_scrape_category_crawling_job();
-        $job->run();
+        Woo_scrape_orchestrator::orchestrate_main_job();
         wp_die(); // this is required to terminate immediately and return a proper response
     }
 
