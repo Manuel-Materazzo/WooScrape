@@ -1,7 +1,7 @@
 <?php
 
 require_once ABSPATH . 'wp-content/plugins/woo-scrape/utils/class-woo-scrape-fishdeal-dom-utils.php';
-require_once ABSPATH . 'wp-content/plugins/woo-scrape/services/class-woo-scrape-abstract-crawler-service.php';
+require_once ABSPATH . 'wp-content/plugins/woo-scrape/services/abstracts/class-woo-scrape-abstract-crawler-service.php';
 
 class Woo_scrape_fishdeal_crawler_service extends Woo_Scrape_Abstract_Crawler_Service {
 
