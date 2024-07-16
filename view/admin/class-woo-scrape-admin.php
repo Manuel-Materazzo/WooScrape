@@ -59,13 +59,40 @@ class Woo_Scrape_Admin
 
     }
 
-    function run_my_job(): void
+    function run_orchestrator_job(): void
     {
-        include plugin_dir_path( __FILE__ ) . '../../jobs/class-woo-scrape-orchestrator.php';
-        error_log("job started");
+        include_once plugin_dir_path( __FILE__ ) . '../../jobs/class-woo-scrape-orchestrator.php';
+        error_log("orchestrator job started");
         Woo_scrape_orchestrator::orchestrate_main_job();
         wp_die(); // this is required to terminate immediately and return a proper response
     }
+
+	function run_crawling_job(): void
+	{
+		include_once plugin_dir_path( __FILE__ ) . '../../jobs/class-woo-scrape-crawling-job.php';
+		error_log("crawling job started");
+		$job = new Woo_scrape_crawling_job();
+		$job->run();
+		wp_die(); // this is required to terminate immediately and return a proper response
+	}
+
+	function run_translate_job(): void
+	{
+		include_once plugin_dir_path( __FILE__ ) . '../../jobs/class-woo-scrape-translation-job.php';
+		error_log("translate job started");
+		$job = new Woo_Scrape_Translation_Job();
+		$job->run();
+		wp_die(); // this is required to terminate immediately and return a proper response
+	}
+
+	function run_wordpress_job(): void
+	{
+		include_once plugin_dir_path( __FILE__ ) . '../../jobs/class-woo-scrape-woocommerce-update-job.php';
+		error_log("wordpress update job started");
+		$job = new Woo_scrape_woocommerce_update_job();
+		$job->run();
+		wp_die(); // this is required to terminate immediately and return a proper response
+	}
 
     public function display_plugin_dashboard(): void
     {

@@ -158,8 +158,13 @@ class Woo_Scrape {
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
 
         $this->loader->add_action( 'admin_menu', $plugin_admin, 'add_menus' );
-        $this->loader->add_action( 'wp_ajax_run_my_job', $plugin_admin, 'run_my_job' );
+
+        $this->loader->add_action( 'wp_ajax_run_orchestrator_job', $plugin_admin, 'run_orchestrator_job' );
+        $this->loader->add_action( 'wp_ajax_run_crawling_job', $plugin_admin, 'run_crawling_job' );
+        $this->loader->add_action( 'wp_ajax_run_translate_job', $plugin_admin, 'run_translate_job' );
+        $this->loader->add_action( 'wp_ajax_run_wordpress_job', $plugin_admin, 'run_wordpress_job' );
 	}
+
 
 	/**
 	 * Register all of the hooks related to the public-facing functionality
