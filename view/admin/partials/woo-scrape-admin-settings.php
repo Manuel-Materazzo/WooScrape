@@ -18,7 +18,9 @@
     <nav class="nav-tab-wrapper">
         <a class="nav-tab nav-tab-active woo-scrape-tab-link" onclick="changeTab(event, 'scraping')">Scraping</a>
         <a class="nav-tab woo-scrape-tab-link" onclick="changeTab(event, 'provider')">Provider</a>
+        <a class="nav-tab woo-scrape-tab-link" onclick="changeTab(event, 'translation')">Translation</a>
         <a class="nav-tab woo-scrape-tab-link" onclick="changeTab(event, 'product-import')">Product Import</a>
+
 
     </nav>
     <div id="scraping" class="woo-scrape-tab">
@@ -147,8 +149,13 @@
                     </td>
                 </tr>
             </table>
-            <hr class="solid">
-            <h3>Translation</h3>
+			<?php submit_button(); ?>
+    </div>
+    <div id="translation" class="woo-scrape-tab" style="display:none">
+        <h3>Translation</h3>
+        <form method="post" action="options.php">
+			<?php settings_fields( 'woo-scrape-translation-settings-group' ); ?>
+			<?php do_settings_sections( 'woo-scrape-translation-settings-group' ); ?>
             <table class="form-table">
                 <tr>
                     <th scope="row">
@@ -164,13 +171,52 @@
                 </tr>
                 <tr>
                     <th scope="row">
+                        Google script url
+                    </th>
+                    <td>
+                        <input type="text" name="google_script_url"
+                               value="<?php echo esc_attr( get_option( 'google_script_url' ) ); ?>"/>
+                        <p class="description">
+                            The google script url to use for translations see
+                            <a href="https://stackoverflow.com/questions/8147284/how-to-use-google-translate-api-in-my-java-application/48159904#48159904"
+                            >this</a>.
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">
                         Deepl api key
                     </th>
                     <td>
                         <input type="text" name="deepl_api_key"
                                value="<?php echo esc_attr( get_option( 'deepl_api_key' ) ); ?>"/>
                         <p class="description">
-                            Api key to use Deepl as translator, get it from <a href="https://www.deepl.com/it/pro-api/ru/en/pl/pro-api">here</a>.
+                            Api key to use Deepl as translator, get it (free or paid) from <a
+                                    href="https://www.deepl.com/it/pro-api/ru/en/pl/pro-api">here</a>.
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">
+                        Deepl free endpoint
+                    </th>
+                    <td>
+                        <input type="checkbox" id="deepl_api_free" name="deepl_api_free"
+                               value="1" <?php checked( 1, get_option( 'deepl_api_free' ), true ); ?> />
+                        <label for="deepl_api_free">Use Deepl free api endpoint, enable only if you are not paying for a
+                            Deepl api key.</label>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">
+                        Proxy url
+                    </th>
+                    <td>
+                        <input type="text" name="proxy_url"
+                               value="<?php echo esc_attr( get_option( 'proxy_url' ) ); ?>"/>
+                        <p class="description">
+                            Every translation request will pass from this proxy. The request URL will be appended at the
+                            end.
                         </p>
                     </td>
                 </tr>
@@ -181,7 +227,8 @@
                     <td>
                         <input type="checkbox" id="automatic_title_translation" name="automatic_title_translation"
                                value="1" <?php checked( 1, get_option( 'automatic_title_translation' ), true ); ?> />
-                        <label for="automatic_title_translation">Enable automatic translation of the title for new products</label>
+                        <label for="automatic_title_translation">Enable automatic translation of the title for new
+                            products</label>
                     </td>
                 </tr>
                 <tr>
@@ -189,9 +236,11 @@
                         Automatic Description translation
                     </th>
                     <td>
-                        <input type="checkbox" id="automatic_description_translation" name="automatic_description_translation"
+                        <input type="checkbox" id="automatic_description_translation"
+                               name="automatic_description_translation"
                                value="1" <?php checked( 1, get_option( 'automatic_description_translation' ), true ); ?> />
-                        <label for="automatic_description_translation">Enable automatic translation of  the description for new products</label>
+                        <label for="automatic_description_translation">Enable automatic translation of the description
+                            for new products</label>
                     </td>
                 </tr>
                 <tr>
@@ -199,9 +248,11 @@
                         Automatic Specification translation
                     </th>
                     <td>
-                        <input type="checkbox" id="automatic_specification_translation" name="automatic_specification_translation"
+                        <input type="checkbox" id="automatic_specification_translation"
+                               name="automatic_specification_translation"
                                value="1" <?php checked( 1, get_option( 'automatic_specification_translation' ), true ); ?> />
-                        <label for="automatic_specification_translation">Enable automatic translation of the specifications for new products</label>
+                        <label for="automatic_specification_translation">Enable automatic translation of the
+                            specifications for new products</label>
                     </td>
                 </tr>
                 <tr>
@@ -211,7 +262,8 @@
                     <td>
                         <input type="checkbox" id="title_google_translation" name="title_google_translation"
                                value="1" <?php checked( 1, get_option( 'title_google_translation' ), true ); ?> />
-                        <label for="title_google_translation">Save Deepl credits by using google translate for titles</label>
+                        <label for="title_google_translation">Save Deepl credits by using google translate for
+                            titles</label>
                     </td>
                 </tr>
                 <tr>
@@ -219,9 +271,11 @@
                         Use Google translate for specifications
                     </th>
                     <td>
-                        <input type="checkbox" id="specification_google_translation" name="specification_google_translation"
+                        <input type="checkbox" id="specification_google_translation"
+                               name="specification_google_translation"
                                value="1" <?php checked( 1, get_option( 'specification_google_translation' ), true ); ?> />
-                        <label for="specification_google_translation">Save Deepl credits by using google translate for specifications</label>
+                        <label for="specification_google_translation">Save Deepl credits by using google translate for
+                            specifications</label>
                     </td>
                 </tr>
                 <tr>
@@ -229,9 +283,11 @@
                         Use Google translate for descriptions
                     </th>
                     <td>
-                        <input type="checkbox" id="descriptions_google_translation" name="descriptions_google_translation"
+                        <input type="checkbox" id="descriptions_google_translation"
+                               name="descriptions_google_translation"
                                value="1" <?php checked( 1, get_option( 'descriptions_google_translation' ), true ); ?> />
-                        <label for="descriptions_google_translation">Save Deepl credits by using google translate for descriptions</label>
+                        <label for="descriptions_google_translation">Save Deepl credits by using google translate for
+                            descriptions</label>
                     </td>
                 </tr>
                 <tr>

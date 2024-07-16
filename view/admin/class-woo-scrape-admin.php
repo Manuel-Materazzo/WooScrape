@@ -174,14 +174,6 @@ class Woo_Scrape_Admin
                 'default' => 1.2,
             )
         );
-	    register_setting(
-		    'woo-scrape-import-settings-group',
-		    'deepl_api_key',
-		    array(
-			    'type' => 'text',
-			    'default' => '',
-		    )
-	    );
         register_setting(
             'woo-scrape-import-settings-group',
             'sku_prefix',
@@ -199,7 +191,27 @@ class Woo_Scrape_Admin
 		    'woocommerce_stock_management'
 	    );
 	    register_setting(
-		    'woo-scrape-import-settings-group',
+		    'woo-scrape-translation-settings-group',
+		    'google_script_url',
+		    array(
+			    'type' => 'text',
+			    'default' => '',
+		    )
+	    );
+	    register_setting(
+		    'woo-scrape-translation-settings-group',
+		    'deepl_api_key',
+		    array(
+			    'type' => 'text',
+			    'default' => '',
+		    )
+	    );
+	    Woo_scrape_setting_utils::register_boolean_true(
+		    'woo-scrape-translation-settings-group',
+		    'deepl_api_free'
+	    );
+	    register_setting(
+		    'woo-scrape-translation-settings-group',
 		    'translation_language',
 		    array(
 			    'type' => 'text',
@@ -207,27 +219,27 @@ class Woo_Scrape_Admin
 		    )
 	    );
 	    Woo_scrape_setting_utils::register_boolean_true(
-			'woo-scrape-import-settings-group',
+			'woo-scrape-translation-settings-group',
 			'automatic_description_translation'
 	    );
 	    Woo_scrape_setting_utils::register_boolean_true(
-		    'woo-scrape-import-settings-group',
+		    'woo-scrape-translation-settings-group',
 		    'automatic_title_translation'
 	    );
 	    Woo_scrape_setting_utils::register_boolean_true(
-		    'woo-scrape-import-settings-group',
+		    'woo-scrape-translation-settings-group',
 		    'translation_ignore_brands'
 	    );
 	    Woo_scrape_setting_utils::register_boolean_true(
-		    'woo-scrape-import-settings-group',
+		    'woo-scrape-translation-settings-group',
 		    'specification_google_translation'
 	    );
 	    Woo_scrape_setting_utils::register_boolean_true(
-		    'woo-scrape-import-settings-group',
+		    'woo-scrape-translation-settings-group',
 		    'title_google_translation'
 	    );
 	    register_setting(
-		    'woo-scrape-import-settings-group',
+		    'woo-scrape-translation-settings-group',
 		    'descriptions_google_translation',
 		    array(
 			    'type' => 'boolean',
