@@ -212,8 +212,8 @@
                         Proxy url
                     </th>
                     <td>
-                        <input type="text" name="proxy_url"
-                               value="<?php echo esc_attr( get_option( 'proxy_url' ) ); ?>"/>
+                        <input type="text" name="translation_proxy_url"
+                               value="<?php echo esc_attr( get_option( 'translation_proxy_url' ) ); ?>"/>
                         <p class="description">
                             Every translation request will pass from this proxy. The request URL will be appended at the
                             end.

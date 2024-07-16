@@ -15,12 +15,12 @@
 <div class="wrap">
     <h2>Woo Scrape - Dashboard</h2>
 
-    <hr class="solid">
+    <hr class="solid" id="toast-hanger">
 
     <h3>Manual Actions</h3>
     <div class="m-1">
         <div class="col-2 d-inline-block">
-            <button id="run-orchestrator-job-button" class="button button-primary">Run Orchestrator Job</button>
+            <button id="run-orchestrator-job-button" class="button button-primary">Run Orchestrated Job</button>
         </div>
         <div class="col-9 d-inline-block description">
                 Manually trigger cron schedule to run all jobs in order
@@ -113,22 +113,38 @@
     jQuery(document).ready(function ($) {
         $('#run-orchestrator-job-button').click(function () {
             $.post(ajaxurl, {action: 'run_orchestrator_job'}, function (response) {
-                console.log('Job run successfully');
+                $('#toast-hanger').append(
+                    '<div class="notice notice-success is-dismissible"> ' +
+                    '<p>Orchestrated job started successfully.</p> ' +
+                    '</div>'
+                )
             });
         });
         $('#run-crawling-job-button').click(function () {
             $.post(ajaxurl, {action: 'run_crawling_job'}, function (response) {
-                console.log('Job run successfully');
+                $('#toast-hanger').append(
+                    '<div class="notice notice-success is-dismissible"> ' +
+                    '<p>Crawling job started successfully.</p> ' +
+                    '</div>'
+                )
             });
         });
         $('#run-translate-job-button').click(function () {
             $.post(ajaxurl, {action: 'run_translate_job'}, function (response) {
-                console.log('Job run successfully');
+                $('#toast-hanger').append(
+                    '<div class="notice notice-success is-dismissible"> ' +
+                    '<p>Translation job started successfully.</p> ' +
+                    '</div>'
+                )
             });
         });
         $('#run-wordpress-job-button').click(function () {
             $.post(ajaxurl, {action: 'run_wordpress_job'}, function (response) {
-                console.log('Job run successfully');
+                $('#toast-hanger').append(
+                    '<div class="notice notice-success is-dismissible"> ' +
+                    '<p>Wordpress update job started successfully.</p> ' +
+                    '</div>'
+                )
             });
         });
     });
