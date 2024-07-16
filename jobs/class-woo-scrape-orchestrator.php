@@ -1,8 +1,8 @@
 <?php
 
-require ABSPATH . 'wp-content/plugins/woo-scrape/jobs/class-woo-scrape-crawling-job.php';
-require ABSPATH . 'wp-content/plugins/woo-scrape/jobs/class-woo-scrape-translation-job.php';
-require ABSPATH . 'wp-content/plugins/woo-scrape/jobs/class-woo-scrape-woocommerce-update-job.php';
+require_once ABSPATH . 'wp-content/plugins/woo-scrape/jobs/class-woo-scrape-crawling-job.php';
+require_once ABSPATH . 'wp-content/plugins/woo-scrape/jobs/class-woo-scrape-translation-job.php';
+require_once ABSPATH . 'wp-content/plugins/woo-scrape/jobs/class-woo-scrape-woocommerce-update-job.php';
 
 
 class Woo_scrape_orchestrator {

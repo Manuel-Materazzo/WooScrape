@@ -1,6 +1,6 @@
 <?php
 
-require 'class-woo-scrape-decimal.php';
+require_once 'class-woo-scrape-decimal.php';
 
 class WooScrapeProduct {
 	//TODO: private

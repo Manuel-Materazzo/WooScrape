@@ -1,10 +1,10 @@
 <?php
 
 
-require ABSPATH . 'wp-content/plugins/woo-scrape/services/class-woo-scrape-product-service.php';
-require ABSPATH . 'wp-content/plugins/woo-scrape/services/class-woo-scrape-variation-service.php';
-require ABSPATH . 'wp-content/plugins/woo-scrape/services/class-woo-scrape-woocommerce-service.php';
-require ABSPATH . 'wp-content/plugins/woo-scrape/services/class-woo-scrape-job-log-service.php';
+require_once ABSPATH . 'wp-content/plugins/woo-scrape/services/class-woo-scrape-product-service.php';
+require_once ABSPATH . 'wp-content/plugins/woo-scrape/services/class-woo-scrape-variation-service.php';
+require_once ABSPATH . 'wp-content/plugins/woo-scrape/services/class-woo-scrape-woocommerce-service.php';
+require_once ABSPATH . 'wp-content/plugins/woo-scrape/services/class-woo-scrape-job-log-service.php';
 
 class Woo_scrape_woocommerce_update_job {
 	private static Woo_scrape_product_service $product_service;

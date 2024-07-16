@@ -1,7 +1,7 @@
 <?php
 
 
-require ABSPATH . 'wp-content/plugins/woo-scrape/dtos/class-woo-scrape-product.php';
+require_once ABSPATH . 'wp-content/plugins/woo-scrape/dtos/class-woo-scrape-product.php';
 
 class Woo_scrape_fishdeal_dom_utils {
 
