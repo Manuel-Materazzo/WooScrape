@@ -50,6 +50,29 @@ class WooScrapeProduct {
 		return $supplier_price->lower_than( $this->suggested_price );
 	}
 
+	/**
+	 * Sets the value of the translated_$field property
+	 *
+	 * @param string $field
+	 * @param string $translated_value
+	 *
+	 * @return void
+	 */
+	public function setTranslatedField( string $field, string $translated_value ): void {
+		switch ( $field ) {
+			case 'name':
+				$this->translated_name = $translated_value;
+				break;
+			case 'specifications':
+				$this->translated_specification = $translated_value;
+				break;
+			case 'description':
+				$this->translated_description = $translated_value;
+				break;
+			default:
+				break;
+		}
+	}
 
 	public function getTranslatedName(): string {
 		return $this->translated_name;

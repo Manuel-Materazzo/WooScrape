@@ -13,7 +13,8 @@ class Woo_scrape_orchestrator {
 		$crawling_job = new Woo_scrape_crawling_job();
 		$crawling_job->run();
 
-		//TODO: translate job
+		$translation_job = new Woo_scrape_translation_job();
+		$translation_job->run();
 
 		$woocommerce_job = new Woo_scrape_woocommerce_update_job();
 		$woocommerce_job->run();

@@ -32,61 +32,22 @@ class Woo_scrape_product_service {
 	}
 
 	/**
-	 * Gets a paged list of products without a translated name
+	 * Gets a paged list of products without a translated_$field
 	 *
+	 * @param string $field
 	 * @param int $page
 	 *
 	 * @return array|object|stdClass[]|null
 	 */
-	public function get_products_with_untranslated_name_paged( int $page ): array {
+	public function get_products_with_untranslated_field_paged( string $field, int $page ): array {
 		global $wpdb;
 		$products_table_name = $wpdb->prefix . self::$products_table_name;
 
 		$start = $page * 30;
 
 		return $wpdb->get_results(
-			"SELECT id, name FROM $products_table_name
-                WHERE translated_name is null
-                LIMIT $start,30"
-		);
-	}
-
-	/**
-	 * Gets a paged list of products without a translated specification
-	 *
-	 * @param int $page
-	 *
-	 * @return array|object|stdClass[]|null
-	 */
-	public function get_products_with_untranslated_specification_paged( int $page ): array {
-		global $wpdb;
-		$products_table_name = $wpdb->prefix . self::$products_table_name;
-
-		$start = $page * 30;
-
-		return $wpdb->get_results(
-			"SELECT id, specification FROM $products_table_name
-                WHERE translated_specification is null
-                LIMIT $start,30"
-		);
-	}
-
-	/**
-	 * Gets a paged list of products without a translated description
-	 *
-	 * @param int $page
-	 *
-	 * @return array|object|stdClass[]|null
-	 */
-	public function get_products_with_untranslated_description_paged( int $page ): array {
-		global $wpdb;
-		$products_table_name = $wpdb->prefix . self::$products_table_name;
-
-		$start = $page * 30;
-
-		return $wpdb->get_results(
-			"SELECT id, description FROM $products_table_name
-                WHERE translated_description is null
+			"SELECT id, brand, $field FROM $products_table_name
+                WHERE translated_$field is null
                 LIMIT $start,30"
 		);
 	}
@@ -239,7 +200,7 @@ class Woo_scrape_product_service {
 	 *
 	 * @return bool
 	 */
-	private function update( WooScrapeProduct $product, array $where_clause, bool $set_updated_time, string $date ): bool {
+	private function update( WooScrapeProduct $product, array $where_clause, bool $set_updated_time, string | null $date = null ): bool {
 		global $wpdb;
 
 		// initialize date, if not given
