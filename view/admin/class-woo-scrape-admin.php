@@ -174,6 +174,14 @@ class Woo_Scrape_Admin
                 'default' => 1.2,
             )
         );
+	    register_setting(
+		    'woo-scrape-import-settings-group',
+		    'deepl_api_key',
+		    array(
+			    'type' => 'text',
+			    'default' => '',
+		    )
+	    );
         register_setting(
             'woo-scrape-import-settings-group',
             'sku_prefix',
@@ -217,6 +225,14 @@ class Woo_Scrape_Admin
 	    Woo_scrape_setting_utils::register_boolean_true(
 		    'woo-scrape-import-settings-group',
 		    'title_google_translation'
+	    );
+	    register_setting(
+		    'woo-scrape-import-settings-group',
+		    'descriptions_google_translation',
+		    array(
+			    'type' => 'boolean',
+			    'default' => false,
+		    )
 	    );
     }
 

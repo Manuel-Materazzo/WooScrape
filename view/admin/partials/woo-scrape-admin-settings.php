@@ -147,6 +147,7 @@
                     </td>
                 </tr>
             </table>
+            <hr class="solid">
             <h3>Translation</h3>
             <table class="form-table">
                 <tr>
@@ -163,12 +164,24 @@
                 </tr>
                 <tr>
                     <th scope="row">
+                        Deepl api key
+                    </th>
+                    <td>
+                        <input type="text" name="deepl_api_key"
+                               value="<?php echo esc_attr( get_option( 'deepl_api_key' ) ); ?>"/>
+                        <p class="description">
+                            Api key to use Deepl as translator, get it from <a href="https://www.deepl.com/it/pro-api/ru/en/pl/pro-api">here</a>.
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">
                         Automatic Title translation
                     </th>
                     <td>
-                        <input type="checkbox" id="automatic_translation" name="automatic_title_translation"
+                        <input type="checkbox" id="automatic_title_translation" name="automatic_title_translation"
                                value="1" <?php checked( 1, get_option( 'automatic_title_translation' ), true ); ?> />
-                        <label for="woocommerce_auto_import">Enable automatic translation of the title for new products</label>
+                        <label for="automatic_title_translation">Enable automatic translation of the title for new products</label>
                     </td>
                 </tr>
                 <tr>
@@ -176,9 +189,9 @@
                         Automatic Description translation
                     </th>
                     <td>
-                        <input type="checkbox" id="automatic_translation" name="automatic_description_translation"
+                        <input type="checkbox" id="automatic_description_translation" name="automatic_description_translation"
                                value="1" <?php checked( 1, get_option( 'automatic_description_translation' ), true ); ?> />
-                        <label for="woocommerce_auto_import">Enable automatic translation of  the description for new products</label>
+                        <label for="automatic_description_translation">Enable automatic translation of  the description for new products</label>
                     </td>
                 </tr>
                 <tr>
@@ -186,9 +199,9 @@
                         Automatic Specification translation
                     </th>
                     <td>
-                        <input type="checkbox" id="automatic_translation" name="automatic_specification_translation"
+                        <input type="checkbox" id="automatic_specification_translation" name="automatic_specification_translation"
                                value="1" <?php checked( 1, get_option( 'automatic_specification_translation' ), true ); ?> />
-                        <label for="woocommerce_auto_import">Enable automatic translation of the specifications for new products</label>
+                        <label for="automatic_specification_translation">Enable automatic translation of the specifications for new products</label>
                     </td>
                 </tr>
                 <tr>
@@ -196,9 +209,9 @@
                         Use Google translate for titles
                     </th>
                     <td>
-                        <input type="checkbox" id="automatic_translation" name="title_google_translation"
+                        <input type="checkbox" id="title_google_translation" name="title_google_translation"
                                value="1" <?php checked( 1, get_option( 'title_google_translation' ), true ); ?> />
-                        <label for="woocommerce_auto_import">Save Deepl credits by using google translate for titles</label>
+                        <label for="title_google_translation">Save Deepl credits by using google translate for titles</label>
                     </td>
                 </tr>
                 <tr>
@@ -206,9 +219,19 @@
                         Use Google translate for specifications
                     </th>
                     <td>
-                        <input type="checkbox" id="automatic_translation" name="specification_google_translation"
+                        <input type="checkbox" id="specification_google_translation" name="specification_google_translation"
                                value="1" <?php checked( 1, get_option( 'specification_google_translation' ), true ); ?> />
-                        <label for="woocommerce_auto_import">Save Deepl credits by using google translate for specifications</label>
+                        <label for="specification_google_translation">Save Deepl credits by using google translate for specifications</label>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">
+                        Use Google translate for descriptions
+                    </th>
+                    <td>
+                        <input type="checkbox" id="descriptions_google_translation" name="descriptions_google_translation"
+                               value="1" <?php checked( 1, get_option( 'descriptions_google_translation' ), true ); ?> />
+                        <label for="descriptions_google_translation">Save Deepl credits by using google translate for descriptions</label>
                     </td>
                 </tr>
                 <tr>
@@ -216,9 +239,9 @@
                         Ignore brands during translation
                     </th>
                     <td>
-                        <input type="checkbox" id="automatic_translation" name="translation_ignore_brands"
+                        <input type="checkbox" id="translation_ignore_brands" name="translation_ignore_brands"
                                value="1" <?php checked( 1, get_option( 'translation_ignore_brands' ), true ); ?> />
-                        <label for="woocommerce_auto_import">Try to ignore brand names while translating</label>
+                        <label for="translation_ignore_brands">Try to ignore brand names while translating</label>
                     </td>
                 </tr>
             </table>
