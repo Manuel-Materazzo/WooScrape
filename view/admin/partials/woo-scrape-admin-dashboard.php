@@ -54,7 +54,7 @@
 
 
     <h3>Logs</h3>
-    <table>
+    <table class="table-style">
         <tr>
             <th>Type</th>
             <th>Name</th>
