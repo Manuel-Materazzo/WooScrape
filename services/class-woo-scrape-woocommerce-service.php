@@ -96,6 +96,7 @@ class Woo_Scrape_WooCommerce_Service {
 		}
 
 		// if the quantity is not specified, set the item in stock
+		// TODO: if latest_crawl_timestamp is not today, skip stock status update
 		if ( is_null( $crawled_product->quantity ) ) {
 			$product->set_stock_status( 'instock' );
 		} else {
@@ -129,9 +130,10 @@ class Woo_Scrape_WooCommerce_Service {
 
 //				TODO: $product->set_category_ids( array( 19 ) );
 
-		//TODO: update other things
+		//TODO: update other things?
 
 		// if the product has no variations, set the price
+		// TODO: if latest_crawl_timestamp is not today, skip variation update
 		if ( ! $crawled_product->has_variations ) {
 
 			// get options from settings

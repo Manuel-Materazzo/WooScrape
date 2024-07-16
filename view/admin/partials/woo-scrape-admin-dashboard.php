@@ -12,7 +12,7 @@
  * @subpackage Woo_Scrape/admin/partials
  */
 ?>
-<button id="run-job-button">Run Job</button>
+<button id="run-job-button" class="button button-primary">Run Job</button>
 
 
 <script type="text/javascript">

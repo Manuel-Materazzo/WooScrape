@@ -1,6 +1,6 @@
 <?php
 
-require ABSPATH . 'wp-content/plugins/woo-scrape/utils/class-woo-scrape-settings-utils.php';
+require ABSPATH . 'wp-content/plugins/woo-scrape/utils/class-woo-scrape-setting-utils.php';
 
 /**
  * The admin-specific functionality of the plugin.

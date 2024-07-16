@@ -42,22 +42,11 @@ class Woo_Scrape_Activator {
         $job_logs_table_name = $wpdb->prefix . 'woo_scrape_job_logs';
         $job_logs_table_sql = "CREATE TABLE IF NOT EXISTS $job_logs_table_name (
         id mediumint(9) UNSIGNED NOT NULL AUTO_INCREMENT,
-        categories_crawled mediumint(9) UNSIGNED,
-        categories_crawl_fails mediumint(9) UNSIGNED,
-        products_crawled mediumint(9) UNSIGNED,
-        products_crawl_fails mediumint(9) UNSIGNED,
-        image_crawls mediumint(9) UNSIGNED,
-        woo_out_of_stock_products mediumint(9) UNSIGNED,
-        woo_out_of_stock_products_fails mediumint(9) UNSIGNED,
-        woo_updated_products mediumint(9) UNSIGNED,
-        woo_updated_products_fails mediumint(9) UNSIGNED,
-        woo_created_products mediumint(9) UNSIGNED,
-        woo_created_products_fails mediumint(9) UNSIGNED,
+        type tinytext NOT NULL,
+        name tinytext NOT NULL,
+        completed_counter mediumint(9) UNSIGNED,
+        failed_counter mediumint(9) UNSIGNED,
         job_start_timestamp datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
-        categories_crawl_end_timestamp datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
-        products_crawl_end_timestamp datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
-        woo_out_of_stock_end_timestamp datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
-        woo_update_end_timestamp datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
         job_end_timestamp datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
         PRIMARY KEY (id)
         ) $charset_collate;";

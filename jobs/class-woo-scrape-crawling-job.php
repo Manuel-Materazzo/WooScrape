@@ -14,26 +14,22 @@ class Woo_scrape_crawling_job {
 	private static string $date_format = 'Y-m-d H:i:s';
 
 	public function __construct() {
-		self::$crawler             = new Woo_scrape_fishdeal_crawler_service();
-		self::$product_service     = new Woo_scrape_product_service();
-		self::$variation_service   = new Woo_scrape_variation_service();
-		self::$log_service         = new Woo_Scrape_Job_Log_Service();
+		self::$crawler           = new Woo_scrape_fishdeal_crawler_service();
+		self::$product_service   = new Woo_scrape_product_service();
+		self::$variation_service = new Woo_scrape_variation_service();
+		self::$log_service       = new Woo_Scrape_Job_Log_Service();
 	}
 
 	public function run(): void {
-		self::$log_service->job_start();
-
 		// crawl categories to get partial products
+		self::$log_service->job_start( JobType::Categories_crawl );
 		$this->fetch_categories_for_profitable_products();
-
-		self::$log_service->categories_crawl_end();
+		self::$log_service->job_end( JobType::Categories_crawl );
 
 		// crawl each partial product to complete informations
+		self::$log_service->job_start( JobType::Products_crawl );
 		$this->fetch_profitable_products();
-
-		self::$log_service->product_crawl_end();
-
-		self::$log_service->job_end();
+		self::$log_service->job_end( JobType::Products_crawl );
 	}
 
 	/**
@@ -61,10 +57,10 @@ class Woo_scrape_crawling_job {
 				$partial_profitable_products = self::$product_service->update_all_by_url( $partial_profitable_products );
 
 				error_log( "There are " . count( $partial_profitable_products ) . " new items to save" );
-				self::$log_service->increase_crawled_categories();
+				self::$log_service->increase_completed_counter( JobType::Categories_crawl );
 			} catch ( Exception $e ) {
 				error_log( $e );
-				self::$log_service->increase_failed_categories();
+				self::$log_service->increase_failed_counter( JobType::Categories_crawl );
 			}
 
 			// save the new products
@@ -116,7 +112,9 @@ class Woo_scrape_crawling_job {
 						// add ids to the product
 						$complete_product->setImageIds( $image_ids );
 						error_log( "Crawled " . count( $image_ids ) . " images for " . $partial_product->url );
-						self::$log_service->increase_crawled_images();
+						self::$log_service->job_start( JobType::Images_crawl, $partial_product->url );
+						self::$log_service->increase_completed_counter( JobType::Images_crawl, count( $image_ids ) );
+						self::$log_service->job_end( JobType::Images_crawl );
 					}
 
 					// update the product on DB
@@ -130,10 +128,10 @@ class Woo_scrape_crawling_job {
 						// create new variations on db
 						self::$variation_service->create_all( $partial_product->id, $new_variations, $now );
 					}
-					self::$log_service->increase_crawled_products();
+					self::$log_service->increase_completed_counter( JobType::Products_crawl );
 				} catch ( Exception $e ) {
 					error_log( $e );
-					self::$log_service->increase_failed_products();
+					self::$log_service->increase_failed_counter( JobType::Products_crawl );
 				}
 			}
 			$page += 1;

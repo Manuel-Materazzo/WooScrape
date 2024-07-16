@@ -25,14 +25,18 @@ class Woo_scrape_woocommerce_update_job {
 
 		// get from database outdated products, and set them out of stock
 		if ( $stock_management ) {
+			self::$log_service->job_start(JobType::Woocommerce_out_of_stock);
 			$this->update_out_of_stock();
+			self::$log_service->job_end(JobType::Woocommerce_out_of_stock);
 		}
-
-		self::$log_service->woocommerce_out_of_stock_end();
 
 		// extracts from DB today's crawled products and variants, and persists them on woocomerce
 		if ( $auto_import ) {
+			self::$log_service->job_start(JobType::Woocommerce_update);
+			self::$log_service->job_start(JobType::Woocommerce_create);
 			$this->update_woocommerce_database();
+			self::$log_service->job_end(JobType::Woocommerce_update);
+			self::$log_service->job_end(JobType::Woocommerce_create);
 		}
 	}
 
@@ -72,10 +76,10 @@ class Woo_scrape_woocommerce_update_job {
 					if ( $crawled_product->has_variations ) {
 						$this->update_woocommerce_vatiarions( $crawled_product->id, $woocommerce_product );
 					}
-					self::$log_service->increase_woocommerce_updated_products();
+					self::$log_service->increase_completed_counter(JobType::Woocommerce_update);
 				} catch ( Exception $e ) {
 					error_log( $e );
-					self::$log_service->increase_failed_woocommerce_updated_products();
+					self::$log_service->increase_failed_counter(JobType::Woocommerce_update);
 				}
 			}
 
@@ -93,10 +97,10 @@ class Woo_scrape_woocommerce_update_job {
 					$product->set_sku( $sku_prefix . $new_product->id );
 
 					self::$woocommerce_service->update_product( $product, $new_product );
-					self::$log_service->increase_woocommerce_created_products();
+					self::$log_service->increase_completed_counter(JobType::Woocommerce_create);
 				} catch ( Exception $e ) {
 					error_log( $e );
-					self::$log_service->increase_failed_woocommerce_created_products();
+					self::$log_service->increase_failed_counter(JobType::Woocommerce_create);
 				}
 			}
 
@@ -138,10 +142,10 @@ class Woo_scrape_woocommerce_update_job {
 							self::$woocommerce_service->update_product_by_id( $variation_id, $outdated_product );
 						}
 					}
-					self::$log_service->increase_out_of_stock_products();
+					self::$log_service->increase_completed_counter(JobType::Woocommerce_out_of_stock);
 				} catch ( Exception $e ) {
 					error_log( $e );
-					self::$log_service->increase_failed_out_of_stock_products();
+					self::$log_service->increase_failed_counter(JobType::Woocommerce_out_of_stock);
 				}
 			}
 			$page += 1;
