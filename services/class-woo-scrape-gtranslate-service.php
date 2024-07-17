@@ -22,6 +22,9 @@ class Woo_scrape_gtranslate_service extends Woo_Scrape_Abstract_Translator_Servi
 			$text = str_replace( $ignored_text, '[]', $text );
 		}
 
+		// urlencode to avoid weird characters
+		$text = urlencode( $text );
+
 		$url = $script_url . "?to_lang={$lang_code}&string={$text}";
 
 		if ( $proxy_url ) {
@@ -63,8 +66,6 @@ class Woo_scrape_gtranslate_service extends Woo_Scrape_Abstract_Translator_Servi
 	}
 
 	private function proxied_call( string $url, string $proxy_url ): array|WP_Error {
-
-		error_log( $url );
 
 		return wp_remote_post( $proxy_url, array(
 			'method'      => 'GET',

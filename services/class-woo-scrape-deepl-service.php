@@ -23,6 +23,9 @@ class Woo_scrape_deepl_service extends Woo_Scrape_Abstract_Translator_Service {
 			$text = str_replace( $ignored_text, '<ignored>' . $ignored_text . '</ignored>', $text );
 		}
 
+		// replace unsafe characters
+		$text = $this->replace_special_characters($text);
+
 		if ( $free_endpoint ) {
 			$url = 'https://api-free.deepl.com/v2/translate';
 		} else {
@@ -52,7 +55,7 @@ class Woo_scrape_deepl_service extends Woo_Scrape_Abstract_Translator_Service {
 			$translated_text = str_replace( '</ignored>', '', $translated_text );
 		}
 
-		return $translated_text;
+		return $this->filter_artifacts( $translated_text );
 	}
 
 	private function direct_call( string $url, string $api_key, string $lang_code, string $text ): array|WP_Error {
@@ -96,4 +99,13 @@ class Woo_scrape_deepl_service extends Woo_Scrape_Abstract_Translator_Service {
 		) );
 	}
 
+	private function filter_artifacts(string $text):string {
+		return str_replace( 'Ã¢', ' ', $text );
+		return str_replace( 'â', ' ', $text );
+	}
+
+	private function replace_special_characters(string $text): string {
+		$text = str_replace( '×', 'x', $text );
+		return str_replace( '±', '~', $text );
+	}
 }

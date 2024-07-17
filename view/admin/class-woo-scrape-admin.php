@@ -121,7 +121,7 @@ class Woo_Scrape_Admin {
 		// scraping
 		register_setting(
 			'woo-scrape-import-scraping-group',
-			'proxy_url',
+			'crawl_proxy_url',
 			array(
 				'type'    => 'text',
 				'default' => 'http://localhost:3000/',

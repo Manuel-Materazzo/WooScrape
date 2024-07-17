@@ -93,7 +93,13 @@ class Woo_scrape_fishdeal_crawler_service extends Woo_Scrape_Abstract_Crawler_Se
 				$variation->setDiscountedPrice( new WooScrapeDecimal( $variation_json->offers->price ) );
 				//TODO: quantity
 
-				$images       = array_merge( $images, $variation_json->image );
+				// cast to array
+				$variation_images = $variation_json->image;
+				if ( ! is_array( $variation_images ) ) {
+					$variation_images = array( $variation_images );
+				}
+
+				$images       = array_merge( $images, $variation_images );
 				$variations[] = $variation;
 			}
 

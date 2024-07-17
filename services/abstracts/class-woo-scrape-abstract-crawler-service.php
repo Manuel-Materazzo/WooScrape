@@ -66,7 +66,7 @@ abstract class Woo_Scrape_Abstract_Crawler_Service
 	 * @throws Exception
 	 */
     protected function crawl(string $url ): string {
-        $proxy_url = get_option('proxy_url', 'http://localhost:3000/');
+        $proxy_url = get_option('crawl_proxy_url', 'http://localhost:3000/');
         $sleep_ms = (int) get_option('crawl_delay_ms', 100);
 
         $response = wp_remote_post( $proxy_url . $url, array(

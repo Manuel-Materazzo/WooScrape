@@ -34,8 +34,8 @@
                         Proxy url
                     </th>
                     <td>
-                        <input type="text" name="proxy_url"
-                               value="<?php echo esc_attr( get_option( 'proxy_url' ) ); ?>"/>
+                        <input type="text" name="crawl_proxy_url"
+                               value="<?php echo esc_attr( get_option( 'crawl_proxy_url' ) ); ?>"/>
                         <p class="description">
                             Every crawl request will pass from this proxy. The request URL will be appended at the end.
                         </p>

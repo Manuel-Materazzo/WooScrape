@@ -19,7 +19,7 @@ class Woo_scrape_fishdeal_dom_utils {
 		if ( ! $page_elements ) {
 			error_log( "pagination element not found" );
 
-			return 0;
+			return 1;
 		}
 
 		return (int) end( $page_elements )->plaintext;

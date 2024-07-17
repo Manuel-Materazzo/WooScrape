@@ -94,7 +94,7 @@ class Woo_Scrape_Translation_Job {
 					$translated_field = $translator->translate( $text_to_translate, $language_code, $brand );
 
 					// add back newlines
-					$translated_field = str_replace( '- ', '\r\n- ', $translated_field );
+					$translated_field = str_replace( '- ', "\r\n- ", $translated_field );
 					$translated_field = str_replace( ' .', '.', $translated_field );
 
 					// update product on database
