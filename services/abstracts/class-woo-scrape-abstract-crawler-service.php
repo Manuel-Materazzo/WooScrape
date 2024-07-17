@@ -11,7 +11,7 @@ abstract class Woo_Scrape_Abstract_Crawler_Service
      */
     public function crawl_images( array $urls ): array {
         include_once ABSPATH . 'wp-admin/includes/image.php';
-        $proxy_url = get_option('proxy_url', 'http://localhost:3000/');
+        $proxy_url = get_option('image_proxy_url', 'http://localhost:3000/');
 	    $sleep_ms = (int) get_option('crawl_delay_ms', 100);
         $ids = array();
 

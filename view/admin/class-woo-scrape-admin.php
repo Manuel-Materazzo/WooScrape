@@ -129,6 +129,14 @@ class Woo_Scrape_Admin {
 		);
 		register_setting(
 			'woo-scrape-import-scraping-group',
+			'image_proxy_url',
+			array(
+				'type'    => 'text',
+				'default' => 'http://localhost:3000/',
+			)
+		);
+		register_setting(
+			'woo-scrape-import-scraping-group',
 			'crawl_delay_ms',
 			array(
 				'type'    => 'number',

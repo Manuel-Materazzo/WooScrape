@@ -43,6 +43,18 @@
                 </tr>
                 <tr>
                     <th scope="row">
+                        Images Proxy url
+                    </th>
+                    <td>
+                        <input type="text" name="image_proxy_url"
+                               value="<?php echo esc_attr( get_option( 'image_proxy_url' ) ); ?>"/>
+                        <p class="description">
+                            Every image crawl request will pass from this proxy. The request URL will be appended at the end.
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">
                         Crawl delay (ms)
                     </th>
                     <td>
