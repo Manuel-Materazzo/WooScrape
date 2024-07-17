@@ -127,6 +127,14 @@ class Woo_Scrape_Admin {
 				'default' => 'http://localhost:3000/',
 			)
 		);
+		register_setting(
+			'woo-scrape-import-scraping-group',
+			'crawl_delay_ms',
+			array(
+				'type'    => 'number',
+				'default' => 100,
+			)
+		);
 
 		// provider
 		register_setting(
@@ -172,6 +180,14 @@ class Woo_Scrape_Admin {
 				'default' => 'sku-1-',
 			)
 		);
+		register_setting(
+			'woo-scrape-import-settings-group',
+			'import_delay_ms',
+			array(
+				'type'    => 'number',
+				'default' => 10,
+			)
+		);
 		Woo_scrape_setting_utils::register_boolean_true(
 			'woo-scrape-import-settings-group',
 			'woocommerce_auto_import'
@@ -208,6 +224,14 @@ class Woo_Scrape_Admin {
 			array(
 				'type'    => 'text',
 				'default' => 'http://localhost:3000/',
+			)
+		);
+		register_setting(
+			'woo-scrape-translation-settings-group',
+			'translation_delay_ms',
+			array(
+				'type'    => 'number',
+				'default' => 50,
 			)
 		);
 		register_setting(

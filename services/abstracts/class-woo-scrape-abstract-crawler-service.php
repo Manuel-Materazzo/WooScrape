@@ -12,6 +12,7 @@ abstract class Woo_Scrape_Abstract_Crawler_Service
     public function crawl_images( array $urls ): array {
         include_once ABSPATH . 'wp-admin/includes/image.php';
         $proxy_url = get_option('proxy_url', 'http://localhost:3000/');
+	    $sleep_ms = get_option('crawl_delay_ms', 100);
         $ids = array();
 
         foreach ( $urls as $url ) {
@@ -26,7 +27,6 @@ abstract class Woo_Scrape_Abstract_Crawler_Service
             // download and save file
             $uploaddir  = wp_upload_dir();
             $uploadfile = $uploaddir['path'] . '/' . $filename;
-            //TODO: real implementation
             $contents = file_get_contents( $proxy_url . $url );
             $savefile = fopen( $uploadfile, 'w' );
             fwrite( $savefile, $contents );
@@ -49,6 +49,9 @@ abstract class Woo_Scrape_Abstract_Crawler_Service
             wp_update_attachment_metadata( $attach_id, $attach_data );
             // add the id to the list
             $ids[] = $attach_id;
+
+			// delay to avoid too many requests
+	        usleep($sleep_ms * 1000);
         }
 
         return $ids;
@@ -63,6 +66,8 @@ abstract class Woo_Scrape_Abstract_Crawler_Service
      */
     protected function crawl(string $url ): string {
         $proxy_url = get_option('proxy_url', 'http://localhost:3000/');
+        $sleep_ms = get_option('crawl_delay_ms', 100);
+
         $response = wp_remote_post( $proxy_url . $url, array(
             'method'      => 'GET',
             'headers'     => array( 'Accept' => 'application/json' ),
@@ -71,6 +76,9 @@ abstract class Woo_Scrape_Abstract_Crawler_Service
             'httpversion' => '1.0',
             'blocking'    => true
         ) );
+
+	    // delay to avoid too many requests
+		usleep($sleep_ms * 1000);
 
         return json_decode($response["body"])->result;
     }

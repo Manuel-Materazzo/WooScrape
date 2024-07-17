@@ -41,6 +41,18 @@
                         </p>
                     </td>
                 </tr>
+                <tr>
+                    <th scope="row">
+                        Crawl delay (ms)
+                    </th>
+                    <td>
+                        <input type="number" name="crawl_delay_ms" step="10"
+                               value="<?php echo esc_attr( get_option( 'crawl_delay_ms' ) ); ?>"/>
+                        <p class="description">
+                            Time to wait at the end of a crawl before starting another one.
+                        </p>
+                    </td>
+                </tr>
             </table>
 			<?php submit_button(); ?>
         </form>
@@ -123,6 +135,18 @@
                                value="<?php echo esc_attr( get_option( 'price_multiplier' ) ); ?>"/>x
                         <p class="description">
                             Every product's price will be multiplied for this value before saving it on woocommerce.
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">
+                        Import delay (ms)
+                    </th>
+                    <td>
+                        <input type="number" name="crawl_delay_ms" step="10"
+                               value="<?php echo esc_attr( get_option( 'import_delay_ms' ) ); ?>"/>
+                        <p class="description">
+                            Time to wait at the end of a woocommerce import before starting another one.
                         </p>
                     </td>
                 </tr>
@@ -217,6 +241,18 @@
                         <p class="description">
                             Every translation request will pass from this proxy. The request URL will be appended at the
                             end.
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">
+                        Translation delay (ms)
+                    </th>
+                    <td>
+                        <input type="number" name="crawl_delay_ms" step="10"
+                               value="<?php echo esc_attr( get_option( 'translation_delay_ms' ) ); ?>"/>
+                        <p class="description">
+                            Time to wait at the end of a translation before starting another one.
                         </p>
                     </td>
                 </tr>

@@ -78,8 +78,6 @@
 
 		if ( ! $results ) {
 			echo '<tr>No logs found</tr>';
-
-			return;
 		}
 
 		foreach ( $results as $row ) {
@@ -108,45 +106,4 @@
 		}
 		?>
 </div>
-
-<script type="text/javascript">
-    jQuery(document).ready(function ($) {
-        $('#run-orchestrator-job-button').click(function () {
-            $.post(ajaxurl, {action: 'run_orchestrator_job'}, function (response) {
-                $('#toast-hanger').append(
-                    '<div class="notice notice-success is-dismissible"> ' +
-                    '<p>Orchestrated job started successfully.</p> ' +
-                    '</div>'
-                )
-            });
-        });
-        $('#run-crawling-job-button').click(function () {
-            $.post(ajaxurl, {action: 'run_crawling_job'}, function (response) {
-                $('#toast-hanger').append(
-                    '<div class="notice notice-success is-dismissible"> ' +
-                    '<p>Crawling job started successfully.</p> ' +
-                    '</div>'
-                )
-            });
-        });
-        $('#run-translate-job-button').click(function () {
-            $.post(ajaxurl, {action: 'run_translate_job'}, function (response) {
-                $('#toast-hanger').append(
-                    '<div class="notice notice-success is-dismissible"> ' +
-                    '<p>Translation job started successfully.</p> ' +
-                    '</div>'
-                )
-            });
-        });
-        $('#run-wordpress-job-button').click(function () {
-            $.post(ajaxurl, {action: 'run_wordpress_job'}, function (response) {
-                $('#toast-hanger').append(
-                    '<div class="notice notice-success is-dismissible"> ' +
-                    '<p>Wordpress update job started successfully.</p> ' +
-                    '</div>'
-                )
-            });
-        });
-    });
-</script>
 

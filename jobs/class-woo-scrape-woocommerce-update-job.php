@@ -43,6 +43,7 @@ class Woo_scrape_woocommerce_update_job {
 	private function update_woocommerce_database(): void {
 		$page       = 0;
 		$sku_prefix = get_option( 'sku_prefix', 'sku-1-' );
+		$sleep_ms = get_option('import_delay_ms', 10);
 
 		// gets products crawled today
 		while ( true ) {
@@ -81,6 +82,9 @@ class Woo_scrape_woocommerce_update_job {
 					error_log( $e );
 					self::$log_service->increase_failed_counter(JobType::Woocommerce_update);
 				}
+
+				// delay to avoid harrassing the DB
+				usleep($sleep_ms * 1000);
 			}
 
 			error_log( "there are " . count( $new_products ) . " new products to create on woocommerce." );
@@ -102,6 +106,9 @@ class Woo_scrape_woocommerce_update_job {
 					error_log( $e );
 					self::$log_service->increase_failed_counter(JobType::Woocommerce_create);
 				}
+
+				// delay to avoid harrassing the DB
+				usleep($sleep_ms * 1000);
 			}
 
 			$page += 1;

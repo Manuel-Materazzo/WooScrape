@@ -45,6 +45,7 @@ class Woo_Scrape_Translation_Job {
 	private function translate( bool $use_gtranslate, string $field ): void {
 		$language_code = get_option( 'translation_language', 'en' );
 		$ignore_brands = get_option( 'translation_ignore_brands', true );
+		$sleep_ms = get_option('translation_delay_ms', 50);
 		$page          = 0;
 
 		// get the correct translator
@@ -82,6 +83,9 @@ class Woo_Scrape_Translation_Job {
 				$product->setId( $untranslated_product->id );
 				$product->setTranslatedField( $field, $translated_field );
 				self::$product_service->update_by_id( $product, true );
+
+				// delay to avoid too many requests
+				usleep($sleep_ms * 1000);
 			}
 			$page += 1;
 		}
