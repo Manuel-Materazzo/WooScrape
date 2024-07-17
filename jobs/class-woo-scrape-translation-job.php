@@ -45,7 +45,7 @@ class Woo_Scrape_Translation_Job {
 	private function translate( bool $use_gtranslate, string $field ): void {
 		$language_code = get_option( 'translation_language', 'en' );
 		$ignore_brands = get_option( 'translation_ignore_brands', true );
-		$sleep_ms = get_option('translation_delay_ms', 50);
+		$sleep_ms = (int) get_option('translation_delay_ms', 50);
 		$page          = 0;
 
 		// get the correct translator
@@ -75,8 +75,16 @@ class Woo_Scrape_Translation_Job {
 					$brand = $untranslated_product->brand;
 				}
 
+				// remove newlines
+				$text_to_translate = $untranslated_product->$field;
+				$text_to_translate = preg_replace('/\s+/', ' ', $text_to_translate);
+
 				// translate
-				$translated_field = $translator->translate( $untranslated_product->$field, $language_code, $brand );
+				$translated_field = $translator->translate( $text_to_translate, $language_code, $brand );
+
+				// add back newlines
+				$translated_field = str_replace('- ', '\r\n- ', $translated_field);
+				$translated_field = str_replace(' .', '.', $translated_field);
 
 				// update product on database
 				$product = new WooScrapeProduct();

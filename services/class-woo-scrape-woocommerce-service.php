@@ -1,5 +1,7 @@
 <?php
 
+require_once ABSPATH . 'wp-content/plugins/woo-scrape/dtos/class-woo-scrape-decimal.php';
+
 class Woo_Scrape_WooCommerce_Service {
 
 	/**
@@ -92,7 +94,7 @@ class Woo_Scrape_WooCommerce_Service {
 		if ( $crawled_product->description ) {
 			$description = $crawled_product->translated_description ?? $crawled_product->description;
 			$specifications = $crawled_product->translated_specifications ?? $crawled_product->specifications;
-			$product->set_description( $specifications . $description );
+			$product->set_description( $specifications . "\r\n" . $description );
 		}
 
 		// if the quantity is not specified, set the item in stock

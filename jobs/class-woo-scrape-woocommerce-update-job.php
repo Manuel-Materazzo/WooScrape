@@ -43,7 +43,7 @@ class Woo_scrape_woocommerce_update_job {
 	private function update_woocommerce_database(): void {
 		$page       = 0;
 		$sku_prefix = get_option( 'sku_prefix', 'sku-1-' );
-		$sleep_ms = get_option('import_delay_ms', 10);
+		$sleep_ms = (int) get_option('import_delay_ms', 10);
 
 		// gets products crawled today
 		while ( true ) {

@@ -12,7 +12,7 @@ abstract class Woo_Scrape_Abstract_Crawler_Service
     public function crawl_images( array $urls ): array {
         include_once ABSPATH . 'wp-admin/includes/image.php';
         $proxy_url = get_option('proxy_url', 'http://localhost:3000/');
-	    $sleep_ms = get_option('crawl_delay_ms', 100);
+	    $sleep_ms = (int) get_option('crawl_delay_ms', 100);
         $ids = array();
 
         foreach ( $urls as $url ) {
@@ -57,16 +57,17 @@ abstract class Woo_Scrape_Abstract_Crawler_Service
         return $ids;
     }
 
-    /**
-     * Requests the crawling of an url to the cf workers web scraping service
-     *
-     * @param string $url the url to crawl
-     *
-     * @return string a string containing the HTML body
-     */
+	/**
+	 * Requests the crawling of an url to the cf workers web scraping service
+	 *
+	 * @param string $url the url to crawl
+	 *
+	 * @return string a string containing the HTML body
+	 * @throws Exception
+	 */
     protected function crawl(string $url ): string {
         $proxy_url = get_option('proxy_url', 'http://localhost:3000/');
-        $sleep_ms = get_option('crawl_delay_ms', 100);
+        $sleep_ms = (int) get_option('crawl_delay_ms', 100);
 
         $response = wp_remote_post( $proxy_url . $url, array(
             'method'      => 'GET',
@@ -76,6 +77,11 @@ abstract class Woo_Scrape_Abstract_Crawler_Service
             'httpversion' => '1.0',
             'blocking'    => true
         ) );
+
+	    if ( $response["response"]["code"] != 200 ) {
+		    error_log( "The request returned a {$response["response"]["code"]} error code" );
+		    throw new Exception( "The request returned a {$response["response"]["code"]} error code" );
+	    }
 
 	    // delay to avoid too many requests
 		usleep($sleep_ms * 1000);

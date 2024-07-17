@@ -239,8 +239,10 @@
                         <input type="text" name="translation_proxy_url"
                                value="<?php echo esc_attr( get_option( 'translation_proxy_url' ) ); ?>"/>
                         <p class="description">
-                            Every translation request will pass from this proxy. The request URL will be appended at the
-                            end.
+                            Every translation request will pass from this proxy. This is uses standard http/https proxy
+                             protocol, for everything but deepl, where it's dependant from
+                            <a href="https://github.com/Manuel-Materazzo/Fluid-Proxy">Fluid-proxy</a>'s
+                            request manipulation features.
                         </p>
                     </td>
                 </tr>
