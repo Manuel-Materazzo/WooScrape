@@ -99,6 +99,7 @@ class Woo_scrape_woocommerce_update_job {
 					}
 
 					$product->set_sku( $sku_prefix . $new_product->id );
+					$product->set_category_ids( array( $new_product->corresponding_woocommerce_category_id ) );
 
 					self::$woocommerce_service->update_product( $product, $new_product );
 					self::$log_service->increase_completed_counter(JobType::Woocommerce_create);

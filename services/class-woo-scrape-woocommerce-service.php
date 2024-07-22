@@ -130,8 +130,6 @@ class Woo_Scrape_WooCommerce_Service {
 			$product->set_gallery_image_ids( $product_images );
 		}
 
-//				TODO: $product->set_category_ids( array( 19 ) );
-
 		//TODO: update other things?
 
 		// if the product has no variations, set the price

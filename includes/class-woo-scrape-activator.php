@@ -57,6 +57,7 @@ class Woo_Scrape_Activator {
         name tinytext NOT NULL,
         provider tinytext NOT NULL,
         url varchar(250) DEFAULT '' NOT NULL,
+        corresponding_woocommerce_category_id mediumint(9) UNSIGNED NOT NULL,
         weight decimal(4,2) NOT NULL,
         length TINYINT UNSIGNED NOT NULL,
         width TINYINT UNSIGNED NOT NULL,
