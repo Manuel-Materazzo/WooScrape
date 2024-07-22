@@ -1,6 +1,7 @@
 <?php
 
 require ABSPATH . 'wp-content/plugins/woo-scrape/utils/class-woo-scrape-setting-utils.php';
+require ABSPATH . 'wp-content/plugins/woo-scrape/jobs/class-woo-scrape-orchestrator.php';
 
 /**
  * The admin-specific functionality of the plugin.
@@ -114,11 +115,21 @@ class Woo_Scrape_Admin {
 			[ $this, 'display_plugin_settings' ]
 		);
 
-		$this->register_settings();
+		$this->register_schedulation_settings();
+		$this->register_scraping_settings();
+		$this->register_provider_settings();
+		$this->register_product_import_settings();
+		$this->register_translation_settings();
+		add_action( 'update_option_schedule_crawl', [$this, 'update_schedule_crawl'], 10, 0 );
+		add_action( 'update_option_schedule_crawl_minute', [$this, 'update_schedule_crawl'], 10, 0 );
+		add_action( 'update_option_schedule_crawl_hour', [$this, 'update_schedule_crawl'], 10, 0 );
 	}
 
-	public function register_settings(): void {
-		// schedulation
+	/**
+	 * Registers settings for the schedulation tab
+	 * @return void
+	 */
+	private function register_schedulation_settings(): void {
 		Woo_scrape_setting_utils::register_boolean_false(
 			'woo-scrape-schedulation-group',
 			'schedule_crawl'
@@ -132,15 +143,20 @@ class Woo_Scrape_Admin {
 			)
 		);
 		register_setting(
-			'woo-scrape-ischedulation-group',
+			'woo-scrape-schedulation-group',
 			'schedule_crawl_minute',
 			array(
 				'type'    => 'number',
 				'default' => 0,
 			)
 		);
+	}
 
-		// scraping
+	/**
+	 * Registers settings for the scraping tab
+	 * @return void
+	 */
+	private function register_scraping_settings(): void {
 		Woo_scrape_setting_utils::register_string(
 			'woo-scrape-import-scraping-group',
 			'crawl_proxy_url',
@@ -159,8 +175,13 @@ class Woo_Scrape_Admin {
 				'default' => 100,
 			)
 		);
+	}
 
-		// provider
+	/**
+	 * Registers settings for the provider tab
+	 * @return void
+	 */
+	private function register_provider_settings(): void {
 		register_setting(
 			'woo-scrape-provider-settings-group',
 			'provider_free_shipping_threshold',
@@ -185,8 +206,13 @@ class Woo_Scrape_Admin {
 				'default' => 1,
 			)
 		);
+	}
 
-		// product import
+	/**
+	 * Registers settings for the product import tab
+	 * @return void
+	 */
+	private function register_product_import_settings(): void {
 		register_setting(
 			'woo-scrape-import-settings-group',
 			'price_multiplier',
@@ -217,8 +243,13 @@ class Woo_Scrape_Admin {
 			'woo-scrape-import-settings-group',
 			'woocommerce_stock_management'
 		);
+	}
 
-		// Translation
+	/**
+	 * Registers settings for the translation tab
+	 * @return void
+	 */
+	private function register_translation_settings(): void {
 		Woo_scrape_setting_utils::register_string(
 			'woo-scrape-translation-settings-group',
 			'google_script_url',
@@ -277,6 +308,28 @@ class Woo_Scrape_Admin {
 		);
 	}
 
+	/**
+	 * Schedule or unschedule orchestration job on settings update
+	 *
+	 * @param $old_value
+	 * @param $new_value
+	 *
+	 * @return void
+	 */
+	public function update_schedule_crawl(): void {
+		$schedule_enabled   = get_option( 'schedule_crawl', false );
+		if ( $schedule_enabled ) {
+			// get the first execution time
+			$hour   = get_option( 'schedule_crawl_hour', 1 );
+			$minute = get_option( 'schedule_crawl_minute', 0 );
+			$time   = Woo_scrape_setting_utils::get_schedule_time( $hour, $minute );
+			// schedule the orchestration job
+			Woo_scrape_orchestrator::schedule_daily( $time );
+		} else {
+			// If the new value is not 1 (checked), unschedule the job
+			Woo_scrape_orchestrator::unschedule();
+		}
+	}
 
 	/**
 	 * Register the stylesheets for the admin area.

@@ -27,8 +27,8 @@
     <div id="schedule" class="woo-scrape-tab">
         <h3>Schedule</h3>
         <form method="post" action="options.php">
-		    <?php settings_fields( 'woo-scrape-schedule-group' ); ?>
-		    <?php do_settings_sections( 'woo-scrape-schedule-group' ); ?>
+		    <?php settings_fields( 'woo-scrape-schedulation-group' ); ?>
+		    <?php do_settings_sections( 'woo-scrape-schedulation-group' ); ?>
             <table class="form-table">
                 <tr>
                     <th scope="row">
