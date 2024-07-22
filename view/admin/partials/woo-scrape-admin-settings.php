@@ -16,14 +16,58 @@
 <div class="wrap">
     <h2>Woo Scrape - Settings</h2>
     <nav class="nav-tab-wrapper">
-        <a class="nav-tab nav-tab-active woo-scrape-tab-link" onclick="changeTab(event, 'scraping')">Scraping</a>
+        <a class="nav-tab nav-tab-active woo-scrape-tab-link" onclick="changeTab(event, 'schedule')">Schedulation</a>
         <a class="nav-tab woo-scrape-tab-link" onclick="changeTab(event, 'provider')">Provider</a>
+        <a class="nav-tab  woo-scrape-tab-link" onclick="changeTab(event, 'scraping')">Scraping</a>
         <a class="nav-tab woo-scrape-tab-link" onclick="changeTab(event, 'translation')">Translation</a>
         <a class="nav-tab woo-scrape-tab-link" onclick="changeTab(event, 'product-import')">Product Import</a>
 
 
     </nav>
-    <div id="scraping" class="woo-scrape-tab">
+    <div id="schedule" class="woo-scrape-tab">
+        <h3>Schedule</h3>
+        <form method="post" action="options.php">
+		    <?php settings_fields( 'woo-scrape-schedule-group' ); ?>
+		    <?php do_settings_sections( 'woo-scrape-schedule-group' ); ?>
+            <table class="form-table">
+                <tr>
+                    <th scope="row">
+                        Schedule enabled
+                    </th>
+                    <td>
+                        <input type="checkbox" id="schedule_crawl"
+                               name="schedule_crawl"
+                               value="1" <?php checked( 1, get_option( 'schedule_crawl' ), true ); ?> />
+                        <label for="schedule_crawl">Start automatically the Orchestrator Job</label>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">
+                        Schedule time
+                    </th>
+                    <td>
+                        <div class="d-inline-block">
+                            <input type="number" name="schedule_crawl_hour" step="1" min="0" max="23"
+                                   value="<?php echo esc_attr( get_option( 'schedule_crawl_hour' ) ); ?>"/>
+                            <p class="description">
+                                Hour
+                            </p>
+                        </div>
+                        <div class="d-inline-block">
+                            <input type="number" name="schedule_crawl_minute" step="1" min="0" max="59"
+                                   value="<?php echo esc_attr( get_option( 'schedule_crawl_minute' ) ); ?>"/>
+                            <p class="description">
+                                Minute
+                            </p>
+                        </div>
+
+                    </td>
+                </tr>
+            </table>
+		    <?php submit_button(); ?>
+        </form>
+    </div>
+    <div id="scraping" class="woo-scrape-tab" style="display:none">
         <h3>Scraping</h3>
         <form method="post" action="options.php">
 			<?php settings_fields( 'woo-scrape-import-scraping-group' ); ?>
@@ -58,7 +102,7 @@
                         Crawl delay (ms)
                     </th>
                     <td>
-                        <input type="number" name="crawl_delay_ms" step="10"
+                        <input type="number" name="crawl_delay_ms" step="10" min="1"
                                value="<?php echo esc_attr( get_option( 'crawl_delay_ms' ) ); ?>"/>
                         <p class="description">
                             Time to wait at the end of a crawl before starting another one.
@@ -81,7 +125,7 @@
                         Free shipping threshold
                     </th>
                     <td>
-                        <input type="number" name="provider_free_shipping_threshold" step="0.1"
+                        <input type="number" name="provider_free_shipping_threshold" step="0.1" min="0"
                                value="<?php echo esc_attr( get_option( 'provider_free_shipping_threshold' ) ); ?>"/>
                         <p class="description">
                             When the cart value on provider's website is greater than this amount, the shipping is free.
@@ -93,7 +137,7 @@
                         Shipping addendum
                     </th>
                     <td>
-                        <input type="number" name="provider_shipping_addendum" step="0.1"
+                        <input type="number" name="provider_shipping_addendum" step="0.1" min="0"
                                value="<?php echo esc_attr( get_option( 'provider_shipping_addendum' ) ); ?>"/>
                         <p class="description">
                             Shipping cost on provider's carts that do not surpass the "Free shipping threshold".
@@ -106,7 +150,7 @@
                         Currency conversion multiplier
                     </th>
                     <td>
-                        <input type="number" name="currency_conversion_multiplier" step="0.1"
+                        <input type="number" name="currency_conversion_multiplier" step="0.1" min="0"
                                value="<?php echo esc_attr( get_option( 'currency_conversion_multiplier' ) ); ?>"/>x
                         <p class="description">
                             Every product's price will be multiplied for this value before saving it on woocommerce to
@@ -143,7 +187,7 @@
                         Price multiplier
                     </th>
                     <td>
-                        <input type="number" name="price_multiplier" step="0.1"
+                        <input type="number" name="price_multiplier" step="0.1" min="0"
                                value="<?php echo esc_attr( get_option( 'price_multiplier' ) ); ?>"/>x
                         <p class="description">
                             Every product's price will be multiplied for this value before saving it on woocommerce.
@@ -263,7 +307,7 @@
                         Translation delay (ms)
                     </th>
                     <td>
-                        <input type="number" name="crawl_delay_ms" step="10"
+                        <input type="number" name="crawl_delay_ms" step="10" min="1"
                                value="<?php echo esc_attr( get_option( 'translation_delay_ms' ) ); ?>"/>
                         <p class="description">
                             Time to wait at the end of a translation before starting another one.

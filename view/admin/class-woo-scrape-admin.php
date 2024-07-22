@@ -118,22 +118,38 @@ class Woo_Scrape_Admin {
 	}
 
 	public function register_settings(): void {
-		// scraping
+		// schedulation
+		Woo_scrape_setting_utils::register_boolean_false(
+			'woo-scrape-schedulation-group',
+			'schedule_crawl'
+		);
 		register_setting(
-			'woo-scrape-import-scraping-group',
-			'crawl_proxy_url',
+			'woo-scrape-schedulation-group',
+			'schedule_crawl_hour',
 			array(
-				'type'    => 'text',
-				'default' => 'http://localhost:3000/',
+				'type'    => 'number',
+				'default' => 1,
 			)
 		);
 		register_setting(
+			'woo-scrape-ischedulation-group',
+			'schedule_crawl_minute',
+			array(
+				'type'    => 'number',
+				'default' => 0,
+			)
+		);
+
+		// scraping
+		Woo_scrape_setting_utils::register_string(
+			'woo-scrape-import-scraping-group',
+			'crawl_proxy_url',
+			'http://localhost:3000/'
+		);
+		Woo_scrape_setting_utils::register_string(
 			'woo-scrape-import-scraping-group',
 			'image_proxy_url',
-			array(
-				'type'    => 'text',
-				'default' => 'http://localhost:3000/',
-			)
+			'http://localhost:3000/'
 		);
 		register_setting(
 			'woo-scrape-import-scraping-group',
@@ -180,13 +196,10 @@ class Woo_Scrape_Admin {
 				'default' => 1.2,
 			)
 		);
-		register_setting(
+		Woo_scrape_setting_utils::register_string(
 			'woo-scrape-import-settings-group',
 			'sku_prefix',
-			array(
-				'type'    => 'text',
-				'default' => 'sku-1-',
-			)
+			'sku-1-'
 		);
 		register_setting(
 			'woo-scrape-import-settings-group',
@@ -206,33 +219,24 @@ class Woo_Scrape_Admin {
 		);
 
 		// Translation
-		register_setting(
+		Woo_scrape_setting_utils::register_string(
 			'woo-scrape-translation-settings-group',
 			'google_script_url',
-			array(
-				'type'    => 'text',
-				'default' => '',
-			)
+			''
 		);
-		register_setting(
+		Woo_scrape_setting_utils::register_string(
 			'woo-scrape-translation-settings-group',
 			'deepl_api_key',
-			array(
-				'type'    => 'text',
-				'default' => '',
-			)
+			''
 		);
 		Woo_scrape_setting_utils::register_boolean_true(
 			'woo-scrape-translation-settings-group',
 			'deepl_api_free'
 		);
-		register_setting(
+		Woo_scrape_setting_utils::register_string(
 			'woo-scrape-translation-settings-group',
 			'translation_proxy_url',
-			array(
-				'type'    => 'text',
-				'default' => 'http://localhost:3000/',
-			)
+			'http://localhost:3000/'
 		);
 		register_setting(
 			'woo-scrape-translation-settings-group',
@@ -242,13 +246,10 @@ class Woo_Scrape_Admin {
 				'default' => 50,
 			)
 		);
-		register_setting(
+		Woo_scrape_setting_utils::register_string(
 			'woo-scrape-translation-settings-group',
 			'translation_language',
-			array(
-				'type'    => 'text',
-				'default' => 'en',
-			)
+			'en'
 		);
 		Woo_scrape_setting_utils::register_boolean_true(
 			'woo-scrape-translation-settings-group',
@@ -270,13 +271,9 @@ class Woo_Scrape_Admin {
 			'woo-scrape-translation-settings-group',
 			'title_google_translation'
 		);
-		register_setting(
+		Woo_scrape_setting_utils::register_boolean_false(
 			'woo-scrape-translation-settings-group',
-			'descriptions_google_translation',
-			array(
-				'type'    => 'boolean',
-				'default' => false,
-			)
+			'descriptions_google_translation'
 		);
 	}
 
