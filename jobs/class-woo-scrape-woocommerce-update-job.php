@@ -20,8 +20,8 @@ class Woo_scrape_woocommerce_update_job {
 	}
 
 	public function run(): void {
-		$stock_management = get_option( 'woocommerce_stock_management', true );
-		$auto_import      = get_option( 'woocommerce_auto_import', true );
+		$stock_management = get_option( 'woo_scrape_woocommerce_stock_management', true );
+		$auto_import      = get_option( 'woo_scrape_woocommerce_auto_import', true );
 
 		// get from database outdated products, and set them out of stock
 		if ( $stock_management ) {
@@ -42,8 +42,8 @@ class Woo_scrape_woocommerce_update_job {
 
 	private function update_woocommerce_database(): void {
 		$page       = 0;
-		$sku_prefix = get_option( 'sku_prefix', 'sku-1-' );
-		$sleep_ms = (int) get_option('import_delay_ms', 10);
+		$sku_prefix = get_option( 'woo_scrape_sku_prefix', 'sku-1-' );
+		$sleep_ms = (int) get_option('woo_scrape_import_delay_ms', 10);
 
 		// gets products crawled today
 		while ( true ) {
@@ -118,7 +118,7 @@ class Woo_scrape_woocommerce_update_job {
 
 	private function update_out_of_stock(): void {
 		$page       = 0;
-		$sku_prefix = get_option( 'sku_prefix', 'sku-1-' );
+		$sku_prefix = get_option( 'woo_scrape_sku_prefix', 'sku-1-' );
 
 		// gets products not crawled today
 		while ( true ) {

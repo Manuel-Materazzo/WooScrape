@@ -120,9 +120,9 @@ class Woo_Scrape_Admin {
 		$this->register_provider_settings();
 		$this->register_product_import_settings();
 		$this->register_translation_settings();
-		add_action( 'update_option_schedule_crawl', [$this, 'update_schedule_crawl'], 10, 0 );
-		add_action( 'update_option_schedule_crawl_minute', [$this, 'update_schedule_crawl'], 10, 0 );
-		add_action( 'update_option_schedule_crawl_hour', [$this, 'update_schedule_crawl'], 10, 0 );
+		add_action( 'update_option_woo_scrape_schedule_crawl', [$this, 'update_schedule_crawl'], 10, 0 );
+		add_action( 'update_option_woo_scrape_schedule_crawl_minute', [$this, 'update_schedule_crawl'], 10, 0 );
+		add_action( 'update_option_woo_scrape_schedule_crawl_hour', [$this, 'update_schedule_crawl'], 10, 0 );
 	}
 
 	/**
@@ -132,11 +132,11 @@ class Woo_Scrape_Admin {
 	private function register_schedulation_settings(): void {
 		Woo_scrape_setting_utils::register_boolean_false(
 			'woo-scrape-schedulation-group',
-			'schedule_crawl'
+			'woo_scrape_schedule_crawl'
 		);
 		register_setting(
 			'woo-scrape-schedulation-group',
-			'schedule_crawl_hour',
+			'woo_scrape_schedule_crawl_hour',
 			array(
 				'type'    => 'number',
 				'default' => 1,
@@ -144,7 +144,7 @@ class Woo_Scrape_Admin {
 		);
 		register_setting(
 			'woo-scrape-schedulation-group',
-			'schedule_crawl_minute',
+			'woo_scrape_schedule_crawl_minute',
 			array(
 				'type'    => 'number',
 				'default' => 0,
@@ -159,17 +159,17 @@ class Woo_Scrape_Admin {
 	private function register_scraping_settings(): void {
 		Woo_scrape_setting_utils::register_string(
 			'woo-scrape-import-scraping-group',
-			'crawl_proxy_url',
+			'woo_scrape_crawl_proxy_url',
 			'http://localhost:3000/'
 		);
 		Woo_scrape_setting_utils::register_string(
 			'woo-scrape-import-scraping-group',
-			'image_proxy_url',
+			'woo_scrape_image_proxy_url',
 			'http://localhost:3000/'
 		);
 		register_setting(
 			'woo-scrape-import-scraping-group',
-			'crawl_delay_ms',
+			'woo_scrape_crawl_delay_ms',
 			array(
 				'type'    => 'number',
 				'default' => 100,
@@ -184,7 +184,7 @@ class Woo_Scrape_Admin {
 	private function register_provider_settings(): void {
 		register_setting(
 			'woo-scrape-provider-settings-group',
-			'provider_free_shipping_threshold',
+			'woo_scrape_provider_free_shipping_threshold',
 			array(
 				'type'    => 'number',
 				'default' => 100,
@@ -192,7 +192,7 @@ class Woo_Scrape_Admin {
 		);
 		register_setting(
 			'woo-scrape-provider-settings-group',
-			'provider_shipping_addendum',
+			'woo_scrape_provider_shipping_addendum',
 			array(
 				'type'    => 'number',
 				'default' => 7,
@@ -200,7 +200,7 @@ class Woo_Scrape_Admin {
 		);
 		register_setting(
 			'woo-scrape-provider-settings-group',
-			'currency_conversion_multiplier',
+			'woo_scrape_currency_conversion_multiplier',
 			array(
 				'type'    => 'number',
 				'default' => 1,
@@ -215,7 +215,7 @@ class Woo_Scrape_Admin {
 	private function register_product_import_settings(): void {
 		register_setting(
 			'woo-scrape-import-settings-group',
-			'price_multiplier',
+			'woo_scrape_price_multiplier',
 			array(
 				'type'    => 'number',
 //                'sanitize_callback' => 'sanitize_text_field',
@@ -224,12 +224,12 @@ class Woo_Scrape_Admin {
 		);
 		Woo_scrape_setting_utils::register_string(
 			'woo-scrape-import-settings-group',
-			'sku_prefix',
+			'woo_scrape_sku_prefix',
 			'sku-1-'
 		);
 		register_setting(
 			'woo-scrape-import-settings-group',
-			'import_delay_ms',
+			'woo_scrape_import_delay_ms',
 			array(
 				'type'    => 'number',
 				'default' => 10,
@@ -237,11 +237,11 @@ class Woo_Scrape_Admin {
 		);
 		Woo_scrape_setting_utils::register_boolean_true(
 			'woo-scrape-import-settings-group',
-			'woocommerce_auto_import'
+			'woo_scrape_woocommerce_auto_import'
 		);
 		Woo_scrape_setting_utils::register_boolean_true(
 			'woo-scrape-import-settings-group',
-			'woocommerce_stock_management'
+			'woo_scrape_woocommerce_stock_management'
 		);
 	}
 
@@ -252,26 +252,26 @@ class Woo_Scrape_Admin {
 	private function register_translation_settings(): void {
 		Woo_scrape_setting_utils::register_string(
 			'woo-scrape-translation-settings-group',
-			'google_script_url',
+			'woo_scrape_google_script_url',
 			''
 		);
 		Woo_scrape_setting_utils::register_string(
 			'woo-scrape-translation-settings-group',
-			'deepl_api_key',
+			'woo_scrape_deepl_api_key',
 			''
 		);
 		Woo_scrape_setting_utils::register_boolean_true(
 			'woo-scrape-translation-settings-group',
-			'deepl_api_free'
+			'woo_scrape_deepl_api_free'
 		);
 		Woo_scrape_setting_utils::register_string(
 			'woo-scrape-translation-settings-group',
-			'translation_proxy_url',
+			'woo_scrape_translation_proxy_url',
 			'http://localhost:3000/'
 		);
 		register_setting(
 			'woo-scrape-translation-settings-group',
-			'translation_delay_ms',
+			'woo_scrape_translation_delay_ms',
 			array(
 				'type'    => 'number',
 				'default' => 50,
@@ -279,32 +279,32 @@ class Woo_Scrape_Admin {
 		);
 		Woo_scrape_setting_utils::register_string(
 			'woo-scrape-translation-settings-group',
-			'translation_language',
+			'woo_scrape_translation_language',
 			'en'
 		);
 		Woo_scrape_setting_utils::register_boolean_true(
 			'woo-scrape-translation-settings-group',
-			'automatic_description_translation'
+			'woo_scrape_automatic_description_translation'
 		);
 		Woo_scrape_setting_utils::register_boolean_true(
 			'woo-scrape-translation-settings-group',
-			'automatic_title_translation'
+			'woo_scrape_automatic_title_translation'
 		);
 		Woo_scrape_setting_utils::register_boolean_true(
 			'woo-scrape-translation-settings-group',
-			'translation_ignore_brands'
+			'woo_scrape_translation_ignore_brands'
 		);
 		Woo_scrape_setting_utils::register_boolean_true(
 			'woo-scrape-translation-settings-group',
-			'specification_google_translation'
+			'woo_scrape_specification_google_translation'
 		);
 		Woo_scrape_setting_utils::register_boolean_true(
 			'woo-scrape-translation-settings-group',
-			'title_google_translation'
+			'woo_scrape_title_google_translation'
 		);
 		Woo_scrape_setting_utils::register_boolean_false(
 			'woo-scrape-translation-settings-group',
-			'descriptions_google_translation'
+			'woo_scrape_descriptions_google_translation'
 		);
 	}
 
@@ -317,11 +317,11 @@ class Woo_Scrape_Admin {
 	 * @return void
 	 */
 	public function update_schedule_crawl(): void {
-		$schedule_enabled   = get_option( 'schedule_crawl', false );
+		$schedule_enabled   = get_option( 'woo_scrape_schedule_crawl', false );
 		if ( $schedule_enabled ) {
 			// get the first execution time
-			$hour   = get_option( 'schedule_crawl_hour', 1 );
-			$minute = get_option( 'schedule_crawl_minute', 0 );
+			$hour   = get_option( 'woo_scrape_schedule_crawl_hour', 1 );
+			$minute = get_option( 'woo_scrape_schedule_crawl_minute', 0 );
 			$time   = Woo_scrape_setting_utils::get_schedule_time( $hour, $minute );
 			// schedule the orchestration job
 			Woo_scrape_orchestrator::schedule_daily( $time );

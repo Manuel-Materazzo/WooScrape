@@ -37,9 +37,9 @@ class Woo_Scrape_WooCommerce_Service {
 			$variation->set_attributes( array( 'variant' => $variation_name ) );
 
 			// get options from settings
-			$price_multiplier               = get_option( 'price_multiplier', 1.2 );
-			$provider_shipping_addendum     = get_option( 'provider_shipping_addendum', 7 );
-			$currency_conversion_multiplier = get_option( 'currency_conversion_multiplier', 1 );
+			$price_multiplier               = get_option( 'woo_scrape_price_multiplier', 1.2 );
+			$provider_shipping_addendum     = get_option( 'woo_scrape_provider_shipping_addendum', 7 );
+			$currency_conversion_multiplier = get_option( 'woo_scrape_currency_conversion_multiplier', 1 );
 
 			$profitable_price = new WooScrapeDecimal( $crawled_variation->discounted_price );
 			$profitable_price->add( $provider_shipping_addendum )->multiply( $price_multiplier );
@@ -137,9 +137,9 @@ class Woo_Scrape_WooCommerce_Service {
 		if ( ! $crawled_product->has_variations ) {
 
 			// get options from settings
-			$price_multiplier               = get_option( 'price_multiplier', 1.2 );
-			$provider_shipping_addendum     = get_option( 'provider_shipping_addendum', 7 );
-			$currency_conversion_multiplier = get_option( 'currency_conversion_multiplier', 1 );
+			$price_multiplier               = get_option( 'woo_scrape_price_multiplier', 1.2 );
+			$provider_shipping_addendum     = get_option( 'woo_scrape_provider_shipping_addendum', 7 );
+			$currency_conversion_multiplier = get_option( 'woo_scrape_currency_conversion_multiplier', 1 );
 
 			$profitable_price = new WooScrapeDecimal( $crawled_product->discounted_price );
 			$profitable_price->add( $provider_shipping_addendum )->multiply( $price_multiplier );

@@ -19,28 +19,32 @@ class Woo_Scrape_Translation_Job {
 	}
 
 	public function run( bool $manual = false ): void {
-		$automatic_description_translation = get_option( 'automatic_description_translation', true );
-		$automatic_title_translation       = get_option( 'automatic_title_translation', true );
+		$automatic_description_translation   = get_option( 'woo_scrape_automatic_description_translation', true );
+		$automatic_specification_translation = get_option( 'woo_scrape_automatic_specification_translation', true );
+		$automatic_title_translation         = get_option( 'woo_scrape_automatic_title_translation', true );
 
 		if ( $manual || $automatic_title_translation ) {
-			$title_google_translation = get_option( 'title_google_translation', true );
+			$title_google_translation = get_option( 'woo_scrape_title_google_translation', true );
 
 			self::$log_service->job_start( JobType::Names_translation );
 			$this->translate( $title_google_translation, 'name', JobType::Names_translation );
 			self::$log_service->job_end( JobType::Names_translation );
 		}
 
-		if ( $manual || $automatic_description_translation ) {
-			$description_google_translation   = get_option( 'descriptions_google_translation', true );
-			$specification_google_translation = get_option( 'specification_google_translation', true );
-
-			self::$log_service->job_start( JobType::Descriptions_translation );
-			$this->translate( $description_google_translation, 'description', JobType::Descriptions_translation );
-			self::$log_service->job_end( JobType::Descriptions_translation );
+		if ( $manual || $automatic_specification_translation ) {
+			$specification_google_translation = get_option( 'woo_scrape_specification_google_translation', true );
 
 			self::$log_service->job_start( JobType::Specifications_translation );
 			$this->translate( $specification_google_translation, 'specifications', JobType::Specifications_translation );
 			self::$log_service->job_end( JobType::Specifications_translation );
+		}
+
+		if ( $manual || $automatic_description_translation ) {
+			$description_google_translation = get_option( 'woo_scrape_descriptions_google_translation', true );
+
+			self::$log_service->job_start( JobType::Descriptions_translation );
+			$this->translate( $description_google_translation, 'description', JobType::Descriptions_translation );
+			self::$log_service->job_end( JobType::Descriptions_translation );
 		}
 
 	}
@@ -54,9 +58,9 @@ class Woo_Scrape_Translation_Job {
 	 * @return void
 	 */
 	private function translate( bool $use_gtranslate, string $field, JobType $job_type ): void {
-		$language_code = get_option( 'translation_language', 'en' );
-		$ignore_brands = get_option( 'translation_ignore_brands', true );
-		$sleep_ms      = (int) get_option( 'translation_delay_ms', 50 );
+		$language_code = get_option( 'woo_scrape_translation_language', 'en' );
+		$ignore_brands = get_option( 'woo_scrape_translation_ignore_brands', true );
+		$sleep_ms      = (int) get_option( 'woo_scrape_translation_delay_ms', 50 );
 		$page          = 0;
 
 		// get the correct translator

@@ -35,10 +35,10 @@
                         Schedule enabled
                     </th>
                     <td>
-                        <input type="checkbox" id="schedule_crawl"
-                               name="schedule_crawl"
-                               value="1" <?php checked( 1, get_option( 'schedule_crawl' ), true ); ?> />
-                        <label for="schedule_crawl">Start automatically the Orchestrator Job</label>
+                        <input type="checkbox" id="woo_scrape_schedule_crawl"
+                               name="woo_scrape_schedule_crawl"
+                               value="1" <?php checked( 1, get_option( 'woo_scrape_schedule_crawl' ), true ); ?> />
+                        <label for="woo_scrape_schedule_crawl">Start automatically the Orchestrator Job</label>
                     </td>
                 </tr>
                 <tr>
@@ -47,15 +47,15 @@
                     </th>
                     <td>
                         <div class="d-inline-block">
-                            <input type="number" name="schedule_crawl_hour" step="1" min="0" max="23"
-                                   value="<?php echo esc_attr( get_option( 'schedule_crawl_hour' ) ); ?>"/>
+                            <input type="number" name="woo_scrape_schedule_crawl_hour" step="1" min="0" max="23"
+                                   value="<?php echo esc_attr( get_option( 'woo_scrape_schedule_crawl_hour' ) ); ?>"/>
                             <p class="description">
                                 Hour
                             </p>
                         </div>
                         <div class="d-inline-block">
-                            <input type="number" name="schedule_crawl_minute" step="1" min="0" max="59"
-                                   value="<?php echo esc_attr( get_option( 'schedule_crawl_minute' ) ); ?>"/>
+                            <input type="number" name="woo_scrape_schedule_crawl_minute" step="1" min="0" max="59"
+                                   value="<?php echo esc_attr( get_option( 'woo_scrape_schedule_crawl_minute' ) ); ?>"/>
                             <p class="description">
                                 Minute
                             </p>
@@ -78,8 +78,8 @@
                         Proxy url
                     </th>
                     <td>
-                        <input type="text" name="crawl_proxy_url"
-                               value="<?php echo esc_attr( get_option( 'crawl_proxy_url' ) ); ?>"/>
+                        <input type="text" name="woo_scrape_crawl_proxy_url"
+                               value="<?php echo esc_attr( get_option( 'woo_scrape_crawl_proxy_url' ) ); ?>"/>
                         <p class="description">
                             Every crawl request will pass from this proxy. The request URL will be appended at the end.
                         </p>
@@ -90,8 +90,8 @@
                         Images Proxy url
                     </th>
                     <td>
-                        <input type="text" name="image_proxy_url"
-                               value="<?php echo esc_attr( get_option( 'image_proxy_url' ) ); ?>"/>
+                        <input type="text" name="woo_scrape_image_proxy_url"
+                               value="<?php echo esc_attr( get_option( 'woo_scrape_image_proxy_url' ) ); ?>"/>
                         <p class="description">
                             Every image crawl request will pass from this proxy. The request URL will be appended at the end.
                         </p>
@@ -102,8 +102,8 @@
                         Crawl delay (ms)
                     </th>
                     <td>
-                        <input type="number" name="crawl_delay_ms" step="10" min="1"
-                               value="<?php echo esc_attr( get_option( 'crawl_delay_ms' ) ); ?>"/>
+                        <input type="number" name="woo_scrape_crawl_delay_ms" step="10" min="1"
+                               value="<?php echo esc_attr( get_option( 'woo_scrape_crawl_delay_ms' ) ); ?>"/>
                         <p class="description">
                             Time to wait at the end of a crawl before starting another one.
                         </p>
@@ -125,8 +125,8 @@
                         Free shipping threshold
                     </th>
                     <td>
-                        <input type="number" name="provider_free_shipping_threshold" step="0.1" min="0"
-                               value="<?php echo esc_attr( get_option( 'provider_free_shipping_threshold' ) ); ?>"/>
+                        <input type="number" name="woo_scrape_provider_free_shipping_threshold" step="0.1" min="0"
+                               value="<?php echo esc_attr( get_option( 'woo_scrape_provider_free_shipping_threshold' ) ); ?>"/>
                         <p class="description">
                             When the cart value on provider's website is greater than this amount, the shipping is free.
                         </p>
@@ -137,8 +137,8 @@
                         Shipping addendum
                     </th>
                     <td>
-                        <input type="number" name="provider_shipping_addendum" step="0.1" min="0"
-                               value="<?php echo esc_attr( get_option( 'provider_shipping_addendum' ) ); ?>"/>
+                        <input type="number" name="woo_scrape_provider_shipping_addendum" step="0.1" min="0"
+                               value="<?php echo esc_attr( get_option( 'woo_scrape_provider_shipping_addendum' ) ); ?>"/>
                         <p class="description">
                             Shipping cost on provider's carts that do not surpass the "Free shipping threshold".
                             This will be added on every product's price before the "Price multiplier" is applied
@@ -150,8 +150,8 @@
                         Currency conversion multiplier
                     </th>
                     <td>
-                        <input type="number" name="currency_conversion_multiplier" step="0.1" min="0"
-                               value="<?php echo esc_attr( get_option( 'currency_conversion_multiplier' ) ); ?>"/>x
+                        <input type="number" name="woo_scrape_currency_conversion_multiplier" step="0.1" min="0"
+                               value="<?php echo esc_attr( get_option( 'woo_scrape_currency_conversion_multiplier' ) ); ?>"/>x
                         <p class="description">
                             Every product's price will be multiplied for this value before saving it on woocommerce to
                             correctly match its eur value.
@@ -174,8 +174,8 @@
                         Sku prefix
                     </th>
                     <td>
-                        <input type="text" name="sku_prefix"
-                               value="<?php echo esc_attr( get_option( 'sku_prefix' ) ); ?>"/>
+                        <input type="text" name="woo_scrape_sku_prefix"
+                               value="<?php echo esc_attr( get_option( 'woo_scrape_sku_prefix' ) ); ?>"/>
                         <p class="description">
                             Every product imported by this plugin will have this prefix.
                             Must be different from your standard woocommerce prefix.
@@ -187,8 +187,8 @@
                         Price multiplier
                     </th>
                     <td>
-                        <input type="number" name="price_multiplier" step="0.1" min="0"
-                               value="<?php echo esc_attr( get_option( 'price_multiplier' ) ); ?>"/>x
+                        <input type="number" name="woo_scrape_price_multiplier" step="0.1" min="0"
+                               value="<?php echo esc_attr( get_option( 'woo_scrape_price_multiplier' ) ); ?>"/>x
                         <p class="description">
                             Every product's price will be multiplied for this value before saving it on woocommerce.
                         </p>
@@ -199,8 +199,8 @@
                         Import delay (ms)
                     </th>
                     <td>
-                        <input type="number" name="crawl_delay_ms" step="10"
-                               value="<?php echo esc_attr( get_option( 'import_delay_ms' ) ); ?>"/>
+                        <input type="number" name="woo_scrape_import_delay_ms" step="10"
+                               value="<?php echo esc_attr( get_option( 'woo_scrape_import_delay_ms' ) ); ?>"/>
                         <p class="description">
                             Time to wait at the end of a woocommerce import before starting another one.
                         </p>
@@ -211,9 +211,9 @@
                         Woocommerce stock management
                     </th>
                     <td>
-                        <input type="checkbox" id="woocommerce_auto_import" name="woocommerce_auto_import"
-                               value="1" <?php checked( 1, get_option( 'woocommerce_stock_management' ), true ); ?> />
-                        <label for="woocommerce_auto_import">Enable automatic Woocommerce in stock and out of
+                        <input type="checkbox" id="woo_scrape_woocommerce_auto_import" name="woocommerce_auto_import"
+                               value="1" <?php checked( 1, get_option( 'woo_scrape_woocommerce_stock_management' ), true ); ?> />
+                        <label for="woo_scrape_woocommerce_auto_import">Enable automatic Woocommerce in stock and out of
                             stock</label>
                     </td>
                 </tr>
@@ -222,9 +222,9 @@
                         Woocommerce auto import/update
                     </th>
                     <td>
-                        <input type="checkbox" id="woocommerce_auto_import" name="woocommerce_auto_import"
-                               value="1" <?php checked( 1, get_option( 'woocommerce_auto_import' ), true ); ?> />
-                        <label for="woocommerce_auto_import">Enable automatic Woocommerce database update after product
+                        <input type="checkbox" id="woo_scrape_woocommerce_auto_import" name="woocommerce_auto_import"
+                               value="1" <?php checked( 1, get_option( 'woo_scrape_woocommerce_auto_import' ), true ); ?> />
+                        <label for="woo_scrape_woocommerce_auto_import">Enable automatic Woocommerce database update after product
                             crawling</label>
                     </td>
                 </tr>
@@ -242,8 +242,8 @@
                         Target language code
                     </th>
                     <td>
-                        <input type="text" name="translation_language"
-                               value="<?php echo esc_attr( get_option( 'translation_language' ) ); ?>"/>
+                        <input type="text" name="woo_scrape_translation_language"
+                               value="<?php echo esc_attr( get_option( 'woo_scrape_translation_language' ) ); ?>"/>
                         <p class="description">
                             Every product's title and description will be translated to this language code.
                         </p>
@@ -254,8 +254,8 @@
                         Google script url
                     </th>
                     <td>
-                        <input type="text" name="google_script_url"
-                               value="<?php echo esc_attr( get_option( 'google_script_url' ) ); ?>"/>
+                        <input type="text" name="woo_scrape_google_script_url"
+                               value="<?php echo esc_attr( get_option( 'woo_scrape_google_script_url' ) ); ?>"/>
                         <p class="description">
                             The google script url to use for translations see
                             <a href="https://stackoverflow.com/questions/8147284/how-to-use-google-translate-api-in-my-java-application/48159904#48159904"
@@ -268,8 +268,8 @@
                         Deepl api key
                     </th>
                     <td>
-                        <input type="text" name="deepl_api_key"
-                               value="<?php echo esc_attr( get_option( 'deepl_api_key' ) ); ?>"/>
+                        <input type="text" name="woo_scrape_deepl_api_key"
+                               value="<?php echo esc_attr( get_option( 'woo_scrape_deepl_api_key' ) ); ?>"/>
                         <p class="description">
                             Api key to use Deepl as translator, get it (free or paid) from <a
                                     href="https://www.deepl.com/it/pro-api/ru/en/pl/pro-api">here</a>.
@@ -281,9 +281,9 @@
                         Deepl free endpoint
                     </th>
                     <td>
-                        <input type="checkbox" id="deepl_api_free" name="deepl_api_free"
-                               value="1" <?php checked( 1, get_option( 'deepl_api_free' ), true ); ?> />
-                        <label for="deepl_api_free">Use Deepl free api endpoint, enable only if you are not paying for a
+                        <input type="checkbox" id="woo_scrape_deepl_api_free" name="deepl_api_free"
+                               value="1" <?php checked( 1, get_option( 'woo_scrape_deepl_api_free' ), true ); ?> />
+                        <label for="woo_scrape_deepl_api_free">Use Deepl free api endpoint, enable only if you are not paying for a
                             Deepl api key.</label>
                     </td>
                 </tr>
@@ -292,8 +292,8 @@
                         Proxy url
                     </th>
                     <td>
-                        <input type="text" name="translation_proxy_url"
-                               value="<?php echo esc_attr( get_option( 'translation_proxy_url' ) ); ?>"/>
+                        <input type="text" name="woo_scrape_translation_proxy_url"
+                               value="<?php echo esc_attr( get_option( 'woo_scrape_translation_proxy_url' ) ); ?>"/>
                         <p class="description">
                             Every translation request will pass from this proxy. This is uses standard http/https proxy
                              protocol, for everything but deepl, where it's dependant from
@@ -307,8 +307,8 @@
                         Translation delay (ms)
                     </th>
                     <td>
-                        <input type="number" name="crawl_delay_ms" step="10" min="1"
-                               value="<?php echo esc_attr( get_option( 'translation_delay_ms' ) ); ?>"/>
+                        <input type="number" name="woo_scrape_translation_delay_ms" step="10" min="1"
+                               value="<?php echo esc_attr( get_option( 'woo_scrape_translation_delay_ms' ) ); ?>"/>
                         <p class="description">
                             Time to wait at the end of a translation before starting another one.
                         </p>
@@ -319,9 +319,9 @@
                         Automatic Title translation
                     </th>
                     <td>
-                        <input type="checkbox" id="automatic_title_translation" name="automatic_title_translation"
-                               value="1" <?php checked( 1, get_option( 'automatic_title_translation' ), true ); ?> />
-                        <label for="automatic_title_translation">Enable automatic translation of the title for new
+                        <input type="checkbox" id="woo_scrape_automatic_title_translation" name="automatic_title_translation"
+                               value="1" <?php checked( 1, get_option( 'woo_scrape_automatic_title_translation' ), true ); ?> />
+                        <label for="woo_scrape_automatic_title_translation">Enable automatic translation of the title for new
                             products</label>
                     </td>
                 </tr>
@@ -330,10 +330,10 @@
                         Automatic Description translation
                     </th>
                     <td>
-                        <input type="checkbox" id="automatic_description_translation"
-                               name="automatic_description_translation"
-                               value="1" <?php checked( 1, get_option( 'automatic_description_translation' ), true ); ?> />
-                        <label for="automatic_description_translation">Enable automatic translation of the description
+                        <input type="checkbox" id="woo_scrape_automatic_description_translation"
+                               name="woo_scrape_automatic_description_translation"
+                               value="1" <?php checked( 1, get_option( 'woo_scrape_automatic_description_translation' ), true ); ?> />
+                        <label for="woo_scrape_automatic_description_translation">Enable automatic translation of the description
                             for new products</label>
                     </td>
                 </tr>
@@ -342,10 +342,10 @@
                         Automatic Specification translation
                     </th>
                     <td>
-                        <input type="checkbox" id="automatic_specification_translation"
-                               name="automatic_specification_translation"
-                               value="1" <?php checked( 1, get_option( 'automatic_specification_translation' ), true ); ?> />
-                        <label for="automatic_specification_translation">Enable automatic translation of the
+                        <input type="checkbox" id="woo_scrape_automatic_specification_translation"
+                               name="woo_scrape_automatic_specification_translation"
+                               value="1" <?php checked( 1, get_option( 'woo_scrape_automatic_specification_translation' ), true ); ?> />
+                        <label for="woo_scrape_automatic_specification_translation">Enable automatic translation of the
                             specifications for new products</label>
                     </td>
                 </tr>
@@ -354,9 +354,9 @@
                         Use Google translate for titles
                     </th>
                     <td>
-                        <input type="checkbox" id="title_google_translation" name="title_google_translation"
-                               value="1" <?php checked( 1, get_option( 'title_google_translation' ), true ); ?> />
-                        <label for="title_google_translation">Save Deepl credits by using google translate for
+                        <input type="checkbox" id="woo_scrape_title_google_translation" name="title_google_translation"
+                               value="1" <?php checked( 1, get_option( 'woo_scrape_title_google_translation' ), true ); ?> />
+                        <label for="woo_scrape_title_google_translation">Save Deepl credits by using google translate for
                             titles</label>
                     </td>
                 </tr>
@@ -365,10 +365,10 @@
                         Use Google translate for specifications
                     </th>
                     <td>
-                        <input type="checkbox" id="specification_google_translation"
-                               name="specification_google_translation"
-                               value="1" <?php checked( 1, get_option( 'specification_google_translation' ), true ); ?> />
-                        <label for="specification_google_translation">Save Deepl credits by using google translate for
+                        <input type="checkbox" id="woo_scrape_specification_google_translation"
+                               name="woo_scrape_specification_google_translation"
+                               value="1" <?php checked( 1, get_option( 'woo_scrape_specification_google_translation' ), true ); ?> />
+                        <label for="woo_scrape_specification_google_translation">Save Deepl credits by using google translate for
                             specifications</label>
                     </td>
                 </tr>
@@ -377,10 +377,10 @@
                         Use Google translate for descriptions
                     </th>
                     <td>
-                        <input type="checkbox" id="descriptions_google_translation"
-                               name="descriptions_google_translation"
-                               value="1" <?php checked( 1, get_option( 'descriptions_google_translation' ), true ); ?> />
-                        <label for="descriptions_google_translation">Save Deepl credits by using google translate for
+                        <input type="checkbox" id="woo_scrape_descriptions_google_translation"
+                               name="woo_scrape_descriptions_google_translation"
+                               value="1" <?php checked( 1, get_option( 'woo_scrape_descriptions_google_translation' ), true ); ?> />
+                        <label for="woo_scrape_descriptions_google_translation">Save Deepl credits by using google translate for
                             descriptions</label>
                     </td>
                 </tr>
@@ -389,9 +389,9 @@
                         Ignore brands during translation
                     </th>
                     <td>
-                        <input type="checkbox" id="translation_ignore_brands" name="translation_ignore_brands"
-                               value="1" <?php checked( 1, get_option( 'translation_ignore_brands' ), true ); ?> />
-                        <label for="translation_ignore_brands">Try to ignore brand names while translating</label>
+                        <input type="checkbox" id="woo_scrape_translation_ignore_brands" name="translation_ignore_brands"
+                               value="1" <?php checked( 1, get_option( 'woo_scrape_translation_ignore_brands' ), true ); ?> />
+                        <label for="woo_scrape_translation_ignore_brands">Try to ignore brand names while translating</label>
                     </td>
                 </tr>
             </table>

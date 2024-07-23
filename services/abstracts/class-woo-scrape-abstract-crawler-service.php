@@ -11,8 +11,8 @@ abstract class Woo_Scrape_Abstract_Crawler_Service
      */
     public function crawl_images( array $urls ): array {
         include_once ABSPATH . 'wp-admin/includes/image.php';
-        $proxy_url = get_option('image_proxy_url', 'http://localhost:3000/');
-	    $sleep_ms = (int) get_option('crawl_delay_ms', 100);
+        $proxy_url = get_option('woo_scrape_image_proxy_url', 'http://localhost:3000/');
+	    $sleep_ms = (int) get_option('woo_scrape_crawl_delay_ms', 100);
         $ids = array();
 
         foreach ( $urls as $url ) {
@@ -66,8 +66,8 @@ abstract class Woo_Scrape_Abstract_Crawler_Service
 	 * @throws Exception
 	 */
     protected function crawl(string $url ): string {
-        $proxy_url = get_option('crawl_proxy_url', 'http://localhost:3000/');
-        $sleep_ms = (int) get_option('crawl_delay_ms', 100);
+        $proxy_url = get_option('woo_scrape_crawl_proxy_url', 'http://localhost:3000/');
+        $sleep_ms = (int) get_option('woo_scrape_crawl_delay_ms', 100);
 
         $response = wp_remote_post( $proxy_url . $url, array(
             'method'      => 'GET',

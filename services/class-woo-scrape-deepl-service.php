@@ -14,9 +14,9 @@ class Woo_scrape_deepl_service extends Woo_Scrape_Abstract_Translator_Service {
 	 * @throws Exception
 	 */
 	public function translate( string $text, string $lang_code, string $ignored_text = '' ): string {
-		$proxy_url     = get_option( 'translation_proxy_url', 'http://localhost:3000/' );
-		$api_key       = get_option( 'deepl_api_key', '' );
-		$free_endpoint = get_option( 'deepl_api_free', true );
+		$proxy_url     = get_option( 'woo_scrape_translation_proxy_url', 'http://localhost:3000/' );
+		$api_key       = get_option( 'woo_scrape_deepl_api_key', '' );
+		$free_endpoint = get_option( 'woo_scrape_deepl_api_free', true );
 
 		// add tags for translation ignores
 		if ( $ignored_text ) {

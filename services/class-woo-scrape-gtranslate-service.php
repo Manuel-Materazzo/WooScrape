@@ -14,8 +14,8 @@ class Woo_scrape_gtranslate_service extends Woo_Scrape_Abstract_Translator_Servi
 	 * @throws Exception
 	 */
 	public function translate( string $text, string $lang_code, string $ignored_text = '' ): string {
-		$proxy_url  = get_option( 'translation_proxy_url', 'http://localhost:3000/' );
-		$script_url = get_option( 'google_script_url', '' );
+		$proxy_url  = get_option( 'woo_scrape_translation_proxy_url', 'http://localhost:3000/' );
+		$script_url = get_option( 'woo_scrape_google_script_url', '' );
 
 		// replace translation ignore with placeholder
 		if ( $ignored_text ) {
