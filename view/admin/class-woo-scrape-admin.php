@@ -213,19 +213,18 @@ class Woo_Scrape_Admin {
 	 * @return void
 	 */
 	private function register_product_import_settings(): void {
+		Woo_scrape_setting_utils::register_string(
+			'woo-scrape-import-settings-group',
+			'woo_scrape_sku_prefix',
+			'sku-1-'
+		);
 		register_setting(
 			'woo-scrape-import-settings-group',
 			'woo_scrape_price_multiplier',
 			array(
 				'type'    => 'number',
-//                'sanitize_callback' => 'sanitize_text_field',
 				'default' => 1.2,
 			)
-		);
-		Woo_scrape_setting_utils::register_string(
-			'woo-scrape-import-settings-group',
-			'woo_scrape_sku_prefix',
-			'sku-1-'
 		);
 		register_setting(
 			'woo-scrape-import-settings-group',
@@ -285,6 +284,10 @@ class Woo_Scrape_Admin {
 		Woo_scrape_setting_utils::register_boolean_true(
 			'woo-scrape-translation-settings-group',
 			'woo_scrape_automatic_description_translation'
+		);
+		Woo_scrape_setting_utils::register_boolean_true(
+			'woo-scrape-translation-settings-group',
+			'woo_scrape_automatic_specification_translation'
 		);
 		Woo_scrape_setting_utils::register_boolean_true(
 			'woo-scrape-translation-settings-group',

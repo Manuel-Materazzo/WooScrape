@@ -174,7 +174,7 @@
                         Sku prefix
                     </th>
                     <td>
-                        <input type="text" name="woo_scrape_sku_prefix"
+                        <input type="text" name="woo_scrape_sku_prefix" id="woo_scrape_sku_prefix"
                                value="<?php echo esc_attr( get_option( 'woo_scrape_sku_prefix' ) ); ?>"/>
                         <p class="description">
                             Every product imported by this plugin will have this prefix.
@@ -187,7 +187,7 @@
                         Price multiplier
                     </th>
                     <td>
-                        <input type="number" name="woo_scrape_price_multiplier" step="0.1" min="0"
+                        <input type="number" name="woo_scrape_price_multiplier" step="0.1" min="0" id="woo_scrape_price_multiplier"
                                value="<?php echo esc_attr( get_option( 'woo_scrape_price_multiplier' ) ); ?>"/>x
                         <p class="description">
                             Every product's price will be multiplied for this value before saving it on woocommerce.
@@ -199,7 +199,7 @@
                         Import delay (ms)
                     </th>
                     <td>
-                        <input type="number" name="woo_scrape_import_delay_ms" step="10"
+                        <input type="number" name="woo_scrape_import_delay_ms" step="10" id="woo_scrape_import_delay_ms"
                                value="<?php echo esc_attr( get_option( 'woo_scrape_import_delay_ms' ) ); ?>"/>
                         <p class="description">
                             Time to wait at the end of a woocommerce import before starting another one.
@@ -211,9 +211,9 @@
                         Woocommerce stock management
                     </th>
                     <td>
-                        <input type="checkbox" id="woo_scrape_woocommerce_auto_import" name="woocommerce_auto_import"
+                        <input type="checkbox" id="woo_scrape_woocommerce_stock_management" name="woo_scrape_woocommerce_stock_management"
                                value="1" <?php checked( 1, get_option( 'woo_scrape_woocommerce_stock_management' ), true ); ?> />
-                        <label for="woo_scrape_woocommerce_auto_import">Enable automatic Woocommerce in stock and out of
+                        <label for="woo_scrape_woocommerce_stock_management">Enable automatic Woocommerce in stock and out of
                             stock</label>
                     </td>
                 </tr>
@@ -222,7 +222,7 @@
                         Woocommerce auto import/update
                     </th>
                     <td>
-                        <input type="checkbox" id="woo_scrape_woocommerce_auto_import" name="woocommerce_auto_import"
+                        <input type="checkbox" id="woo_scrape_woocommerce_auto_import" name="woo_scrape_woocommerce_auto_import"
                                value="1" <?php checked( 1, get_option( 'woo_scrape_woocommerce_auto_import' ), true ); ?> />
                         <label for="woo_scrape_woocommerce_auto_import">Enable automatic Woocommerce database update after product
                             crawling</label>
@@ -230,6 +230,7 @@
                 </tr>
             </table>
 			<?php submit_button(); ?>
+        </form>
     </div>
     <div id="translation" class="woo-scrape-tab" style="display:none">
         <h3>Translation</h3>
@@ -281,7 +282,7 @@
                         Deepl free endpoint
                     </th>
                     <td>
-                        <input type="checkbox" id="woo_scrape_deepl_api_free" name="deepl_api_free"
+                        <input type="checkbox" id="woo_scrape_deepl_api_free" name="woo_scrape_deepl_api_free"
                                value="1" <?php checked( 1, get_option( 'woo_scrape_deepl_api_free' ), true ); ?> />
                         <label for="woo_scrape_deepl_api_free">Use Deepl free api endpoint, enable only if you are not paying for a
                             Deepl api key.</label>
@@ -319,7 +320,7 @@
                         Automatic Title translation
                     </th>
                     <td>
-                        <input type="checkbox" id="woo_scrape_automatic_title_translation" name="automatic_title_translation"
+                        <input type="checkbox" id="woo_scrape_automatic_title_translation" name="woo_scrape_automatic_title_translation"
                                value="1" <?php checked( 1, get_option( 'woo_scrape_automatic_title_translation' ), true ); ?> />
                         <label for="woo_scrape_automatic_title_translation">Enable automatic translation of the title for new
                             products</label>
@@ -354,7 +355,7 @@
                         Use Google translate for titles
                     </th>
                     <td>
-                        <input type="checkbox" id="woo_scrape_title_google_translation" name="title_google_translation"
+                        <input type="checkbox" id="woo_scrape_title_google_translation" name="woo_scrape_title_google_translation"
                                value="1" <?php checked( 1, get_option( 'woo_scrape_title_google_translation' ), true ); ?> />
                         <label for="woo_scrape_title_google_translation">Save Deepl credits by using google translate for
                             titles</label>
@@ -389,7 +390,7 @@
                         Ignore brands during translation
                     </th>
                     <td>
-                        <input type="checkbox" id="woo_scrape_translation_ignore_brands" name="translation_ignore_brands"
+                        <input type="checkbox" id="woo_scrape_translation_ignore_brands" name="woo_scrape_translation_ignore_brands"
                                value="1" <?php checked( 1, get_option( 'woo_scrape_translation_ignore_brands' ), true ); ?> />
                         <label for="woo_scrape_translation_ignore_brands">Try to ignore brand names while translating</label>
                     </td>
