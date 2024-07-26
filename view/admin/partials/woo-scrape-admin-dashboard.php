@@ -36,6 +36,14 @@
     </div>
     <div class="m-1">
         <div class="col-2 d-inline-block">
+            <button id="run-product-crawling-job-button" class="button">Run Product Crawling Job</button>
+        </div>
+        <div class="col-9 d-inline-block description">
+            Manually crawl products stored on DB
+        </div>
+    </div>
+    <div class="m-1">
+        <div class="col-2 d-inline-block">
             <button id="run-translate-job-button" class="button">Run Translate Job</button>
         </div>
         <div class="col-9 d-inline-block description">

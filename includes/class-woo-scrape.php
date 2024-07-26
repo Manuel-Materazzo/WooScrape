@@ -161,6 +161,7 @@ class Woo_Scrape {
 
         $this->loader->add_action( 'wp_ajax_run_orchestrator_job', $plugin_admin, 'run_orchestrator_job' );
         $this->loader->add_action( 'wp_ajax_run_crawling_job', $plugin_admin, 'run_crawling_job' );
+        $this->loader->add_action( 'wp_ajax_run_product_crawling_job', $plugin_admin, 'run_product_crawling_job' );
         $this->loader->add_action( 'wp_ajax_run_translate_job', $plugin_admin, 'run_translate_job' );
         $this->loader->add_action( 'wp_ajax_run_wordpress_job', $plugin_admin, 'run_wordpress_job' );
 	}

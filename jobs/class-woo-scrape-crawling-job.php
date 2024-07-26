@@ -26,6 +26,11 @@ class Woo_scrape_crawling_job {
 		$this->fetch_categories_for_profitable_products();
 		self::$log_service->job_end( JobType::Categories_crawl );
 
+		$this->run_products();
+
+	}
+
+	public function run_products(): void {
 		// crawl each partial product to complete informations
 		self::$log_service->job_start( JobType::Products_crawl );
 		$this->fetch_profitable_products();

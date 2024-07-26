@@ -73,6 +73,14 @@ class Woo_Scrape_Admin {
 		wp_die(); // this is required to terminate immediately and return a proper response
 	}
 
+	function run_product_crawling_job(): void {
+		include_once plugin_dir_path( __FILE__ ) . '../../jobs/class-woo-scrape-crawling-job.php';
+		error_log( "product crawling job started" );
+		$job = new Woo_scrape_crawling_job();
+		$job->run_products();
+		wp_die(); // this is required to terminate immediately and return a proper response
+	}
+
 	function run_translate_job(): void {
 		include_once plugin_dir_path( __FILE__ ) . '../../jobs/class-woo-scrape-translation-job.php';
 		error_log( "translate job started" );

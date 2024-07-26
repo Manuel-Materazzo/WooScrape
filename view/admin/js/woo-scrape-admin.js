@@ -50,6 +50,16 @@ jQuery(document).ready(function ($) {
             )
         });
     });
+    $('#run-product-crawling-job-button').click(function () {
+        console.log("dio cane")
+        $.post(ajaxurl, {action: 'run_product_crawling_job'}, function (response) {
+            $('#toast-hanger').append(
+                '<div class="notice notice-success is-dismissible"> ' +
+                '<p>Product Crawling job started successfully.</p> ' +
+                '</div>'
+            )
+        });
+    });
     $('#run-translate-job-button').click(function () {
         console.log("dio cane")
         $.post(ajaxurl, {action: 'run_translate_job'}, function (response) {

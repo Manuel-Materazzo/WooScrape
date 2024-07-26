@@ -69,6 +69,7 @@ abstract class Woo_Scrape_Abstract_Crawler_Service
         $proxy_url = get_option('woo_scrape_crawl_proxy_url', 'http://localhost:3000/');
         $sleep_ms = (int) get_option('woo_scrape_crawl_delay_ms', 100);
 
+	    error_log("crawling " .$url . " as " . $proxy_url . $url);
         $response = wp_remote_post( $proxy_url . $url, array(
             'method'      => 'GET',
             'headers'     => array( 'Accept' => 'application/json' ),
@@ -77,6 +78,10 @@ abstract class Woo_Scrape_Abstract_Crawler_Service
             'httpversion' => '1.0',
             'blocking'    => true
         ) );
+
+	    if ( is_wp_error( $response ) ) {
+		    error_log( $response->get_error_message() );
+	    }
 
 	    if ( $response["response"]["code"] != 200 ) {
 		    error_log( "The request returned a {$response["response"]["code"]} error code" );
