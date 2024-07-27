@@ -56,6 +56,15 @@ class Woo_scrape_crawling_job {
 				// crawl all products
 				$partial_profitable_products = self::$crawler->crawl_category( $category->url );
 
+				// deduplicate products
+				$partial_profitable_products = array_reduce($partial_profitable_products, function ($carry, $product) {
+					$carry[$product->getUrl()] = $product;
+					return $carry;
+				}, []);
+
+				// reindex deduplicated array
+				$partial_profitable_products = array_values($partial_profitable_products);
+
 				error_log( "The category " . $category->id . " has crawled " . count( $partial_profitable_products ) . " items" );
 
 				// update existing products, and return "new" products
