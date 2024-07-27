@@ -30,9 +30,7 @@ jQuery(document).ready(function ($) {
      */
 
     $('#run-orchestrator-job-button').click(function () {
-        console.log("dio cane")
         $.post(ajaxurl, {action: 'run_orchestrator_job'}, function (response) {
-            console.log("dio musso")
             $('#toast-hanger').append(
                 '<div class="notice notice-success is-dismissible"> ' +
                 '<p>Orchestrated job started successfully.</p> ' +
@@ -41,7 +39,6 @@ jQuery(document).ready(function ($) {
         });
     });
     $('#run-crawling-job-button').click(function () {
-        console.log("dio cane")
         $.post(ajaxurl, {action: 'run_crawling_job'}, function (response) {
             $('#toast-hanger').append(
                 '<div class="notice notice-success is-dismissible"> ' +
@@ -51,7 +48,6 @@ jQuery(document).ready(function ($) {
         });
     });
     $('#run-product-crawling-job-button').click(function () {
-        console.log("dio cane")
         $.post(ajaxurl, {action: 'run_product_crawling_job'}, function (response) {
             $('#toast-hanger').append(
                 '<div class="notice notice-success is-dismissible"> ' +
@@ -61,7 +57,6 @@ jQuery(document).ready(function ($) {
         });
     });
     $('#run-translate-job-button').click(function () {
-        console.log("dio cane")
         $.post(ajaxurl, {action: 'run_translate_job'}, function (response) {
             $('#toast-hanger').append(
                 '<div class="notice notice-success is-dismissible"> ' +
@@ -71,7 +66,6 @@ jQuery(document).ready(function ($) {
         });
     });
     $('#run-wordpress-job-button').click(function () {
-        console.log("dio cane")
         $.post(ajaxurl, {action: 'run_wordpress_job'}, function (response) {
             $('#toast-hanger').append(
                 '<div class="notice notice-success is-dismissible"> ' +

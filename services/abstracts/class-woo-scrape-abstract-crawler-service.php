@@ -24,6 +24,9 @@ abstract class Woo_Scrape_Abstract_Crawler_Service
             $uniq_name = date( 'dmY' ) . '' . (int) microtime( true );
             $filename  = $uniq_name . '.' . $imagetype;
 
+			// free up memory
+	        unset($exploded);
+
             // download and save file
             $uploaddir  = wp_upload_dir();
             $uploadfile = $uploaddir['path'] . '/' . $filename;
@@ -31,6 +34,10 @@ abstract class Woo_Scrape_Abstract_Crawler_Service
             $savefile = fopen( $uploadfile, 'w' );
             fwrite( $savefile, $contents );
             fclose( $savefile );
+
+			// free up memory
+			unset($contents);
+	        unset($savefile);
 
             // prepare file
             $wp_filetype = wp_check_filetype( basename( $filename ), null );
@@ -49,6 +56,10 @@ abstract class Woo_Scrape_Abstract_Crawler_Service
             wp_update_attachment_metadata( $attach_id, $attach_data );
             // add the id to the list
             $ids[] = $attach_id;
+
+	        // free up memory
+	        unset($imagenew);
+	        unset($attach_data);
 
 			// delay to avoid too many requests
 	        usleep($sleep_ms * 1000);
@@ -91,6 +102,11 @@ abstract class Woo_Scrape_Abstract_Crawler_Service
 	    // delay to avoid too many requests
 		usleep($sleep_ms * 1000);
 
-        return json_decode($response["body"])->result;
+		$body = json_decode($response["body"])->result;
+
+	    // free up memory
+	    unset($response);
+
+        return $body;
     }
 }

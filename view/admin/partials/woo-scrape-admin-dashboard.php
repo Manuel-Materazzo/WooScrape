@@ -99,6 +99,8 @@
 			echo '</tr>';
 		}
 
+		$wpdb->flush();
+
 		echo '</table>';
 
 		if ( $num_pages > 1 ) {

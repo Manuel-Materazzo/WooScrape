@@ -81,6 +81,9 @@ class Woo_scrape_fishdeal_crawler_service extends Woo_Scrape_Abstract_Crawler_Se
 			$description_element = $html->find( '.SC_DealDescription-block .SC_DealDescription-description', 1 );
 			$description         = $this->sanitize_text( $description_element->text() );
 
+			// free up memory
+			$html->clear();
+			unset($html);
 
 			$variations = array();
 			$images     = array();

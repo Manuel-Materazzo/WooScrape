@@ -70,8 +70,11 @@ class Woo_scrape_crawling_job {
 
 			// save the new products
 			self::$product_service->create_all( $category->id, $partial_profitable_products );
-
+			// free up memory
+			unset($partial_profitable_products);
 		}
+
+		$wpdb->flush();
 	}
 
 	/**
@@ -97,49 +100,82 @@ class Woo_scrape_crawling_job {
 			}
 
 			// crawl each product to get the complete informations
-			foreach ( $updated_products as $partial_product ) {
-				try {
-					// calculate price multiplier to get suggested price from discounted
-					$suggested_price_multiplier = new WooScrapeDecimal( $partial_product->suggested_price );
-					$suggested_price_multiplier = $suggested_price_multiplier->divide( $partial_product->discounted_price );
+			$this->crawl_products_to_get_informations( $updated_products, $now );
 
-					$complete_product = self::$crawler->crawl_product( $partial_product->url, $suggested_price_multiplier );
-					$complete_product->setId( $partial_product->id );
+			// free up memory
+			mysqli_free_result($updated_products);
+			unset($updated_products);
 
-					error_log( "Crawled " . $partial_product->url );
-
-					// if the product has no crawled images, or the images changed
-					if ( ! $partial_product->image_ids ||
-					     json_encode( $complete_product->getImageUrls() ) !== $partial_product->image_urls ) {
-						error_log( "Found new images for " . $partial_product->url . " : " . json_encode( $complete_product->getImageUrls() ) );
-						// crawl images and save them
-						$image_ids = self::$crawler->crawl_images( $complete_product->getImageUrls() );
-						// add ids to the product
-						$complete_product->setImageIds( $image_ids );
-						error_log( "Crawled " . count( $image_ids ) . " images for " . $partial_product->url );
-						self::$log_service->job_start( JobType::Images_crawl, $partial_product->url );
-						self::$log_service->increase_completed_counter( JobType::Images_crawl, count( $image_ids ) );
-						self::$log_service->job_end( JobType::Images_crawl );
-					}
-
-					// update the product on DB
-					self::$product_service->update_by_id( $complete_product, true, $now );
-
-					if ( $complete_product->hasvariations() ) {
-						error_log( "The item " . $partial_product->url . "has " . count( $complete_product->getVariations() ) . " variations!" );
-						// update variations on DB
-						$new_variations = self::$variation_service->update_all_by_product_id_and_name( $partial_product->id, $complete_product->getVariations(), $now );
-						error_log( "The item " . $partial_product->url . "has " . count( $new_variations ) . " new variations!" );
-						// create new variations on db
-						self::$variation_service->create_all( $partial_product->id, $new_variations, $now );
-					}
-					self::$log_service->increase_completed_counter( JobType::Products_crawl );
-				} catch ( Exception $e ) {
-					error_log( $e );
-					self::$log_service->increase_failed_counter( JobType::Products_crawl );
-				}
-			}
 			$page += 1;
 		}
 	}
+
+	/**
+	 * @param array|object $updated_products
+	 * @param string $now
+	 *
+	 * @return void
+	 */
+	public function crawl_products_to_get_informations( array|object $updated_products, string $now ): void {
+		foreach ( $updated_products as $partial_product ) {
+			try {
+				// calculate price multiplier to get suggested price from discounted
+				$suggested_price_multiplier = new WooScrapeDecimal( $partial_product->suggested_price );
+				$suggested_price_multiplier = $suggested_price_multiplier->divide( $partial_product->discounted_price );
+
+				$complete_product = self::$crawler->crawl_product( $partial_product->url, $suggested_price_multiplier );
+				$complete_product->setId( $partial_product->id );
+
+				error_log( "Crawled " . $partial_product->url );
+
+				// if the product has no crawled images, or the images changed
+				if ( ! $partial_product->image_ids ||
+				     json_encode( $complete_product->getImageUrls() ) !== $partial_product->image_urls ) {
+					$this->crawl_images( $partial_product, $complete_product );
+				}
+
+				// update the product on DB
+				self::$product_service->update_by_id( $complete_product, true, $now );
+
+				if ( $complete_product->hasvariations() ) {
+					error_log( "The item " . $partial_product->url . "has " . count( $complete_product->getVariations() ) . " variations!" );
+					// update variations on DB
+					$new_variations = self::$variation_service->update_all_by_product_id_and_name( $partial_product->id, $complete_product->getVariations(), $now );
+					error_log( "The item " . $partial_product->url . "has " . count( $new_variations ) . " new variations!" );
+					// create new variations on db
+					self::$variation_service->create_all( $partial_product->id, $new_variations, $now );
+					// free up memory
+					unset($new_variations);
+				}
+
+				// free up memory
+				unset($complete_product);
+
+				self::$log_service->increase_completed_counter( JobType::Products_crawl );
+			} catch ( Exception $e ) {
+				error_log( $e );
+				self::$log_service->increase_failed_counter( JobType::Products_crawl );
+			}
+		}
+	}
+
+	/**
+	 * @param mixed $partial_product
+	 * @param WooScrapeProduct $complete_product
+	 *
+	 * @return void
+	 */
+	public function crawl_images( mixed $partial_product, WooScrapeProduct $complete_product ): void {
+		error_log( "Found new images for " . $partial_product->url . " : " . json_encode( $complete_product->getImageUrls() ) );
+		// crawl images and save them
+		$image_ids = self::$crawler->crawl_images( $complete_product->getImageUrls() );
+		// add ids to the product
+		$complete_product->setImageIds( $image_ids );
+		error_log( "Crawled " . count( $image_ids ) . " images for " . $partial_product->url );
+		self::$log_service->job_start( JobType::Images_crawl, $partial_product->url );
+		self::$log_service->increase_completed_counter( JobType::Images_crawl, count( $image_ids ) );
+		self::$log_service->job_end( JobType::Images_crawl );
+	}
+
+
 }
