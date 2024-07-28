@@ -17,6 +17,51 @@
 
     <hr class="solid" id="toast-hanger">
 
+    <h3>Stats</h3>
+    <table class="table-style">
+        <tr>
+            <th>Products</th>
+            <th>To Crawl</th>
+            <th>Crawled Once</th>
+            <th>Not Crawled Once</th>
+            <th>Untranslated Names</th>
+            <th>Translated Names</th>
+            <th>Untranslated Specifications</th>
+            <th>Translated Specifications</th>
+            <th>Untranslated Descriptions</th>
+            <th>Translated Descriptions</th>
+        </tr>
+		<?php
+		global $wpdb;
+
+		$results = $wpdb->get_results( "SELECT
+    (SELECT COUNT(*) FROM wp_woo_scrape_products) AS products,
+    (SELECT COUNT(*) FROM wp_woo_scrape_products WHERE DATE(`latest_crawl_timestamp`) = CURDATE() and has_variations is not false) AS to_crawl,
+    (SELECT COUNT(*) FROM wp_woo_scrape_products WHERE has_variations IS NOT NULL) AS crawled_once,
+    (SELECT COUNT(*) FROM wp_woo_scrape_products WHERE has_variations IS NULL) AS not_crawled_once,
+    (SELECT COUNT(*) FROM wp_woo_scrape_products WHERE translated_name IS NULL) AS untranslated_names,
+    (SELECT COUNT(*) FROM wp_woo_scrape_products WHERE translated_name IS NOT NULL) AS translated_names,
+    (SELECT COUNT(*) FROM wp_woo_scrape_products WHERE translated_specifications IS NULL) AS untranslated_specifications,
+    (SELECT COUNT(*) FROM wp_woo_scrape_products WHERE translated_specifications IS NOT NULL) AS translated_specifications,
+    (SELECT COUNT(*) FROM wp_woo_scrape_products WHERE translated_description IS NULL) AS untranslated_descriptions,
+    (SELECT COUNT(*) FROM wp_woo_scrape_products WHERE translated_description IS NOT NULL) AS translated_descriptions", OBJECT );
+
+		foreach ( $results as $row ) {
+			echo '<tr>';
+			echo '<td>' . $row->products . '</td>';
+			echo '<td>' . $row->to_crawl . '</td>';
+			echo '<td>' . $row->crawled_once . '</td>';
+			echo '<td>' . $row->not_crawled_once . '</td>';
+			echo '<td>' . $row->untranslated_names . '</td>';
+			echo '<td>' . $row->translated_names . '</td>';
+			echo '<td>' . $row->untranslated_specifications . '</td>';
+			echo '<td>' . $row->translated_specifications . '</td>';
+			echo '<td>' . $row->untranslated_descriptions . '</td>';
+			echo '<td>' . $row->translated_descriptions . '</td>';
+			echo '</tr>';
+		}
+		?>
+    </table>
     <h3>Manual Actions</h3>
     <div class="m-1">
         <div class="col-2 d-inline-block">
@@ -71,8 +116,6 @@
             <th>Job End Timestamp</th>
         </tr>
 		<?php
-		global $wpdb;
-
 		$per_page = 20; // Number of items to display per page
 		$page     = isset( $_GET['paged'] ) ? abs( (int) $_GET['paged'] ) : 1;
 		$offset   = ( $page * $per_page ) - $per_page;
