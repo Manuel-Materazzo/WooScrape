@@ -91,9 +91,28 @@ class Woo_scrape_product_service {
 		return $wpdb->get_results(
 			"SELECT id, url, image_urls, image_ids, suggested_price, discounted_price FROM $products_table_name
                 WHERE DATE(`latest_crawl_timestamp`) = CURDATE()
-                and has_variations is not false
+                and has_variations is true
                 ORDER BY id
                 LIMIT $start,30"
+		);
+	}
+
+	/**
+	 * Gets a paged list of products (id, url, image_urls, image_ids) that never crawled
+	 *
+	 * @param int $page
+	 *
+	 * @return array|object|stdClass[]|null
+	 */
+	public function get_unfetched_products_with_variations_paged(): array {
+		global $wpdb;
+		$products_table_name = $wpdb->prefix . self::$products_table_name;
+
+		return $wpdb->get_results(
+			"SELECT id, url, image_urls, image_ids, suggested_price, discounted_price FROM $products_table_name
+                WHERE has_variations is null
+                ORDER BY id
+                LIMIT 30"
 		);
 	}
 

@@ -33,6 +33,7 @@ class Woo_scrape_crawling_job {
 	public function run_products(): void {
 		// crawl each partial product to complete informations
 		self::$log_service->job_start( JobType::Products_crawl );
+		$this->fetch_unfetched_products();
 		$this->fetch_profitable_products();
 		self::$log_service->job_end( JobType::Products_crawl );
 	}
@@ -115,6 +116,31 @@ class Woo_scrape_crawling_job {
 			unset($updated_products);
 
 			$page += 1;
+		}
+	}
+
+	private function fetch_unfetched_products(): void {
+		$now  = date( self::$date_format );
+
+		// gets profitable products crawled today. Does not crawl products that have has_variants = false
+		// (already crawled once, and found no variants. using the categpry price is fine)
+		while ( true ) {
+			// get product page
+			$updated_products = self::$product_service->get_unfetched_products_with_variations_paged();
+
+			error_log( "Fetched " . count( $updated_products ) . " products to crawl and update." );
+
+			// if there are no product left to crawl, stop the cycle
+			if ( empty( $updated_products ) ) {
+				error_log( "There are no more updated products" );
+				break;
+			}
+
+			// crawl each product to get the complete informations
+			$this->crawl_products_to_get_informations( $updated_products, $now );
+
+			// free up memory
+			unset($updated_products);
 		}
 	}
 
