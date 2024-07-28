@@ -28,6 +28,7 @@ class Woo_scrape_product_service {
 				FROM $products_table_name INNER JOIN $pages_list_table_name
             	ON $products_table_name.category_id = $pages_list_table_name.id
                 WHERE DATE(`item_updated_timestamp`) = CURDATE()
+                ORDER BY $products_table_name.id
                 LIMIT $start,30"
 		);
 	}
@@ -40,16 +41,15 @@ class Woo_scrape_product_service {
 	 *
 	 * @return array|object|stdClass[]|null
 	 */
-	public function get_products_with_untranslated_field_paged( string $field, int $page ): array {
+	public function get_products_with_untranslated_field_paged( string $field): array {
 		global $wpdb;
 		$products_table_name = $wpdb->prefix . self::$products_table_name;
-
-		$start = $page * 30;
 
 		return $wpdb->get_results(
 			"SELECT id, brand, $field FROM $products_table_name
                 WHERE translated_$field is null
-                LIMIT $start,30"
+                ORDER BY id
+                LIMIT 30"
 		);
 	}
 
@@ -70,6 +70,7 @@ class Woo_scrape_product_service {
 		return $wpdb->get_results(
 			"SELECT id FROM $products_table_name
                 WHERE DATE(`latest_crawl_timestamp`) != CURDATE()
+                ORDER BY id
                 LIMIT $start,30"
 		);
 	}
@@ -91,6 +92,7 @@ class Woo_scrape_product_service {
 			"SELECT id, url, image_urls, image_ids, suggested_price, discounted_price FROM $products_table_name
                 WHERE DATE(`latest_crawl_timestamp`) = CURDATE()
                 and has_variations is not false
+                ORDER BY id
                 LIMIT $start,30"
 		);
 	}

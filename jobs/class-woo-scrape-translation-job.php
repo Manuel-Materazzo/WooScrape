@@ -61,7 +61,6 @@ class Woo_Scrape_Translation_Job {
 		$language_code = get_option( 'woo_scrape_translation_language', 'en' );
 		$ignore_brands = get_option( 'woo_scrape_translation_ignore_brands', true );
 		$sleep_ms      = (int) get_option( 'woo_scrape_translation_delay_ms', 50 );
-		$page          = 0;
 
 		// get the correct translator
 		if ( $use_gtranslate ) {
@@ -72,7 +71,7 @@ class Woo_Scrape_Translation_Job {
 
 		// get all untranslated products with a paged query
 		while ( true ) {
-			$untranslated_products = self::$product_service->get_products_with_untranslated_field_paged( $field, $page );
+			$untranslated_products = self::$product_service->get_products_with_untranslated_field_paged( $field);
 
 			error_log( "Fetched " . count( $untranslated_products ) . " products with untranslated {$field}." );
 
@@ -117,7 +116,6 @@ class Woo_Scrape_Translation_Job {
 				// delay to avoid too many requests
 				usleep( $sleep_ms * 1000 );
 			}
-			$page += 1;
 		}
 
 	}

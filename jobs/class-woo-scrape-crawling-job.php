@@ -112,7 +112,6 @@ class Woo_scrape_crawling_job {
 			$this->crawl_products_to_get_informations( $updated_products, $now );
 
 			// free up memory
-			mysqli_free_result($updated_products);
 			unset($updated_products);
 
 			$page += 1;
