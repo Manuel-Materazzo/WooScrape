@@ -23,7 +23,7 @@
             <button id="run-orchestrator-job-button" class="button button-primary">Run Orchestrated Job</button>
         </div>
         <div class="col-9 d-inline-block description">
-                Manually trigger cron schedule to run all jobs in order
+            Manually trigger cron schedule to run all jobs in order
         </div>
     </div>
     <div class="m-1">
@@ -58,7 +58,6 @@
             Manually update wordpress products from DB stored ones.
         </div>
     </div>
-
 
 
     <h3>Logs</h3>
@@ -105,15 +104,22 @@
 
 		if ( $num_pages > 1 ) {
 			echo '<div class="pagination">';
-			for ( $i = 1; $i <= $num_pages; $i ++ ) {
+			echo '<a class="page-numbers" href="?page=woo-scrape-dashboard&paged=1"><<</a>';
+			$start = max( 1, $page - 3 );
+			$end   = min( $num_pages, $page + 3 );
+			for ( $i = $start; $i <= $end; $i ++ ) {
 				if ( $i == $page ) {
 					echo '<span class="page-numbers active">' . $i . '</span>';
 				} else {
 					echo '<a class="page-numbers" href="?page=woo-scrape-dashboard&paged=' . $i . '">' . $i . '</a>';
 				}
 			}
+			echo '<span class="page-numbers">...</span>';
+			echo '<a class="page-numbers" href="?page=woo-scrape-dashboard&paged=' . $num_pages . '">' . $num_pages . '</a>';
+			echo '<a class="page-numbers" href="?page=woo-scrape-dashboard&paged=' . $num_pages . '">>></a>';
 			echo '</div>';
 		}
+
 		?>
 </div>
 
