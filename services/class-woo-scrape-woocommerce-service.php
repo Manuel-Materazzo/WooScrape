@@ -31,7 +31,7 @@ class Woo_Scrape_WooCommerce_Service {
 		$product->save();
 
 		foreach ( $crawled_variations as $crawled_variation ) {
-			$variation_name = $crawled_variation->name;
+			$variation_name = $crawled_variation->translated_name ?? $crawled_variation->name;
 			$variation      = new WC_Product_Variation();
 			$variation->set_parent_id( $product->get_id() );
 			$variation->set_attributes( array( 'variant' => $variation_name ) );

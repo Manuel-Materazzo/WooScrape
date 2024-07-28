@@ -4,6 +4,7 @@ class Woo_Scrape_Variation_Service {
 
 	private static string $date_format = 'Y-m-d H:i:s';
 	private static string $variations_table_name = 'woo_scrape_variations';
+	private static string $products_table_name = 'woo_scrape_products';
 
 	/**
 	 * Get a list of updated variations (id, name, suggested_price) by product id
@@ -18,8 +19,30 @@ class Woo_Scrape_Variation_Service {
 		$variations_table_name = $wpdb->prefix . self::$variations_table_name;
 
 		return $wpdb->get_results(
-			"SELECT id, name, suggested_price, discounted_price FROM $variations_table_name
+			"SELECT id, name, translated_name, suggested_price, discounted_price FROM $variations_table_name
                 					WHERE DATE(`item_updated_timestamp`) = CURDATE() AND product_id = $product_id"
+		);
+	}
+
+	/**
+	 * Gets a paged list of variations without a translated_$field
+	 *
+	 * @param string $field
+	 * @param int $page
+	 *
+	 * @return array|object|stdClass[]|null
+	 */
+	public function get_variations_with_untranslated_field_paged( string $field): array {
+		global $wpdb;
+		$products_table_name = $wpdb->prefix . self::$products_table_name;
+		$variations_table_name = $wpdb->prefix . self::$variations_table_name;
+
+		return $wpdb->get_results(
+			"SELECT $variations_table_name.id, $products_table_name.brand, $variations_table_name.$field FROM $variations_table_name
+                INNER JOIN $products_table_name ON $variations_table_name.product_id = $products_table_name.id
+                WHERE $variations_table_name.translated_$field is null
+                ORDER BY $variations_table_name.id
+                LIMIT 30"
 		);
 	}
 

@@ -1,18 +1,21 @@
 <?php
 require_once ABSPATH . 'wp-content/plugins/woo-scrape/dtos/class-woo-scrape-product.php';
 require_once ABSPATH . 'wp-content/plugins/woo-scrape/services/class-woo-scrape-product-service.php';
+require_once ABSPATH . 'wp-content/plugins/woo-scrape/services/class-woo-scrape-variation-service.php';
 require_once ABSPATH . 'wp-content/plugins/woo-scrape/services/class-woo-scrape-deepl-service.php';
 require_once ABSPATH . 'wp-content/plugins/woo-scrape/services/class-woo-scrape-gtranslate-service.php';
 require_once ABSPATH . 'wp-content/plugins/woo-scrape/services/class-woo-scrape-job-log-service.php';
 
 class Woo_Scrape_Translation_Job {
 	private static Woo_scrape_product_service $product_service;
+	private static Woo_Scrape_Variation_Service $variation_service;
 	private static Woo_scrape_gtranslate_service $gtranslate_service;
 	private static Woo_scrape_deepl_service $deepl_service;
 	private static Woo_Scrape_Job_Log_Service $log_service;
 
 	public function __construct() {
 		self::$product_service    = new Woo_scrape_product_service();
+		self::$variation_service  = new Woo_Scrape_Variation_Service();
 		self::$gtranslate_service = new Woo_scrape_gtranslate_service();
 		self::$deepl_service      = new Woo_scrape_deepl_service();
 		self::$log_service        = new Woo_Scrape_Job_Log_Service();
@@ -28,6 +31,8 @@ class Woo_Scrape_Translation_Job {
 
 			self::$log_service->job_start( JobType::Names_translation );
 			$this->translate( $title_google_translation, 'name', JobType::Names_translation );
+			// translate variations too
+			$this->translate( $title_google_translation, 'name', JobType::Names_translation, true );
 			self::$log_service->job_end( JobType::Names_translation );
 		}
 
@@ -57,7 +62,7 @@ class Woo_Scrape_Translation_Job {
 	 *
 	 * @return void
 	 */
-	private function translate( bool $use_gtranslate, string $field, JobType $job_type ): void {
+	private function translate( bool $use_gtranslate, string $field, JobType $job_type, bool $variation = false ): void {
 		$language_code = get_option( 'woo_scrape_translation_language', 'en' );
 		$ignore_brands = get_option( 'woo_scrape_translation_ignore_brands', true );
 		$sleep_ms      = (int) get_option( 'woo_scrape_translation_delay_ms', 50 );
@@ -71,7 +76,12 @@ class Woo_Scrape_Translation_Job {
 
 		// get all untranslated products with a paged query
 		while ( true ) {
-			$untranslated_products = self::$product_service->get_products_with_untranslated_field_paged( $field);
+			// select the correct service, variation or product
+			if ( $variation ) {
+				$untranslated_products = self::$variation_service->get_variations_with_untranslated_field_paged( $field );
+			} else {
+				$untranslated_products = self::$product_service->get_products_with_untranslated_field_paged( $field );
+			}
 
 			error_log( "Fetched " . count( $untranslated_products ) . " products with untranslated {$field}." );
 
