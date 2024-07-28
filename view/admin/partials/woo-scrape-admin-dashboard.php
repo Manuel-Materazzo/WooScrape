@@ -24,8 +24,10 @@
             <th>To Crawl</th>
             <th>Crawled Once</th>
             <th>Not Crawled Once</th>
-            <th>Untranslated Names</th>
-            <th>Translated Names</th>
+            <th>Untranslated Product Names</th>
+            <th>Translated Product Names</th>
+            <th>Untranslated Variation Names</th>
+            <th>Translated Variation Names</th>
             <th>Untranslated Specifications</th>
             <th>Translated Specifications</th>
             <th>Untranslated Descriptions</th>
@@ -41,6 +43,8 @@
     (SELECT COUNT(*) FROM wp_woo_scrape_products WHERE has_variations IS NULL) AS not_crawled_once,
     (SELECT COUNT(*) FROM wp_woo_scrape_products WHERE translated_name IS NULL) AS untranslated_names,
     (SELECT COUNT(*) FROM wp_woo_scrape_products WHERE translated_name IS NOT NULL) AS translated_names,
+    (SELECT COUNT(*) FROM wp_woo_scrape_variations WHERE translated_name IS NULL) AS untranslated_names,
+    (SELECT COUNT(*) FROM wp_woo_scrape_variations WHERE translated_name IS NOT NULL) AS translated_names,
     (SELECT COUNT(*) FROM wp_woo_scrape_products WHERE translated_specifications IS NULL) AS untranslated_specifications,
     (SELECT COUNT(*) FROM wp_woo_scrape_products WHERE translated_specifications IS NOT NULL) AS translated_specifications,
     (SELECT COUNT(*) FROM wp_woo_scrape_products WHERE translated_description IS NULL) AS untranslated_descriptions,
