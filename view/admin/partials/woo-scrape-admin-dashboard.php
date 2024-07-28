@@ -41,10 +41,10 @@
     (SELECT COUNT(*) FROM wp_woo_scrape_products WHERE DATE(`latest_crawl_timestamp`) = CURDATE() and has_variations is not false) AS to_crawl,
     (SELECT COUNT(*) FROM wp_woo_scrape_products WHERE has_variations IS NOT NULL) AS crawled_once,
     (SELECT COUNT(*) FROM wp_woo_scrape_products WHERE has_variations IS NULL) AS not_crawled_once,
-    (SELECT COUNT(*) FROM wp_woo_scrape_products WHERE translated_name IS NULL) AS untranslated_names,
-    (SELECT COUNT(*) FROM wp_woo_scrape_products WHERE translated_name IS NOT NULL) AS translated_names,
-    (SELECT COUNT(*) FROM wp_woo_scrape_variations WHERE translated_name IS NULL) AS untranslated_names,
-    (SELECT COUNT(*) FROM wp_woo_scrape_variations WHERE translated_name IS NOT NULL) AS translated_names,
+    (SELECT COUNT(*) FROM wp_woo_scrape_products WHERE translated_name IS NULL) AS untranslated_product_names,
+    (SELECT COUNT(*) FROM wp_woo_scrape_products WHERE translated_name IS NOT NULL) AS translated_product_names,
+    (SELECT COUNT(*) FROM wp_woo_scrape_variations WHERE translated_name IS NULL) AS untranslated_variation_names,
+    (SELECT COUNT(*) FROM wp_woo_scrape_variations WHERE translated_name IS NOT NULL) AS translated_variation_names,
     (SELECT COUNT(*) FROM wp_woo_scrape_products WHERE translated_specifications IS NULL) AS untranslated_specifications,
     (SELECT COUNT(*) FROM wp_woo_scrape_products WHERE translated_specifications IS NOT NULL) AS translated_specifications,
     (SELECT COUNT(*) FROM wp_woo_scrape_products WHERE translated_description IS NULL) AS untranslated_descriptions,
@@ -56,8 +56,10 @@
 			echo '<td>' . $row->to_crawl . '</td>';
 			echo '<td>' . $row->crawled_once . '</td>';
 			echo '<td>' . $row->not_crawled_once . '</td>';
-			echo '<td>' . $row->untranslated_names . '</td>';
-			echo '<td>' . $row->translated_names . '</td>';
+			echo '<td>' . $row->untranslated_product_names . '</td>';
+			echo '<td>' . $row->translated_product_names . '</td>';
+			echo '<td>' . $row->untranslated_variation_names . '</td>';
+			echo '<td>' . $row->translated_variation_names . '</td>';
 			echo '<td>' . $row->untranslated_specifications . '</td>';
 			echo '<td>' . $row->translated_specifications . '</td>';
 			echo '<td>' . $row->untranslated_descriptions . '</td>';

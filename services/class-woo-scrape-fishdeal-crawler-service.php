@@ -71,9 +71,6 @@ class Woo_scrape_fishdeal_crawler_service extends Woo_Scrape_Abstract_Crawler_Se
 				$variations_array_json = array( $variations_array_json );
 			}
 
-//			$variations_element = $html->find( '.SC_DealInfo-description attribute-select-block', 0 );
-//			$variations_element-> data-deal-products-assignment, data-deal-options
-
 			// format description
 			$specification_element = $html->find( '.SC_DealDescription-block .SC_DealDescription-description', 0 );
 			$specification         = $this->sanitize_text( $specification_element->text() );
@@ -81,12 +78,19 @@ class Woo_scrape_fishdeal_crawler_service extends Woo_Scrape_Abstract_Crawler_Se
 			$description_element = $html->find( '.SC_DealDescription-block .SC_DealDescription-description', 1 );
 			$description         = $this->sanitize_text( $description_element->text() );
 
-			// free up memory
-			$html->clear();
-			unset($html);
-
 			$variations = array();
 			$images     = array();
+
+			// if has vatiations, extract details
+			if ( count( $variations_array_json ) > 1 ) {
+				$variations_element              = $html->find( '.SC_DealInfo-description attribute-select-block', 0 );
+				$variations_details_json_element = $variations_element->getAttribute( 'data-deal-products-assignment' );
+				$variations_details_json         = json_decode( $variations_details_json_element );
+			}
+
+			// free up memory
+			$html->clear();
+			unset( $html );
 
 			foreach ( $variations_array_json as $variation_json ) {
 				$variation = new WooScrapeProduct();
@@ -94,7 +98,15 @@ class Woo_scrape_fishdeal_crawler_service extends Woo_Scrape_Abstract_Crawler_Se
 				// the suggested price is not on html, it's a websocket byproduct, so i'll approximate it
 				$variation->setSuggestedPrice( $suggested_price_multiplier->clone()->multiply( $variation_json->offers->price ) );
 				$variation->setDiscountedPrice( new WooScrapeDecimal( $variation_json->offers->price ) );
-				//TODO: quantity
+
+				// if has vatiations, extract quantity from $variations_details_json
+				if ( count( $variations_array_json ) > 1 ) {
+					foreach ( $variations_details_json as $variations_detail ) {
+						if ( $variation_json->sku == $variations_detail->id ) {
+							$variation->set_quantity( $variations_detail->quantity_available );
+						}
+					}
+				}
 
 				// cast to array
 				$variation_images = $variation_json->image;
