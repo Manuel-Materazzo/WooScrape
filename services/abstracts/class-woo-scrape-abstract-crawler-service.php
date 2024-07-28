@@ -79,34 +79,45 @@ abstract class Woo_Scrape_Abstract_Crawler_Service
     protected function crawl(string $url ): string {
         $proxy_url = get_option('woo_scrape_crawl_proxy_url', 'http://localhost:3000/');
         $sleep_ms = (int) get_option('woo_scrape_crawl_delay_ms', 100);
+	    $max_retries = 5; // Maximum number of retries
+	    $retry_count = 0; // Counter for retries
 
-	    error_log("crawling " .$url . " as " . $proxy_url . $url);
-        $response = wp_remote_post( $proxy_url . $url, array(
-            'method'      => 'GET',
-            'headers'     => array( 'Accept' => 'application/json' ),
-            'timeout'     => 45,
-            'redirection' => 5,
-            'httpversion' => '1.0',
-            'blocking'    => true
-        ) );
+	    do {
+		    error_log("crawling " .$url . " as " . $proxy_url . urlencode(urlencode($url)));
+		    $response = wp_remote_post( $proxy_url . $url, array(
+			    'method'      => 'GET',
+			    'headers'     => array( 'Accept' => 'application/json' ),
+			    'timeout'     => 60, // Increase timeout to 60 seconds
+			    'redirection' => 5,
+			    'httpversion' => '1.0',
+			    'blocking'    => true
+		    ) );
 
-	    if ( is_wp_error( $response ) ) {
-		    error_log( $response->get_error_message() );
-	    }
+		    if ( is_wp_error( $response ) ) {
+			    error_log( $response->get_error_message() );
+			    error_log( "Retrying in 60 seconds..." );
+			    sleep(60); // Wait for 60 seconds before retrying
+			    $retry_count++;
+			    continue;
+		    }
 
-	    if ( $response["response"]["code"] != 200 ) {
-		    error_log( "The request returned a {$response["response"]["code"]} error code" );
-		    throw new Exception( "The request returned a {$response["response"]["code"]} error code" );
-	    }
+		    if ( $response["response"]["code"] != 200 ) {
+			    error_log( "The request returned a {$response["response"]["code"]} error code, not retrying." );
+			    break;
+		    }
 
-	    // delay to avoid too many requests
-		usleep($sleep_ms * 1000);
+		    // delay to avoid too many requests
+		    usleep($sleep_ms * 1000);
 
-		$body = json_decode($response["body"])->result;
+		    $body = json_decode($response["body"])->result;
 
-	    // free up memory
-	    unset($response);
+		    // free up memory
+		    unset($response);
 
-        return $body;
+		    return $body;
+	    } while ($retry_count < $max_retries);
+
+	    throw new Exception("The request failed after {$max_retries} attempts");
+
     }
 }
