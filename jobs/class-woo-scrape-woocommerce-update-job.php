@@ -143,7 +143,7 @@ class Woo_scrape_woocommerce_update_job {
 					$product                    = self::$woocommerce_service->update_product_by_id( $product_id, $outdated_product );
 
 					// if the product has variations, set them out of stock
-					if ( $outdated_product->has_variations() ) {
+					if ( $product && $outdated_product->has_variations ) {
 						$variation_ids = $product->get_children();
 						foreach ( $variation_ids as $variation_id ) {
 							// $outdated_product has only the quantity, and it's 0

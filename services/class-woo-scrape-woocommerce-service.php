@@ -70,8 +70,14 @@ class Woo_Scrape_WooCommerce_Service {
 	 *
 	 * @return WC_Product
 	 */
-	public function update_product_by_id( int $product_id, $crawled_product ): WC_Product {
+	public function update_product_by_id( int $product_id, $crawled_product ): WC_Product|null {
 		$product = wc_get_product( $product_id );
+
+		if ( ! $product ) {
+			error_log( "product with sku ending in {$crawled_product->id} does not exist" );
+
+			return null;
+		}
 
 		return $this->update_product( $product, $crawled_product );
 	}
@@ -92,7 +98,7 @@ class Woo_Scrape_WooCommerce_Service {
 		}
 
 		if ( $crawled_product->description ) {
-			$description = $crawled_product->translated_description ?? $crawled_product->description;
+			$description    = $crawled_product->translated_description ?? $crawled_product->description;
 			$specifications = $crawled_product->translated_specifications ?? $crawled_product->specifications;
 			$product->set_description( $specifications . "\r\n" . $description );
 		}

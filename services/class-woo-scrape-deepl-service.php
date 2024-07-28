@@ -100,7 +100,8 @@ class Woo_scrape_deepl_service extends Woo_Scrape_Abstract_Translator_Service {
 	}
 
 	private function filter_artifacts(string $text):string {
-		return str_replace( 'Ã¢', ' ', $text );
+		$text = str_replace( 'Ã¢', ' ', $text );
+		$text = str_replace( 'â€', '\'', $text );
 		return str_replace( 'â', ' ', $text );
 	}
 

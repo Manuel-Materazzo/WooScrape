@@ -68,7 +68,7 @@ class Woo_scrape_product_service {
 		$start = $page * 30;
 
 		return $wpdb->get_results(
-			"SELECT id FROM $products_table_name
+			"SELECT id, has_variations FROM $products_table_name
                 WHERE DATE(`latest_crawl_timestamp`) != CURDATE()
                 ORDER BY id
                 LIMIT $start,30"
