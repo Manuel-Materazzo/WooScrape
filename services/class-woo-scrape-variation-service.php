@@ -174,6 +174,22 @@ class Woo_Scrape_Variation_Service {
 		return $rows_updated >= 1;
 	}
 
+	public function update_by_id(WooScrapeProduct $variation) {
+		global $wpdb;
+
+		// add query parameters only if needed
+		$parameters = $this->add_standard_parameters( array(), $variation );
+
+		// update product
+		$wpdb->update(
+			$wpdb->prefix . self::$variations_table_name,
+			$parameters,
+			array(
+				'id' => $variation->getId()
+			)
+		);
+	}
+
 	/**
 	 * Given an array of pre-existing parameters and a product, adds only the valorized parameter
 	 *
@@ -183,8 +199,11 @@ class Woo_Scrape_Variation_Service {
 	 * @return array array of pre-existing parameters
 	 */
 	private function add_standard_parameters( array $parameters, WooScrapeProduct $variation ): array {
-		if ( ! is_null( $variation->getName() ) ) {
+		if ( ! empty( $variation->getName() ) ) {
 			$parameters['name'] = $variation->getName();
+		}
+		if ( ! empty( $variation->getTranslatedName() ) ) {
+			$parameters['translated_name'] = $variation->getTranslatedName();
 		}
 		if ( ! is_null( $variation->getQuantity() ) ) {
 			$parameters['quantity'] = strval( $variation->getQuantity() );

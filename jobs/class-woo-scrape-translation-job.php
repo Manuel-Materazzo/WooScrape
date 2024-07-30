@@ -115,7 +115,14 @@ class Woo_Scrape_Translation_Job {
 					$product->setId( $untranslated_product->id );
 					$product->setTranslatedField( $field, $translated_field );
 
-					self::$product_service->update_by_id( $product, true );
+					// select the correct service, variation or product
+					if ( $variation ) {
+						self::$variation_service->update_by_id( $product );
+					} else {
+						self::$product_service->update_by_id( $product, true );
+					}
+
+
 					self::$log_service->increase_completed_counter( $job_type );
 
 				} catch ( Exception $e ) {
