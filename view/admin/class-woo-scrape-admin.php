@@ -183,6 +183,10 @@ class Woo_Scrape_Admin {
 				'default' => 100,
 			)
 		);
+		Woo_scrape_setting_utils::register_boolean_false(
+			'woo-scrape-import-scraping-group',
+			'woo_scrape_crawl_changed_images'
+		);
 	}
 
 	/**

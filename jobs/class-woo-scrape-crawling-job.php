@@ -53,18 +53,18 @@ class Woo_scrape_crawling_job {
 		foreach ( $categories as $category ) {
 			try {
 
-
 				// crawl all products
 				$partial_profitable_products = self::$crawler->crawl_category( $category->url );
 
 				// deduplicate products
-				$partial_profitable_products = array_reduce($partial_profitable_products, function ($carry, $product) {
-					$carry[$product->getUrl()] = $product;
+				$partial_profitable_products = array_reduce( $partial_profitable_products, function ( $carry, $product ) {
+					$carry[ $product->getUrl() ] = $product;
+
 					return $carry;
-				}, []);
+				}, [] );
 
 				// reindex deduplicated array
-				$partial_profitable_products = array_values($partial_profitable_products);
+				$partial_profitable_products = array_values( $partial_profitable_products );
 
 				error_log( "The category " . $category->id . " has crawled " . count( $partial_profitable_products ) . " items" );
 
@@ -81,7 +81,7 @@ class Woo_scrape_crawling_job {
 			// save the new products
 			self::$product_service->create_all( $category->id, $partial_profitable_products );
 			// free up memory
-			unset($partial_profitable_products);
+			unset( $partial_profitable_products );
 		}
 
 		$wpdb->flush();
@@ -113,14 +113,14 @@ class Woo_scrape_crawling_job {
 			$this->crawl_products_to_get_informations( $updated_products, $now );
 
 			// free up memory
-			unset($updated_products);
+			unset( $updated_products );
 
 			$page += 1;
 		}
 	}
 
 	private function fetch_unfetched_products(): void {
-		$now  = date( self::$date_format );
+		$now = date( self::$date_format );
 
 		// gets profitable products crawled today. Does not crawl products that have has_variants = false
 		// (already crawled once, and found no variants. using the categpry price is fine)
@@ -140,7 +140,7 @@ class Woo_scrape_crawling_job {
 			$this->crawl_products_to_get_informations( $updated_products, $now );
 
 			// free up memory
-			unset($updated_products);
+			unset( $updated_products );
 		}
 	}
 
@@ -151,6 +151,9 @@ class Woo_scrape_crawling_job {
 	 * @return void
 	 */
 	public function crawl_products_to_get_informations( array|object $updated_products, string $now ): void {
+
+		$crawl_changed_images = get_option( 'woo_scrape_crawl_changed_images', false );
+
 		foreach ( $updated_products as $partial_product ) {
 			try {
 				// calculate price multiplier to get suggested price from discounted
@@ -162,9 +165,11 @@ class Woo_scrape_crawling_job {
 
 				error_log( "Crawled " . $partial_product->url );
 
-				// if the product has no crawled images, or the images changed
+				// if the product has no crawled images, or the images changed (and the option is enabled)
 				if ( ! $partial_product->image_ids ||
-				     json_encode( $complete_product->getImageUrls() ) !== $partial_product->image_urls ) {
+				     ( $crawl_changed_images &&
+				       json_encode( $complete_product->getImageUrls() ) !== $partial_product->image_urls )
+				) {
 					$this->crawl_images( $partial_product, $complete_product );
 				}
 
@@ -179,11 +184,11 @@ class Woo_scrape_crawling_job {
 					// create new variations on db
 					self::$variation_service->create_all( $partial_product->id, $new_variations, $now );
 					// free up memory
-					unset($new_variations);
+					unset( $new_variations );
 				}
 
 				// free up memory
-				unset($complete_product);
+				unset( $complete_product );
 
 				self::$log_service->increase_completed_counter( JobType::Products_crawl );
 			} catch ( Exception $e ) {

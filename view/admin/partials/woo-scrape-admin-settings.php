@@ -109,6 +109,17 @@
                         </p>
                     </td>
                 </tr>
+                <tr>
+                    <th scope="row">
+                        Crawl images if changed
+                    </th>
+                    <td>
+                        <input type="checkbox" id="woo_scrape_crawl_changed_images" name="woo_scrape_crawl_changed_images"
+                               value="1" <?php checked( 1, get_option( 'woo_scrape_crawl_changed_images' ), true ); ?> />
+                        <label for="woo_scrape_crawl_changed_images">Enable product image crawling if they are different from the stored data
+                            crawling</label>
+                    </td>
+                </tr>
             </table>
 			<?php submit_button(); ?>
         </form>
