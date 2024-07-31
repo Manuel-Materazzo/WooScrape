@@ -118,15 +118,15 @@ class Woo_Scrape_WooCommerce_Service {
 		}
 
 		if ( $crawled_product->length ) {
-			$product->set_weight( $crawled_product->length );
+			$product->set_length( $crawled_product->length );
 		}
 
 		if ( $crawled_product->width ) {
-			$product->set_weight( $crawled_product->width );
+			$product->set_width( $crawled_product->width );
 		}
 
 		if ( $crawled_product->height ) {
-			$product->set_weight( $crawled_product->height );
+			$product->set_height( $crawled_product->height );
 		}
 
 		if ( $crawled_product->image_ids ) {

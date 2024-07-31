@@ -83,9 +83,12 @@ class Woo_scrape_fishdeal_crawler_service extends Woo_Scrape_Abstract_Crawler_Se
 
 			// if has vatiations, extract details
 			if ( count( $variations_array_json ) > 1 ) {
-				$variations_element              = $html->find( '.SC_DealInfo-description attribute-select-block', 0 );
-				$variations_details_json_element = $variations_element->getAttribute( 'data-deal-products-assignment' );
-				$variations_details_json         = json_decode( $variations_details_json_element );
+				$variations_element = $html->find( '.SC_DealInfo-description attribute-select-block', 0 );
+				//TODO: variable products with different page
+				if ( $variations_element ) {
+					$variations_details_json_element = $variations_element->getAttribute( 'data-deal-products-assignment' );
+					$variations_details_json         = json_decode( $variations_details_json_element );
+				}
 			}
 
 			// free up memory
@@ -100,7 +103,7 @@ class Woo_scrape_fishdeal_crawler_service extends Woo_Scrape_Abstract_Crawler_Se
 				$variation->setDiscountedPrice( new WooScrapeDecimal( $variation_json->offers->price ) );
 
 				// if has vatiations, extract quantity from $variations_details_json
-				if ( count( $variations_array_json ) > 1 ) {
+				if ( count( $variations_array_json ) > 1 && isset($variations_details_json) ) {
 					foreach ( $variations_details_json as $variations_detail ) {
 						if ( $variation_json->sku == $variations_detail->id ) {
 							$variation->set_quantity( $variations_detail->quantity_available );
