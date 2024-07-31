@@ -17,7 +17,7 @@ class Woo_Scrape_WooCommerce_Service {
 		$variation_options = array();
 
 		foreach ( $crawled_variations as $crawled_variation ) {
-			$variation_options[] = $crawled_variation->name;
+			$variation_options[] = $crawled_variation->translated_name ?? $crawled_variation->name;
 		}
 
 		$attribute = new WC_Product_Attribute();
