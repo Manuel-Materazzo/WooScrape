@@ -70,6 +70,20 @@ class Woo_scrape_woocommerce_update_job {
 						continue;
 					}
 
+					//TODO: settable
+					unset($crawled_product->name);
+					unset($crawled_product->translated_name);
+					unset($crawled_product->description);
+					unset($crawled_product->translated_description);
+					unset($crawled_product->specifications);
+					unset($crawled_product->translated_specifications);
+					unset($crawled_product->weight);
+					unset($crawled_product->length);
+					unset($crawled_product->width);
+					unset($crawled_product->height);
+					unset($crawled_product->image_ids);
+					unset($crawled_product->corresponding_woocommerce_category_id);
+
 					// update the product on woocommerce
 					$woocommerce_product = self::$woocommerce_service->update_product_by_id( $product_id, $crawled_product );
 
@@ -189,6 +203,9 @@ class Woo_scrape_woocommerce_update_job {
 
 			// update variation if crawled
 			if ( $current_crawled_variation ) {
+				//TODO: settable
+				unset($current_crawled_variation->name);
+				unset($current_crawled_variation->translated_name);
 				self::$woocommerce_service->update_product_by_id( $variation_id, $current_crawled_variation );
 			}
 
