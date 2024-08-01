@@ -121,6 +121,9 @@ class Woo_scrape_fishdeal_crawler_service extends Woo_Scrape_Abstract_Crawler_Se
 				$variations[] = $variation;
 			}
 
+			// images are in the wrong order
+			$images = array_reverse($images);
+
 			// add variations to the main product
 			$partial_product->setVariations( $variations );
 			// set has_variations = false i f the product has only one variation.
