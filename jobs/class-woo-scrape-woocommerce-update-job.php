@@ -25,25 +25,25 @@ class Woo_scrape_woocommerce_update_job {
 
 		// get from database outdated products, and set them out of stock
 		if ( $stock_management ) {
-			self::$log_service->job_start(JobType::Woocommerce_out_of_stock);
+			self::$log_service->job_start( JobType::Woocommerce_out_of_stock );
 			$this->update_out_of_stock();
-			self::$log_service->job_end(JobType::Woocommerce_out_of_stock);
+			self::$log_service->job_end( JobType::Woocommerce_out_of_stock );
 		}
 
 		// extracts from DB today's crawled products and variants, and persists them on woocomerce
 		if ( $auto_import ) {
-			self::$log_service->job_start(JobType::Woocommerce_update);
-			self::$log_service->job_start(JobType::Woocommerce_create);
+			self::$log_service->job_start( JobType::Woocommerce_update );
+			self::$log_service->job_start( JobType::Woocommerce_create );
 			$this->update_woocommerce_database();
-			self::$log_service->job_end(JobType::Woocommerce_update);
-			self::$log_service->job_end(JobType::Woocommerce_create);
+			self::$log_service->job_end( JobType::Woocommerce_update );
+			self::$log_service->job_end( JobType::Woocommerce_create );
 		}
 	}
 
 	private function update_woocommerce_database(): void {
 		$page       = 0;
 		$sku_prefix = get_option( 'woo_scrape_sku_prefix', 'sku-1-' );
-		$sleep_ms = (int) get_option('woo_scrape_import_delay_ms', 10);
+		$sleep_ms   = (int) get_option( 'woo_scrape_import_delay_ms', 10 );
 
 		// gets products crawled today
 		while ( true ) {
@@ -71,34 +71,40 @@ class Woo_scrape_woocommerce_update_job {
 					}
 
 					//TODO: settable
-					unset($crawled_product->name);
-					unset($crawled_product->translated_name);
-					unset($crawled_product->description);
-					unset($crawled_product->translated_description);
-					unset($crawled_product->specifications);
-					unset($crawled_product->translated_specifications);
-					unset($crawled_product->weight);
-					unset($crawled_product->length);
-					unset($crawled_product->width);
-					unset($crawled_product->height);
-					unset($crawled_product->image_ids);
-					unset($crawled_product->corresponding_woocommerce_category_id);
+					unset( $crawled_product->name );
+					unset( $crawled_product->translated_name );
+					unset( $crawled_product->description );
+					unset( $crawled_product->translated_description );
+					unset( $crawled_product->specifications );
+					unset( $crawled_product->translated_specifications );
+					unset( $crawled_product->weight );
+					unset( $crawled_product->length );
+					unset( $crawled_product->width );
+					unset( $crawled_product->height );
+					unset( $crawled_product->image_ids );
+					unset( $crawled_product->corresponding_woocommerce_category_id );
+
+					// if the product has variations, update them
+					if ( $crawled_product->has_variations ) {
+						$product_total_quantity = $this->update_woocommerce_vatiarions( $crawled_product->id, $woocommerce_product );
+					}
+
+					// if there is a tota product quantity add it to the product
+					if ( isset( $product_total_quantity ) && $product_total_quantity > 0 ) {
+						$crawled_product->quantity = $product_total_quantity;
+					}
 
 					// update the product on woocommerce
 					$woocommerce_product = self::$woocommerce_service->update_product_by_id( $product_id, $crawled_product );
 
-					// if the product has variations, update them
-					if ( $crawled_product->has_variations ) {
-						$this->update_woocommerce_vatiarions( $crawled_product->id, $woocommerce_product );
-					}
-					self::$log_service->increase_completed_counter(JobType::Woocommerce_update);
+					self::$log_service->increase_completed_counter( JobType::Woocommerce_update );
 				} catch ( Exception $e ) {
 					error_log( $e );
-					self::$log_service->increase_failed_counter(JobType::Woocommerce_update);
+					self::$log_service->increase_failed_counter( JobType::Woocommerce_update );
 				}
 
 				// delay to avoid harrassing the DB
-				usleep($sleep_ms * 1000);
+				usleep( $sleep_ms * 1000 );
 			}
 
 			error_log( "there are " . count( $new_products ) . " new products to create on woocommerce." );
@@ -116,14 +122,14 @@ class Woo_scrape_woocommerce_update_job {
 					$product->set_category_ids( array( $new_product->corresponding_woocommerce_category_id ) );
 
 					self::$woocommerce_service->update_product( $product, $new_product );
-					self::$log_service->increase_completed_counter(JobType::Woocommerce_create);
+					self::$log_service->increase_completed_counter( JobType::Woocommerce_create );
 				} catch ( Exception $e ) {
 					error_log( $e );
-					self::$log_service->increase_failed_counter(JobType::Woocommerce_create);
+					self::$log_service->increase_failed_counter( JobType::Woocommerce_create );
 				}
 
 				// delay to avoid harrassing the DB
-				usleep($sleep_ms * 1000);
+				usleep( $sleep_ms * 1000 );
 			}
 
 			$page += 1;
@@ -164,17 +170,17 @@ class Woo_scrape_woocommerce_update_job {
 							self::$woocommerce_service->update_product_by_id( $variation_id, $outdated_product );
 						}
 					}
-					self::$log_service->increase_completed_counter(JobType::Woocommerce_out_of_stock);
+					self::$log_service->increase_completed_counter( JobType::Woocommerce_out_of_stock );
 				} catch ( Exception $e ) {
 					error_log( $e );
-					self::$log_service->increase_failed_counter(JobType::Woocommerce_out_of_stock);
+					self::$log_service->increase_failed_counter( JobType::Woocommerce_out_of_stock );
 				}
 			}
 			$page += 1;
 		}
 	}
 
-	private function update_woocommerce_vatiarions( int $product_id, WC_Product $woocommerce_product ): void {
+	private function update_woocommerce_vatiarions( int $product_id, WC_Product $woocommerce_product ): int {
 
 		// get crawled variation for this product from DB
 		$crawled_variations = self::$variation_service->get_updated_variations_by_product_id( $product_id );
@@ -182,6 +188,9 @@ class Woo_scrape_woocommerce_update_job {
 		$variation_ids = $woocommerce_product->get_children();
 
 		error_log( "Updating " . count( $crawled_variations ) . " variations..." );
+
+		// counter for variation total quantities
+		$total_quantity = 0;
 
 		// update each variation
 		foreach ( $variation_ids as $variation_id ) {
@@ -204,8 +213,14 @@ class Woo_scrape_woocommerce_update_job {
 			// update variation if crawled
 			if ( $current_crawled_variation ) {
 				//TODO: settable
-				unset($current_crawled_variation->name);
-				unset($current_crawled_variation->translated_name);
+				unset( $current_crawled_variation->name );
+				unset( $current_crawled_variation->translated_name );
+
+				// if it has a quantity, add to the product total
+				if ( ! is_null( $current_crawled_variation->quantity ) ) {
+					$total_quantity += $current_crawled_variation->quantity;
+				}
+
 				self::$woocommerce_service->update_product_by_id( $variation_id, $current_crawled_variation );
 			}
 
@@ -216,6 +231,8 @@ class Woo_scrape_woocommerce_update_job {
 		}
 
 		//TODO: insert new variations, they are all contained into $crawled_variations
+
+		return $total_quantity;
 	}
 
 	private function save_woocommerce_variations( int $product_id ): WC_Product_Variable {
