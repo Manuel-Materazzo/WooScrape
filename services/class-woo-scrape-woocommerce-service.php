@@ -106,6 +106,7 @@ class Woo_Scrape_WooCommerce_Service {
 		// if the quantity is not specified, set the item in stock
 		// TODO: if latest_crawl_timestamp is not today, skip stock status update
 		if ( is_null( $crawled_product->quantity ) ) {
+			$product->set_manage_stock( false );
 			$product->set_stock_status( 'instock' );
 		} else {
 			$product->set_manage_stock( true );
@@ -147,18 +148,23 @@ class Woo_Scrape_WooCommerce_Service {
 			$provider_shipping_addendum     = get_option( 'woo_scrape_provider_shipping_addendum', 7 );
 			$currency_conversion_multiplier = get_option( 'woo_scrape_currency_conversion_multiplier', 1 );
 
-			$profitable_price = new WooScrapeDecimal( $crawled_product->discounted_price );
-			$profitable_price->add( $provider_shipping_addendum )->multiply( $price_multiplier );
-			$suggested_price = new WooScrapeDecimal( $crawled_product->suggested_price ?? 0 );
+			// if no price is set, skip updating it
+			if ( $crawled_product->discounted_price && $crawled_product->suggested_price ) {
+				$profitable_price = new WooScrapeDecimal( $crawled_product->discounted_price );
+				$profitable_price->add( $provider_shipping_addendum )->multiply( $price_multiplier );
+				$suggested_price = new WooScrapeDecimal( $crawled_product->suggested_price ?? 0 );
 
-			// if the product has a suggested price and it's greater than the profitable price
-			if ( $suggested_price->greater_than( $profitable_price ) ) {
-				// display a discount
-				$product->set_regular_price( $suggested_price->multiply( $currency_conversion_multiplier ) );
-				$product->set_sale_price( $profitable_price->multiply( $currency_conversion_multiplier ) );
+				// if the product has a suggested price and it's greater than the profitable price
+				if ( $suggested_price->greater_than( $profitable_price ) ) {
+					// display a discount
+					$product->set_regular_price( $suggested_price->multiply( $currency_conversion_multiplier ) );
+					$product->set_sale_price( $profitable_price->multiply( $currency_conversion_multiplier ) );
+				} else {
+					// otherwise, just the price
+					$product->set_regular_price( $profitable_price->multiply( $currency_conversion_multiplier ) );
+				}
 			} else {
-				// otherwise, just the price
-				$product->set_regular_price( $profitable_price->multiply( $currency_conversion_multiplier ) );
+				error_log( $crawled_product->name . " has no price" );
 			}
 
 		}
