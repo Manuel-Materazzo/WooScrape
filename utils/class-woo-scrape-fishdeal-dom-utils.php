@@ -61,8 +61,14 @@ class Woo_scrape_fishdeal_dom_utils {
 		$name_element  = $product_element->find( '.SC_DealTile-title', 0 );
 		$brand_element = $product_element->find( '.SC_Manufacturer img', 0 );
 
-		$suggested_price_element  = $product_element->find( '.SC_DealTile-value', 0 );
-		$discounted_price_element = $product_element->find( '.SC_DealTile-price', 0 );
+		// skip the "Prezzo di listino" text
+		$suggested_price_element  = $product_element->find( '.SC_DealTile-value', 1 );
+		// safeguard, if they remove the "Prezzo di listino" text
+		if (is_null( $suggested_price_element )) {
+			$suggested_price_element = $product_element->find( '.SC_DealTile-value', 0 );
+		}
+		$discounted_price_element = $product_element->find( '.SC_PriceInfo-cell .Text--altMedium', 0 );
+
 
 		// if the product is not discounted, get the single price
 		if ( is_null( $suggested_price_element ) && is_null( $discounted_price_element ) ) {
