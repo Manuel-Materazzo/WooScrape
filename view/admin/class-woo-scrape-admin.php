@@ -99,6 +99,24 @@ class Woo_Scrape_Admin {
 		wp_die(); // this is required to terminate immediately and return a proper response
 	}
 
+	function run_single_product_job() {
+		include_once plugin_dir_path( __FILE__ ) . '../../jobs/class-woo-scrape-crawling-job.php';
+		include_once plugin_dir_path( __FILE__ ) . '../../jobs/class-woo-scrape-woocommerce-update-job.php';
+		error_log( "single product crawl job started" );
+
+		if (!isset($_POST['sku'])) {
+			error_log('Sku not specified');
+		}
+
+		$sku = sanitize_text_field($_POST['sku']);
+
+		$job = new Woo_scrape_crawling_job();
+		$job->run_single($sku);
+		$job = new Woo_scrape_woocommerce_update_job();
+		$job->run_single($sku);
+		wp_die(); // this is required to terminate immediately and return a proper response
+	}
+
 	public function display_plugin_dashboard(): void {
 		include 'partials/woo-scrape-admin-dashboard.php';
 	}

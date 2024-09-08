@@ -20,6 +20,10 @@ class Woo_scrape_crawling_job {
 		self::$log_service       = new Woo_Scrape_Job_Log_Service();
 	}
 
+	/**
+	 * Crawls categories and products
+	 * @return void
+	 */
 	public function run(): void {
 		// crawl categories to get partial products
 		self::$log_service->job_start( JobType::Categories_crawl );
@@ -30,12 +34,32 @@ class Woo_scrape_crawling_job {
 
 	}
 
+	/**
+	 * Only crawls products
+	 * @return void
+	 */
 	public function run_products(): void {
 		// crawl each partial product to complete informations
 		self::$log_service->job_start( JobType::Products_crawl );
 		$this->fetch_unfetched_products();
 		$this->fetch_profitable_products();
 		self::$log_service->job_end( JobType::Products_crawl );
+	}
+
+	/**
+	 * Only crawls a single product
+	 * @return void
+	 */
+	public function run_single(string $sku): void {
+		$sku_prefix = get_option( 'woo_scrape_sku_prefix', 'sku-1-' );
+		$now  = date( self::$date_format );
+
+		// remove sku prefix to get id
+		$product_id = str_replace( $sku_prefix, '' , $sku);
+
+		$product = self::$product_service->get_product_by_id( $product_id );
+
+		$this->crawl_products_to_get_informations( $product, $now );
 	}
 
 	/**

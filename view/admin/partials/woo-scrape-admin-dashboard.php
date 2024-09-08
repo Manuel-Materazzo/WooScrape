@@ -69,47 +69,58 @@
 		?>
     </table>
     <h3>Manual Actions</h3>
-    <div class="m-1">
-        <div class="col-2 d-inline-block">
-            <button id="run-orchestrator-job-button" class="button button-primary">Run Orchestrated Job</button>
+    <button class="accordion">Start Jobs</button>
+    <div class="panel">
+        <div class="m-1">
+            <div class="col-2 d-inline-block">
+                <button id="run-orchestrator-job-button" class="button button-primary">Run Orchestrated Job</button>
+            </div>
+            <div class="col-9 d-inline-block description">
+                Manually trigger cron schedule to run all jobs in order
+            </div>
         </div>
-        <div class="col-9 d-inline-block description">
-            Manually trigger cron schedule to run all jobs in order
+        <div class="m-1">
+            <div class="col-2 d-inline-block">
+                <button id="run-crawling-job-button" class="button">Run Crawling Job</button>
+            </div>
+            <div class="col-9 d-inline-block description">
+                Manually crawl remote website and store products on DB
+            </div>
         </div>
-    </div>
-    <div class="m-1">
-        <div class="col-2 d-inline-block">
-            <button id="run-crawling-job-button" class="button">Run Crawling Job</button>
+        <div class="m-1">
+            <div class="col-2 d-inline-block">
+                <button id="run-product-crawling-job-button" class="button">Run Product Crawling Job</button>
+            </div>
+            <div class="col-9 d-inline-block description">
+                Manually crawl products stored on DB
+            </div>
         </div>
-        <div class="col-9 d-inline-block description">
-            Manually crawl remote website and store products on DB
+        <div class="m-1">
+            <div class="col-2 d-inline-block">
+                <button id="run-translate-job-button" class="button">Run Translate Job</button>
+            </div>
+            <div class="col-9 d-inline-block description">
+                Manually start the DB product translation process.
+            </div>
         </div>
-    </div>
-    <div class="m-1">
-        <div class="col-2 d-inline-block">
-            <button id="run-product-crawling-job-button" class="button">Run Product Crawling Job</button>
-        </div>
-        <div class="col-9 d-inline-block description">
-            Manually crawl products stored on DB
-        </div>
-    </div>
-    <div class="m-1">
-        <div class="col-2 d-inline-block">
-            <button id="run-translate-job-button" class="button">Run Translate Job</button>
-        </div>
-        <div class="col-9 d-inline-block description">
-            Manually start the DB product translation process.
-        </div>
-    </div>
-    <div class="m-1">
-        <div class="col-2 d-inline-block">
-            <button id="run-wordpress-job-button" class="button">Run Wordpress Update Job</button>
-        </div>
-        <div class="col-9 d-inline-block description">
-            Manually update wordpress products from DB stored ones.
+        <div class="m-1">
+            <div class="col-2 d-inline-block">
+                <button id="run-wordpress-job-button" class="button">Run Wordpress Update Job</button>
+            </div>
+            <div class="col-9 d-inline-block description">
+                Manually update wordpress products from DB stored ones.
+            </div>
         </div>
     </div>
 
+    <button class="accordion">Crawl one product</button>
+    <div class="panel p-1">
+        <p class="description">
+            sku of the product to crawl
+        </p>
+        <input type="text" id="manual-crawl-sku" name="manual-crawl-sku"/>
+        <button id="run-single-product-job" class="button">Crawl and update</button>
+    </div>
 
     <h3>Logs</h3>
     <table class="table-style">

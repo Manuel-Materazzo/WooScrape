@@ -40,6 +40,46 @@ class Woo_scrape_woocommerce_update_job {
 		}
 	}
 
+	public function run_single(string $sku): void {
+		$sku_prefix = get_option( 'woo_scrape_sku_prefix', 'sku-1-' );
+
+		$woocommerce_product_id = wc_get_product_id_by_sku( $sku );
+		// remove sku prefix to get id
+		$product_id = str_replace( $sku_prefix, '' , $sku);
+
+		$product = self::$product_service->get_product_by_id( $product_id )[0];
+
+		//TODO: settable
+		unset( $product->name );
+		unset( $product->translated_name );
+		unset( $product->description );
+		unset( $product->translated_description );
+		unset( $product->specifications );
+		unset( $product->translated_specifications );
+		unset( $product->weight );
+		unset( $product->length );
+		unset( $product->width );
+		unset( $product->height );
+		unset( $product->image_ids );
+		unset( $product->corresponding_woocommerce_category_id );
+
+		// get product from woocommerce
+		$woocommerce_product = wc_get_product( $woocommerce_product_id );
+
+		// if the product has variations, update them
+		if ( $product->has_variations ) {
+			$product_total_quantity = $this->update_woocommerce_vatiarions( $product->id, $woocommerce_product );
+		}
+
+		// if there is a total product quantity add it to the product
+		if ( isset( $product_total_quantity ) && $product_total_quantity > 0 ) {
+			$product->quantity = $product_total_quantity;
+		}
+
+		// update the product on woocommerce
+		self::$woocommerce_service->update_product_by_id( $woocommerce_product_id, $product );
+	}
+
 	private function update_woocommerce_database(): void {
 		$page       = 0;
 		$sku_prefix = get_option( 'woo_scrape_sku_prefix', 'sku-1-' );
@@ -84,18 +124,21 @@ class Woo_scrape_woocommerce_update_job {
 					unset( $crawled_product->image_ids );
 					unset( $crawled_product->corresponding_woocommerce_category_id );
 
+					// get product from woocommerce
+					$woocommerce_product = wc_get_product( $product_id );
+
 					// if the product has variations, update them
 					if ( $crawled_product->has_variations ) {
 						$product_total_quantity = $this->update_woocommerce_vatiarions( $crawled_product->id, $woocommerce_product );
 					}
 
-					// if there is a tota product quantity add it to the product
+					// if there is a total product quantity add it to the product
 					if ( isset( $product_total_quantity ) && $product_total_quantity > 0 ) {
 						$crawled_product->quantity = $product_total_quantity;
 					}
 
 					// update the product on woocommerce
-					$woocommerce_product = self::$woocommerce_service->update_product_by_id( $product_id, $crawled_product );
+					self::$woocommerce_service->update_product_by_id( $product_id, $crawled_product );
 
 					self::$log_service->increase_completed_counter( JobType::Woocommerce_update );
 				} catch ( Exception $e ) {

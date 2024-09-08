@@ -7,6 +7,20 @@ class Woo_scrape_product_service {
 	private static string $pages_list_table_name = 'woo_scrape_pages';
 
 	/**
+	 * Gets products (by its id
+	 *
+	 * @return array|object|stdClass[]|null
+	 */
+	public function get_product_by_id(string | int $id): array {
+		global $wpdb;
+		$products_table_name = $wpdb->prefix . self::$products_table_name;
+
+		return $wpdb->get_results(
+			"SELECT * FROM $products_table_name WHERE id = $id"
+		);
+	}
+
+	/**
 	 * Gets a paged list of products joined with package information from DB
 	 *
 	 * @param int $page
