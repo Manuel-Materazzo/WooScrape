@@ -40,7 +40,7 @@ function custom_meta_box_markup( $post ) {
     <div>
         <p>
             <label>Original website url</label><br>
-            <a href="<?php echo $product_url ?? '#'; ?>"
+            <a href="<?php echo esc_url( $product_url ?? '#' ); ?>"
                target="_blank"><?php _e( 'Visit website', 'woocommerce' ); ?></a>
         </p>
     </div>
