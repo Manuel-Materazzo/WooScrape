@@ -1,9 +1,9 @@
 <?php
 
-require_once ABSPATH . 'wp-content/plugins/woo-scrape/utils/class-woo-scrape-setting-utils.php';
-require_once ABSPATH . 'wp-content/plugins/woo-scrape/jobs/class-woo-scrape-orchestrator.php';
+require_once plugin_dir_path( __DIR__ ) . '../utils/class-woo-scrape-setting-utils.php';
+require_once plugin_dir_path( __DIR__ ) . '../jobs/class-woo-scrape-orchestrator.php';
 
-require_once ABSPATH . 'wp-content/plugins/woo-scrape/view/admin/partials/woo-scrape-woocommerce-edit.php';
+require_once plugin_dir_path( __FILE__ ) . 'partials/woo-scrape-woocommerce-edit.php';
 
 /**
  * The admin-specific functionality of the plugin.

@@ -1,5 +1,5 @@
 <?php
-require_once ABSPATH . 'wp-content/plugins/woo-scrape/services/abstracts/class-woo-scrape-abstract-translator-service.php';
+require_once plugin_dir_path( __FILE__ ) . 'abstracts/class-woo-scrape-abstract-translator-service.php';
 
 class Woo_scrape_gtranslate_service extends Woo_Scrape_Abstract_Translator_Service {
 

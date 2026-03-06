@@ -1,6 +1,6 @@
 <?php
 
-require_once ABSPATH . 'wp-content/plugins/woo-scrape/dtos/enums/class-woo-scrape-job-type-enum.php';
+require_once plugin_dir_path( __DIR__ ) . 'dtos/enums/class-woo-scrape-job-type-enum.php';
 
 class Woo_Scrape_Job_Log_Service {
 	private static string $date_format = 'Y-m-d H:i:s';

@@ -1,6 +1,6 @@
 <?php
 
-require_once ABSPATH . 'wp-content/plugins/woo-scrape/dtos/class-woo-scrape-decimal.php';
+require_once plugin_dir_path( __DIR__ ) . 'dtos/class-woo-scrape-decimal.php';
 
 class Woo_Scrape_WooCommerce_Service {
 

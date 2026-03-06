@@ -1,10 +1,10 @@
 <?php
-require_once ABSPATH . 'wp-content/plugins/woo-scrape/dtos/class-woo-scrape-product.php';
-require_once ABSPATH . 'wp-content/plugins/woo-scrape/services/class-woo-scrape-product-service.php';
-require_once ABSPATH . 'wp-content/plugins/woo-scrape/services/class-woo-scrape-variation-service.php';
-require_once ABSPATH . 'wp-content/plugins/woo-scrape/services/class-woo-scrape-deepl-service.php';
-require_once ABSPATH . 'wp-content/plugins/woo-scrape/services/class-woo-scrape-gtranslate-service.php';
-require_once ABSPATH . 'wp-content/plugins/woo-scrape/services/class-woo-scrape-job-log-service.php';
+require_once plugin_dir_path( __DIR__ ) . 'dtos/class-woo-scrape-product.php';
+require_once plugin_dir_path( __DIR__ ) . 'services/class-woo-scrape-product-service.php';
+require_once plugin_dir_path( __DIR__ ) . 'services/class-woo-scrape-variation-service.php';
+require_once plugin_dir_path( __DIR__ ) . 'services/class-woo-scrape-deepl-service.php';
+require_once plugin_dir_path( __DIR__ ) . 'services/class-woo-scrape-gtranslate-service.php';
+require_once plugin_dir_path( __DIR__ ) . 'services/class-woo-scrape-job-log-service.php';
 
 class Woo_Scrape_Translation_Job {
 	private static Woo_scrape_product_service $product_service;
