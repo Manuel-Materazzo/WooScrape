@@ -29,7 +29,13 @@ abstract class Woo_Scrape_Abstract_Crawler_Service
             // download and save file
             $uploaddir  = wp_upload_dir();
             $uploadfile = $uploaddir['path'] . '/' . $filename;
-            $contents = file_get_contents( $proxy_url . $url );
+            $response = wp_remote_get( $proxy_url . $url, array( 'timeout' => 60 ) );
+            if ( is_wp_error( $response ) || wp_remote_retrieve_response_code( $response ) !== 200 ) {
+	            error_log( "Failed to download image: " . $url );
+	            continue;
+            }
+            $contents = wp_remote_retrieve_body( $response );
+            // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fopen
             $savefile = fopen( $uploadfile, 'w' );
             fwrite( $savefile, $contents );
             fclose( $savefile );
@@ -37,6 +43,7 @@ abstract class Woo_Scrape_Abstract_Crawler_Service
 			// free up memory
 			unset($contents);
 	        unset($savefile);
+	        unset($response);
 
             // prepare file
             $wp_filetype = wp_check_filetype( basename( $filename ), null );
