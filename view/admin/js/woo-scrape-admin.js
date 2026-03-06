@@ -29,60 +29,43 @@ jQuery(document).ready(function ($) {
      * practising this, we should strive to set a better example in our own work.
      */
 
+    function showToast(message, type) {
+        var noticeClass = type === 'error' ? 'notice-error' : 'notice-success';
+        $('#toast-hanger').append(
+            '<div class="notice ' + noticeClass + ' is-dismissible"> ' +
+            '<p>' + message + '</p> ' +
+            '</div>'
+        );
+    }
+
+    function runJob(action, data, successMessage) {
+        $.post(ajaxurl, $.extend({action: action, nonce: woo_scrape_ajax.nonce}, data))
+            .done(function () {
+                showToast(successMessage, 'success');
+            })
+            .fail(function (jqXHR) {
+                showToast('Job failed: ' + (jqXHR.statusText || 'Unknown error'), 'error');
+            });
+    }
+
     $('#run-orchestrator-job-button').click(function () {
-        $.post(ajaxurl, {action: 'run_orchestrator_job', nonce: woo_scrape_ajax.nonce}, function (response) {
-            $('#toast-hanger').append(
-                '<div class="notice notice-success is-dismissible"> ' +
-                '<p>Orchestrated job started successfully.</p> ' +
-                '</div>'
-            )
-        });
+        runJob('run_orchestrator_job', {}, 'Orchestrated job completed successfully.');
     });
     $('#run-crawling-job-button').click(function () {
-        $.post(ajaxurl, {action: 'run_crawling_job', nonce: woo_scrape_ajax.nonce}, function (response) {
-            $('#toast-hanger').append(
-                '<div class="notice notice-success is-dismissible"> ' +
-                '<p>Crawling job started successfully.</p> ' +
-                '</div>'
-            )
-        });
+        runJob('run_crawling_job', {}, 'Crawling job completed successfully.');
     });
     $('#run-product-crawling-job-button').click(function () {
-        $.post(ajaxurl, {action: 'run_product_crawling_job', nonce: woo_scrape_ajax.nonce}, function (response) {
-            $('#toast-hanger').append(
-                '<div class="notice notice-success is-dismissible"> ' +
-                '<p>Product Crawling job started successfully.</p> ' +
-                '</div>'
-            )
-        });
+        runJob('run_product_crawling_job', {}, 'Product Crawling job completed successfully.');
     });
     $('#run-translate-job-button').click(function () {
-        $.post(ajaxurl, {action: 'run_translate_job', nonce: woo_scrape_ajax.nonce}, function (response) {
-            $('#toast-hanger').append(
-                '<div class="notice notice-success is-dismissible"> ' +
-                '<p>Translation job started successfully.</p> ' +
-                '</div>'
-            )
-        });
+        runJob('run_translate_job', {}, 'Translation job completed successfully.');
     });
     $('#run-wordpress-job-button').click(function () {
-        $.post(ajaxurl, {action: 'run_wordpress_job', nonce: woo_scrape_ajax.nonce}, function (response) {
-            $('#toast-hanger').append(
-                '<div class="notice notice-success is-dismissible"> ' +
-                '<p>Wordpress update job started successfully.</p> ' +
-                '</div>'
-            )
-        });
+        runJob('run_wordpress_job', {}, 'Wordpress update job completed successfully.');
     });
     $('#run-single-product-job').click(function () {
-        const sku = $("#manual-crawl-sku").val();
-        $.post(ajaxurl, {action: 'run_single_product_job', sku: sku, nonce: woo_scrape_ajax.nonce}, function (response) {
-            $('#toast-hanger').append(
-                '<div class="notice notice-success is-dismissible"> ' +
-                '<p>Single product crawl job started successfully.</p> ' +
-                '</div>'
-            )
-        });
+        var sku = $("#manual-crawl-sku").val();
+        runJob('run_single_product_job', {sku: sku}, 'Single product crawl job completed successfully.');
     });
 
     // accordion
