@@ -30,7 +30,7 @@ class Woo_Scrape_Deactivator {
 	 * @since    1.0.0
 	 */
 	public static function deactivate() {
-
+		wp_clear_scheduled_hook( 'woo_scrape_orchestration_job_hook' );
 	}
 
 }
