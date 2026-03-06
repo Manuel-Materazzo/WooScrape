@@ -95,6 +95,7 @@ class Woo_Scrape_Translation_Job {
 			foreach ( $untranslated_products as $untranslated_product ) {
 				try {
 					// if it's supposed to ignore brands, extract it
+					$brand = '';
 					if ( $ignore_brands ) {
 						$brand = $untranslated_product->brand;
 					}
