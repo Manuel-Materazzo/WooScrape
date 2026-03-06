@@ -67,7 +67,7 @@ class Woo_Scrape_Variation_Service {
 
 		// initialize date, if not given
 		if ( is_null( $date ) ) {
-			$date = date( self::$date_format );
+			$date = current_time( 'mysql' );
 		}
 
 		//TODO: transaction?
@@ -90,7 +90,7 @@ class Woo_Scrape_Variation_Service {
 
 		// initialize date, if not given
 		if ( is_null( $date ) ) {
-			$date = date( self::$date_format );
+			$date = current_time( 'mysql' );
 		}
 
 		$parameters = array(
@@ -119,7 +119,7 @@ class Woo_Scrape_Variation_Service {
 
 		// initialize date, if not given
 		if ( is_null( $date ) ) {
-			$date = date( self::$date_format );
+			$date = current_time( 'mysql' );
 		}
 
 		foreach ( $variations as $key => $variation ) {
@@ -150,7 +150,7 @@ class Woo_Scrape_Variation_Service {
 
 		// initialize date, if not given
 		if ( is_null( $date ) ) {
-			$date = date( self::$date_format );
+			$date = current_time( 'mysql' );
 		}
 
 		$parameters = array(

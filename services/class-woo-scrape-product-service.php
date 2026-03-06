@@ -154,7 +154,7 @@ class Woo_scrape_product_service {
 	 * @return array array of products not updated
 	 */
 	public function update_all_by_url( array $partial_products ): array {
-		$now = date( self::$date_format );
+		$now = current_time( 'mysql' );
 
 		foreach ( $partial_products as $key => $partial_product ) {
 			// update products already on the table
@@ -177,7 +177,7 @@ class Woo_scrape_product_service {
 	 * @param array $partial_products array of products to insert
 	 */
 	public function create_all( int $category_id, array $products ): void {
-		$now = date( self::$date_format );
+		$now = current_time( 'mysql' );
 
 		//TODO: transaction?
 		foreach ( $products as $product ) {
@@ -199,7 +199,7 @@ class Woo_scrape_product_service {
 
 		// initialize date, if not given
 		if ( is_null( $date ) ) {
-			$date = date( self::$date_format );
+			$date = current_time( 'mysql' );
 		}
 
 		$parameters = array(
@@ -255,7 +255,7 @@ class Woo_scrape_product_service {
 
 		// initialize date, if not given
 		if ( is_null( $date ) ) {
-			$date = date( self::$date_format );
+			$date = current_time( 'mysql' );
 		}
 
 		$parameters = array(

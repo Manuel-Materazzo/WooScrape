@@ -52,7 +52,7 @@ class Woo_scrape_crawling_job {
 	 */
 	public function run_single(string $sku): void {
 		$sku_prefix = get_option( 'woo_scrape_sku_prefix', 'sku-1-' );
-		$now  = date( self::$date_format );
+		$now  = current_time( 'mysql' );
 
 		// remove sku prefix to get id
 		$product_id = str_replace( $sku_prefix, '' , $sku);
@@ -117,7 +117,7 @@ class Woo_scrape_crawling_job {
 	 */
 	private function fetch_profitable_products(): void {
 		$page = 0;
-		$now  = date( self::$date_format );
+		$now  = current_time( 'mysql' );
 
 		// gets profitable products crawled today. Does not crawl products that have has_variants = false
 		// (already crawled once, and found no variants. using the categpry price is fine)
@@ -144,7 +144,7 @@ class Woo_scrape_crawling_job {
 	}
 
 	private function fetch_unfetched_products(): void {
-		$now = date( self::$date_format );
+		$now = current_time( 'mysql' );
 
 		// gets profitable products crawled today. Does not crawl products that have has_variants = false
 		// (already crawled once, and found no variants. using the categpry price is fine)

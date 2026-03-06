@@ -9,7 +9,7 @@ class Woo_Scrape_Job_Log_Service {
 
 	public function job_start( JobType $job_type, string $job_name = '' ): void {
 		global $wpdb;
-		$now = date( self::$date_format );
+		$now = current_time( 'mysql' );
 
 		$wpdb->insert(
 			$wpdb->prefix . self::$job_logs_table_name,
@@ -58,7 +58,7 @@ class Woo_Scrape_Job_Log_Service {
 		global $wpdb;
 		$table = $wpdb->prefix . self::$job_logs_table_name;
 
-		$now = date( self::$date_format );
+		$now = current_time( 'mysql' );
 
 		$wpdb->query(
 			$wpdb->prepare(
