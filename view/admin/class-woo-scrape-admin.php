@@ -396,19 +396,11 @@ class Woo_Scrape_Admin {
 	 *
 	 * @since    1.0.0
 	 */
-	public function enqueue_styles() {
+	public function enqueue_styles( $hook ) {
 
-		/**
-		 * This function is provided for demonstration purposes only.
-		 *
-		 * An instance of this class should be passed to the run() function
-		 * defined in Woo_Scrape_Loader as all of the hooks are defined
-		 * in that particular class.
-		 *
-		 * The Woo_Scrape_Loader will then create the relationship
-		 * between the defined hooks and the functions defined in this
-		 * class.
-		 */
+		if ( strpos( $hook, 'woo-scrape' ) === false ) {
+			return;
+		}
 
 		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/woo-scrape-admin.css', array(), $this->version, 'all' );
 
@@ -419,19 +411,11 @@ class Woo_Scrape_Admin {
 	 *
 	 * @since    1.0.0
 	 */
-	public function enqueue_scripts() {
+	public function enqueue_scripts( $hook ) {
 
-		/**
-		 * This function is provided for demonstration purposes only.
-		 *
-		 * An instance of this class should be passed to the run() function
-		 * defined in Woo_Scrape_Loader as all of the hooks are defined
-		 * in that particular class.
-		 *
-		 * The Woo_Scrape_Loader will then create the relationship
-		 * between the defined hooks and the functions defined in this
-		 * class.
-		 */
+		if ( strpos( $hook, 'woo-scrape' ) === false ) {
+			return;
+		}
 
 		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/woo-scrape-admin.js', array( 'jquery' ), $this->version, false );
 		wp_localize_script( $this->plugin_name, 'woo_scrape_ajax', array(
