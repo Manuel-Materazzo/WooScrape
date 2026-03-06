@@ -53,6 +53,7 @@ class Woo_Scrape_WooCommerce_Service {
 			} else {
 				// otherwise, just the price
 				$variation->set_regular_price( $profitable_price->multiply( $currency_conversion_multiplier ) );
+				$variation->set_sale_price( '' );
 			}
 
 			$variation->save();
@@ -162,6 +163,7 @@ class Woo_Scrape_WooCommerce_Service {
 				} else {
 					// otherwise, just the price
 					$product->set_regular_price( $profitable_price->multiply( $currency_conversion_multiplier ) );
+					$product->set_sale_price( '' );
 				}
 			} else {
 				error_log( $crawled_product->name . " has no price" );
