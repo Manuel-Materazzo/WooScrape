@@ -341,7 +341,7 @@ class Woo_scrape_product_service {
 		if ( ! empty( $product->getImageIds() ) ) {
 			$parameters['image_ids'] = json_encode($product->getImageIds());
 		}
-		if ( ! empty( $product->getQuantity() ) ) {
+		if ( ! is_null( $product->getQuantity() ) ) {
 			$parameters['quantity'] = strval( $product->getQuantity() );
 		}
 		if ( ! is_null( $product->getSuggestedPrice() ) ) {
