@@ -48,11 +48,11 @@ class Woo_Scrape_WooCommerce_Service {
 			// if the product has a suggested price and it's greater than the profitable price
 			if ( $suggested_price->greater_than( $profitable_price ) ) {
 				// display a discount
-				$variation->set_regular_price( $suggested_price->multiply( $currency_conversion_multiplier ) );
-				$variation->set_sale_price( $profitable_price->multiply( $currency_conversion_multiplier ) );
+				$variation->set_regular_price( $suggested_price->clone()->multiply( $currency_conversion_multiplier ) );
+				$variation->set_sale_price( $profitable_price->clone()->multiply( $currency_conversion_multiplier ) );
 			} else {
 				// otherwise, just the price
-				$variation->set_regular_price( $profitable_price->multiply( $currency_conversion_multiplier ) );
+				$variation->set_regular_price( $profitable_price->clone()->multiply( $currency_conversion_multiplier ) );
 				$variation->set_sale_price( '' );
 			}
 
@@ -158,11 +158,11 @@ class Woo_Scrape_WooCommerce_Service {
 				// if the product has a suggested price and it's greater than the profitable price
 				if ( $suggested_price->greater_than( $profitable_price ) ) {
 					// display a discount
-					$product->set_regular_price( $suggested_price->multiply( $currency_conversion_multiplier ) );
-					$product->set_sale_price( $profitable_price->multiply( $currency_conversion_multiplier ) );
+					$product->set_regular_price( $suggested_price->clone()->multiply( $currency_conversion_multiplier ) );
+					$product->set_sale_price( $profitable_price->clone()->multiply( $currency_conversion_multiplier ) );
 				} else {
 					// otherwise, just the price
-					$product->set_regular_price( $profitable_price->multiply( $currency_conversion_multiplier ) );
+					$product->set_regular_price( $profitable_price->clone()->multiply( $currency_conversion_multiplier ) );
 					$product->set_sale_price( '' );
 				}
 			} else {
