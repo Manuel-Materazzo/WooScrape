@@ -1,19 +1,19 @@
 <?php
-add_action( 'add_meta_boxes', 'add_custom_meta_box' );
-add_action( 'save_post', 'save_custom_meta_box', 10, 2 );
+add_action( 'add_meta_boxes', 'woo_scrape_add_custom_meta_box' );
+add_action( 'save_post', 'woo_scrape_save_custom_meta_box', 10, 2 );
 
-function add_custom_meta_box() {
+function woo_scrape_add_custom_meta_box() {
 	add_meta_box(
 		'custom_product_links', // ID, should be a string
 		'Custom Product Links', // Meta Box Title
-		'custom_meta_box_markup', // Your call back function, this is where your form field will go
+		'woo_scrape_custom_meta_box_markup', // Your call back function, this is where your form field will go
 		'product', // The post type you want this to show up on, can be post, page, or custom post type
 		'side', // The placement of your meta box, can be normal or side
 		'high' // The priority in which this will be displayed
 	);
 }
 
-function custom_meta_box_markup( $post ) {
+function woo_scrape_custom_meta_box_markup( $post ) {
 	global $wpdb;
 	$products_table_name = $wpdb->prefix . 'woo_scrape_products';
 	$sku_prefix          = get_option( 'woo_scrape_sku_prefix' );
@@ -47,7 +47,7 @@ function custom_meta_box_markup( $post ) {
 	<?php
 }
 
-function save_custom_meta_box( $post_id, $post ) {
+function woo_scrape_save_custom_meta_box( $post_id, $post ) {
 	// This function is required for WordPress to save the data from your custom meta box,
 	// even if you don't have any fields that need to be saved.
 }
