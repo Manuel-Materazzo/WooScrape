@@ -130,6 +130,7 @@ class Woo_Scrape_Admin {
 
 		if (!isset($_POST['sku'])) {
 			error_log('Sku not specified');
+			wp_die( 'Sku not specified', 400 );
 		}
 
 		$sku = sanitize_text_field($_POST['sku']);
