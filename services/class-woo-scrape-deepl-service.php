@@ -39,7 +39,7 @@ class Woo_scrape_deepl_service extends Woo_Scrape_Abstract_Translator_Service {
 		}
 
 		if ( is_wp_error( $response ) ) {
-			error_log( $response->get_error_message() );
+			throw new Exception( $response->get_error_message() );
 		}
 
 		if ( $response["response"]["code"] != 200 ) {

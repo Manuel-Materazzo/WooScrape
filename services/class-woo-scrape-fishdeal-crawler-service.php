@@ -22,7 +22,7 @@ class Woo_scrape_fishdeal_crawler_service extends Woo_Scrape_Abstract_Crawler_Se
 			$products = Woo_scrape_fishdeal_dom_utils::extract_products( $html );
 		} catch ( Exception $ex ) {
 			error_log( "Failed to crawl category " . $url );
-			error_log( $ex );
+			error_log( $ex->getMessage() );
 
 			return array();
 		}
@@ -39,7 +39,7 @@ class Woo_scrape_fishdeal_crawler_service extends Woo_Scrape_Abstract_Crawler_Se
 				$products      = array_merge( $products, $page_products );
 			} catch ( Exception $ex ) {
 				error_log( "Failed to crawl page " . $i . " of the category " . $url );
-				error_log( $ex );
+				error_log( $ex->getMessage() );
 			}
 		}
 
@@ -137,7 +137,7 @@ class Woo_scrape_fishdeal_crawler_service extends Woo_Scrape_Abstract_Crawler_Se
 			$partial_product->setImageUrls( array_unique( $images ) );
 		} catch ( Exception $ex ) {
 			error_log( "Failed to crawl product " . $url );
-			error_log( $ex );
+			error_log( $ex->getMessage() );
 		}
 
 		return $partial_product;

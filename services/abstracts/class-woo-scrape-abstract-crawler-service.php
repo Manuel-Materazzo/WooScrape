@@ -82,7 +82,7 @@ abstract class Woo_Scrape_Abstract_Crawler_Service
 	    $retry_count = 0; // Counter for retries
 
 	    do {
-		    error_log("crawling " .$url . " as " . $proxy_url . urlencode(urlencode($url)));
+		    error_log("crawling " . $url . " as " . $proxy_url . $url);
 		    $response = wp_remote_post( $proxy_url . $url, array(
 			    'method'      => 'GET',
 			    'headers'     => array( 'Accept' => 'application/json' ),

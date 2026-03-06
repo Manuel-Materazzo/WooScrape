@@ -34,7 +34,7 @@ class Woo_scrape_gtranslate_service extends Woo_Scrape_Abstract_Translator_Servi
 		}
 
 		if ( is_wp_error( $response ) ) {
-			error_log( $response->get_error_message() );
+			throw new Exception( $response->get_error_message() );
 		}
 
 		if ( $response["response"]["code"] != 200 ) {

@@ -97,13 +97,13 @@ class Woo_scrape_crawling_job {
 
 				error_log( "There are " . count( $partial_profitable_products ) . " new items to save" );
 				self::$log_service->increase_completed_counter( JobType::Categories_crawl );
+
+				// save the new products
+				self::$product_service->create_all( $category->id, $partial_profitable_products );
 			} catch ( Exception $e ) {
-				error_log( $e );
+				error_log( $e->getMessage() );
 				self::$log_service->increase_failed_counter( JobType::Categories_crawl );
 			}
-
-			// save the new products
-			self::$product_service->create_all( $category->id, $partial_profitable_products );
 			// free up memory
 			unset( $partial_profitable_products );
 		}
@@ -216,7 +216,7 @@ class Woo_scrape_crawling_job {
 
 				self::$log_service->increase_completed_counter( JobType::Products_crawl );
 			} catch ( Exception $e ) {
-				error_log( $e );
+				error_log( $e->getMessage() );
 				self::$log_service->increase_failed_counter( JobType::Products_crawl );
 			}
 		}
