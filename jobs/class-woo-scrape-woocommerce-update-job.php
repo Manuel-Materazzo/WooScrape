@@ -69,7 +69,7 @@ class Woo_scrape_woocommerce_update_job {
 		$product_total_quantity = null;
 		// if the product has variations, update them
 		if ( $product->has_variations ) {
-			$product_total_quantity = $this->update_woocommerce_vatiarions( $product->id, $woocommerce_product );
+			$product_total_quantity = $this->update_woocommerce_variations( $product->id, $woocommerce_product );
 		}
 
 		// if there is a total product quantity add it to the product
@@ -131,7 +131,7 @@ class Woo_scrape_woocommerce_update_job {
 
 					// if the product has variations, update them
 					if ( $crawled_product->has_variations ) {
-						$product_total_quantity = $this->update_woocommerce_vatiarions( $crawled_product->id, $woocommerce_product );
+						$product_total_quantity = $this->update_woocommerce_variations( $crawled_product->id, $woocommerce_product );
 					}
 
 					// if there is a total product quantity add it to the product
@@ -225,7 +225,7 @@ class Woo_scrape_woocommerce_update_job {
 		}
 	}
 
-	private function update_woocommerce_vatiarions( int $product_id, WC_Product $woocommerce_product ): int {
+	private function update_woocommerce_variations( int $product_id, WC_Product $woocommerce_product ): int {
 
 		// get crawled variation for this product from DB
 		$crawled_variations = self::$variation_service->get_updated_variations_by_product_id( $product_id );
