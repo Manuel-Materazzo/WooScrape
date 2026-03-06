@@ -280,7 +280,7 @@
                         Deepl api key
                     </th>
                     <td>
-                        <input type="text" name="woo_scrape_deepl_api_key"
+                        <input type="password" name="woo_scrape_deepl_api_key"
                                value="<?php echo esc_attr( get_option( 'woo_scrape_deepl_api_key' ) ); ?>"/>
                         <p class="description">
                             Api key to use Deepl as translator, get it (free or paid) from <a
