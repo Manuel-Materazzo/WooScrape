@@ -165,6 +165,7 @@ class Woo_Scrape {
         $this->loader->add_action( 'wp_ajax_run_translate_job', $plugin_admin, 'run_translate_job' );
         $this->loader->add_action( 'wp_ajax_run_wordpress_job', $plugin_admin, 'run_wordpress_job' );
         $this->loader->add_action( 'wp_ajax_run_single_product_job', $plugin_admin, 'run_single_product_job' );
+        $this->loader->add_action( 'wp_ajax_clear_job_logs', $plugin_admin, 'clear_job_logs' );
 	}
 
 

@@ -67,6 +67,11 @@ jQuery(document).ready(function ($) {
         var sku = $("#manual-crawl-sku").val();
         runJob('run_single_product_job', {sku: sku}, 'Single product crawl job completed successfully.');
     });
+    $('#clear-job-logs-button').click(function () {
+        if (confirm('Are you sure you want to clear all job logs?')) {
+            runJob('clear_job_logs', {}, 'Job logs cleared successfully.');
+        }
+    });
 
     // accordion
     const acc = document.getElementsByClassName("accordion");

@@ -125,7 +125,7 @@
         <button id="run-single-product-job" class="button">Crawl and update</button>
     </div>
 
-    <h3>Logs</h3>
+    <h3>Logs <button id="clear-job-logs-button" class="button" style="margin-left: 10px;">Clear Logs</button></h3>
     <table class="table-style">
         <tr>
             <th>Type</th>

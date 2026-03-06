@@ -119,6 +119,17 @@ class Woo_Scrape_Admin {
 		wp_die(); // this is required to terminate immediately and return a proper response
 	}
 
+	function clear_job_logs(): void {
+		check_ajax_referer( 'woo_scrape_nonce', 'nonce' );
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die( 'Unauthorized' );
+		}
+		global $wpdb;
+		$table = $wpdb->prefix . 'woo_scrape_job_logs';
+		$wpdb->query( "TRUNCATE TABLE $table" );
+		wp_die();
+	}
+
 	function run_single_product_job() {
 		check_ajax_referer( 'woo_scrape_nonce', 'nonce' );
 		if ( ! current_user_can( 'manage_options' ) ) {
