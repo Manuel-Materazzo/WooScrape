@@ -147,7 +147,7 @@
 		$results = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM $job_logs_table ORDER BY id DESC LIMIT %d, %d", $offset, $per_page ), OBJECT );
 
 		if ( ! $results ) {
-			echo '<tr>No logs found</tr>';
+			echo '<tr><td colspan="6">No logs found</td></tr>';
 		}
 
 		foreach ( $results as $row ) {
