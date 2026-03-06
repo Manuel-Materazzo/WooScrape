@@ -14,6 +14,13 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 	exit;
 }
 
+// Check if the user wants to keep data
+if ( get_option( 'woo_scrape_keep_data_on_uninstall' ) ) {
+	// Clear scheduled hooks only
+	wp_clear_scheduled_hook( 'woo_scrape_orchestration_job_hook' );
+	return;
+}
+
 global $wpdb;
 
 // Drop custom tables

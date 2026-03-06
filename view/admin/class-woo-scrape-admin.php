@@ -183,6 +183,10 @@ class Woo_Scrape_Admin {
 	 * @return void
 	 */
 	private function register_schedulation_settings(): void {
+		Woo_scrape_setting_utils::register_boolean_true(
+			'woo-scrape-schedulation-group',
+			'woo_scrape_keep_data_on_uninstall'
+		);
 		Woo_scrape_setting_utils::register_boolean_false(
 			'woo-scrape-schedulation-group',
 			'woo_scrape_schedule_crawl'

@@ -32,6 +32,17 @@
             <table class="form-table">
                 <tr>
                     <th scope="row">
+                        Keep data on uninstall
+                    </th>
+                    <td>
+                        <input type="checkbox" id="woo_scrape_keep_data_on_uninstall"
+                               name="woo_scrape_keep_data_on_uninstall"
+                               value="1" <?php checked( 1, get_option( 'woo_scrape_keep_data_on_uninstall' ), true ); ?> />
+                        <label for="woo_scrape_keep_data_on_uninstall">Keep plugin data (database tables and settings) when the plugin is uninstalled</label>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">
                         Schedule enabled
                     </th>
                     <td>
