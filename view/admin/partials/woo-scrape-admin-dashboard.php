@@ -36,34 +36,37 @@
 		<?php
 		global $wpdb;
 
+		$products_table = $wpdb->prefix . 'woo_scrape_products';
+		$variations_table = $wpdb->prefix . 'woo_scrape_variations';
+
 		$results = $wpdb->get_results( "SELECT
-    (SELECT COUNT(*) FROM wp_woo_scrape_products) AS products,
-    (SELECT COUNT(*) FROM wp_woo_scrape_products WHERE DATE(`latest_crawl_timestamp`) = CURDATE() and has_variations is not false) AS to_crawl,
-    (SELECT COUNT(*) FROM wp_woo_scrape_products WHERE has_variations IS NOT NULL) AS crawled_once,
-    (SELECT COUNT(*) FROM wp_woo_scrape_products WHERE has_variations IS NULL) AS not_crawled_once,
-    (SELECT COUNT(*) FROM wp_woo_scrape_products WHERE translated_name IS NULL) AS untranslated_product_names,
-    (SELECT COUNT(*) FROM wp_woo_scrape_products WHERE translated_name IS NOT NULL) AS translated_product_names,
-    (SELECT COUNT(*) FROM wp_woo_scrape_variations WHERE translated_name IS NULL) AS untranslated_variation_names,
-    (SELECT COUNT(*) FROM wp_woo_scrape_variations WHERE translated_name IS NOT NULL) AS translated_variation_names,
-    (SELECT COUNT(*) FROM wp_woo_scrape_products WHERE translated_specifications IS NULL) AS untranslated_specifications,
-    (SELECT COUNT(*) FROM wp_woo_scrape_products WHERE translated_specifications IS NOT NULL) AS translated_specifications,
-    (SELECT COUNT(*) FROM wp_woo_scrape_products WHERE translated_description IS NULL) AS untranslated_descriptions,
-    (SELECT COUNT(*) FROM wp_woo_scrape_products WHERE translated_description IS NOT NULL) AS translated_descriptions", OBJECT );
+    (SELECT COUNT(*) FROM $products_table) AS products,
+    (SELECT COUNT(*) FROM $products_table WHERE DATE(`latest_crawl_timestamp`) = CURDATE() and has_variations is not false) AS to_crawl,
+    (SELECT COUNT(*) FROM $products_table WHERE has_variations IS NOT NULL) AS crawled_once,
+    (SELECT COUNT(*) FROM $products_table WHERE has_variations IS NULL) AS not_crawled_once,
+    (SELECT COUNT(*) FROM $products_table WHERE translated_name IS NULL) AS untranslated_product_names,
+    (SELECT COUNT(*) FROM $products_table WHERE translated_name IS NOT NULL) AS translated_product_names,
+    (SELECT COUNT(*) FROM $variations_table WHERE translated_name IS NULL) AS untranslated_variation_names,
+    (SELECT COUNT(*) FROM $variations_table WHERE translated_name IS NOT NULL) AS translated_variation_names,
+    (SELECT COUNT(*) FROM $products_table WHERE translated_specifications IS NULL) AS untranslated_specifications,
+    (SELECT COUNT(*) FROM $products_table WHERE translated_specifications IS NOT NULL) AS translated_specifications,
+    (SELECT COUNT(*) FROM $products_table WHERE translated_description IS NULL) AS untranslated_descriptions,
+    (SELECT COUNT(*) FROM $products_table WHERE translated_description IS NOT NULL) AS translated_descriptions", OBJECT );
 
 		foreach ( $results as $row ) {
 			echo '<tr>';
-			echo '<td>' . $row->products . '</td>';
-			echo '<td>' . $row->to_crawl . '</td>';
-			echo '<td>' . $row->crawled_once . '</td>';
-			echo '<td>' . $row->not_crawled_once . '</td>';
-			echo '<td>' . $row->untranslated_product_names . '</td>';
-			echo '<td>' . $row->translated_product_names . '</td>';
-			echo '<td>' . $row->untranslated_variation_names . '</td>';
-			echo '<td>' . $row->translated_variation_names . '</td>';
-			echo '<td>' . $row->untranslated_specifications . '</td>';
-			echo '<td>' . $row->translated_specifications . '</td>';
-			echo '<td>' . $row->untranslated_descriptions . '</td>';
-			echo '<td>' . $row->translated_descriptions . '</td>';
+			echo '<td>' . esc_html( $row->products ) . '</td>';
+			echo '<td>' . esc_html( $row->to_crawl ) . '</td>';
+			echo '<td>' . esc_html( $row->crawled_once ) . '</td>';
+			echo '<td>' . esc_html( $row->not_crawled_once ) . '</td>';
+			echo '<td>' . esc_html( $row->untranslated_product_names ) . '</td>';
+			echo '<td>' . esc_html( $row->translated_product_names ) . '</td>';
+			echo '<td>' . esc_html( $row->untranslated_variation_names ) . '</td>';
+			echo '<td>' . esc_html( $row->translated_variation_names ) . '</td>';
+			echo '<td>' . esc_html( $row->untranslated_specifications ) . '</td>';
+			echo '<td>' . esc_html( $row->translated_specifications ) . '</td>';
+			echo '<td>' . esc_html( $row->untranslated_descriptions ) . '</td>';
+			echo '<td>' . esc_html( $row->translated_descriptions ) . '</td>';
 			echo '</tr>';
 		}
 		?>
@@ -137,11 +140,11 @@
 		$page     = isset( $_GET['paged'] ) ? abs( (int) $_GET['paged'] ) : 1;
 		$offset   = ( $page * $per_page ) - $per_page;
 
-		$total_query = "SELECT COUNT('id') FROM wp_woo_scrape_job_logs";
-		$total       = $wpdb->get_var( $total_query );
+		$job_logs_table = $wpdb->prefix . 'woo_scrape_job_logs';
+		$total       = $wpdb->get_var( "SELECT COUNT('id') FROM $job_logs_table" );
 		$num_pages   = ceil( $total / $per_page );
 
-		$results = $wpdb->get_results( "SELECT * FROM wp_woo_scrape_job_logs ORDER BY id DESC LIMIT $offset, $per_page", OBJECT );
+		$results = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM $job_logs_table ORDER BY id DESC LIMIT %d, %d", $offset, $per_page ), OBJECT );
 
 		if ( ! $results ) {
 			echo '<tr>No logs found</tr>';
@@ -149,12 +152,12 @@
 
 		foreach ( $results as $row ) {
 			echo '<tr>';
-			echo '<td>' . $row->type . '</td>';
-			echo '<td>' . $row->name . '</td>';
-			echo '<td>' . $row->completed_counter . '</td>';
-			echo '<td>' . $row->failed_counter . '</td>';
-			echo '<td>' . $row->job_start_timestamp . '</td>';
-			echo '<td>' . $row->job_end_timestamp . '</td>';
+			echo '<td>' . esc_html( $row->type ) . '</td>';
+			echo '<td>' . esc_html( $row->name ) . '</td>';
+			echo '<td>' . esc_html( $row->completed_counter ) . '</td>';
+			echo '<td>' . esc_html( $row->failed_counter ) . '</td>';
+			echo '<td>' . esc_html( $row->job_start_timestamp ) . '</td>';
+			echo '<td>' . esc_html( $row->job_end_timestamp ) . '</td>';
 			echo '</tr>';
 		}
 
