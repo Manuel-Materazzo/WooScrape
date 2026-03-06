@@ -40,7 +40,7 @@ class Woo_Scrape_Activator {
 		$charset_collate = $wpdb->get_charset_collate();
 
         $job_logs_table_name = $wpdb->prefix . 'woo_scrape_job_logs';
-        $job_logs_table_sql = "CREATE TABLE IF NOT EXISTS $job_logs_table_name (
+        $job_logs_table_sql = "CREATE TABLE $job_logs_table_name (
         id mediumint(9) UNSIGNED NOT NULL AUTO_INCREMENT,
         type tinytext NOT NULL,
         name tinytext NOT NULL,
@@ -52,21 +52,21 @@ class Woo_Scrape_Activator {
         ) $charset_collate;";
 
 		$pages_list_table_name = $wpdb->prefix . 'woo_scrape_pages';
-		$pages_list_table_sql = "CREATE TABLE IF NOT EXISTS $pages_list_table_name (
+		$pages_list_table_sql = "CREATE TABLE $pages_list_table_name (
         id mediumint(9) UNSIGNED NOT NULL AUTO_INCREMENT,
         name tinytext NOT NULL,
         provider tinytext NOT NULL,
         url varchar(250) DEFAULT '' NOT NULL,
         corresponding_woocommerce_category_id mediumint(9) UNSIGNED NOT NULL,
-        weight decimal(4,2) NOT NULL,
-        length TINYINT UNSIGNED NOT NULL,
-        width TINYINT UNSIGNED NOT NULL,
-        height TINYINT UNSIGNED NOT NULL,
+        weight decimal(7,2) NOT NULL,
+        length SMALLINT UNSIGNED NOT NULL,
+        width SMALLINT UNSIGNED NOT NULL,
+        height SMALLINT UNSIGNED NOT NULL,
         PRIMARY KEY (id)
         ) $charset_collate;";
 
 		$products_table_name = $wpdb->prefix . 'woo_scrape_products';
-		$products_table_sql = "CREATE TABLE IF NOT EXISTS $products_table_name (
+		$products_table_sql = "CREATE TABLE $products_table_name (
         id mediumint(9) UNSIGNED NOT NULL AUTO_INCREMENT,
         name text NOT NULL,
         translated_name text DEFAULT NULL,
@@ -91,7 +91,7 @@ class Woo_Scrape_Activator {
         ) $charset_collate;";
 
 		$variations_table_name = $wpdb->prefix . 'woo_scrape_variations';
-		$variants_table_sql = "CREATE TABLE IF NOT EXISTS $variations_table_name (
+		$variants_table_sql = "CREATE TABLE $variations_table_name (
         id mediumint(9) UNSIGNED NOT NULL AUTO_INCREMENT,
         name text NOT NULL,
         translated_name text DEFAULT NULL,
