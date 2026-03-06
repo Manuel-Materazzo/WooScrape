@@ -66,7 +66,7 @@ class Woo_scrape_deepl_service extends Woo_Scrape_Abstract_Translator_Service {
 				'Accept'        => 'application/json',
 				'Content-Type'  => 'application/x-www-form-urlencoded;charset=UTF-8'
 			),
-			'body'        => 'tag_handling=xml&ignore_tags=ignored&target_lang=' . $lang_code . '&text=' . $text,
+			'body'        => 'tag_handling=xml&ignore_tags=ignored&target_lang=' . urlencode( $lang_code ) . '&text=' . urlencode( $text ),
 			'timeout'     => 45,
 			'redirection' => 5,
 			'httpversion' => '1.0',
@@ -82,7 +82,7 @@ class Woo_scrape_deepl_service extends Woo_Scrape_Abstract_Translator_Service {
 			'Content-Type'  => 'application/x-www-form-urlencoded;charset=UTF-8'
 		) );
 
-		$body = 'tag_handling=xml&ignore_tags=ignored&target_lang=' . $lang_code . '&text=' . $text;
+		$body = 'tag_handling=xml&ignore_tags=ignored&target_lang=' . urlencode( $lang_code ) . '&text=' . urlencode( $text );
 
 		return wp_remote_post( $proxy_url, array(
 			'method'      => 'GET',
