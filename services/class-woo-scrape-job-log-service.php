@@ -29,8 +29,12 @@ class Woo_Scrape_Job_Log_Service {
 		$table = $wpdb->prefix . self::$job_logs_table_name;
 
 		$wpdb->query(
-			"UPDATE {$table} SET completed_counter = completed_counter + {$quantity}
-             		WHERE type = '{$job_type->value}' ORDER BY id DESC LIMIT 1;"
+			$wpdb->prepare(
+				"UPDATE {$table} SET completed_counter = completed_counter + %d
+             		WHERE type = %s ORDER BY id DESC LIMIT 1;",
+				$quantity,
+				$job_type->value
+			)
 		);
 		$wpdb->flush();
 	}
@@ -40,8 +44,12 @@ class Woo_Scrape_Job_Log_Service {
 		$table = $wpdb->prefix . self::$job_logs_table_name;
 
 		$wpdb->query(
-			"UPDATE {$table} SET failed_counter = failed_counter + {$quantity}
-             		WHERE type = '{$job_type->value}' ORDER BY id DESC LIMIT 1;"
+			$wpdb->prepare(
+				"UPDATE {$table} SET failed_counter = failed_counter + %d
+             		WHERE type = %s ORDER BY id DESC LIMIT 1;",
+				$quantity,
+				$job_type->value
+			)
 		);
 		$wpdb->flush();
 	}
@@ -54,8 +62,9 @@ class Woo_Scrape_Job_Log_Service {
 
 		$wpdb->query(
 			$wpdb->prepare(
-				"UPDATE {$table} SET job_end_timestamp = %s WHERE type = '{$job_type->value}' ORDER BY id DESC LIMIT 1;",
-				$now
+				"UPDATE {$table} SET job_end_timestamp = %s WHERE type = %s ORDER BY id DESC LIMIT 1;",
+				$now,
+				$job_type->value
 			)
 		);
 		$wpdb->flush();

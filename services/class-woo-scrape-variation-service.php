@@ -19,8 +19,11 @@ class Woo_Scrape_Variation_Service {
 		$variations_table_name = $wpdb->prefix . self::$variations_table_name;
 
 		return $wpdb->get_results(
-			"SELECT id, name, translated_name, suggested_price, discounted_price FROM $variations_table_name
-                					WHERE DATE(`item_updated_timestamp`) = CURDATE() AND product_id = $product_id"
+			$wpdb->prepare(
+				"SELECT id, name, translated_name, suggested_price, discounted_price FROM $variations_table_name
+                					WHERE DATE(`item_updated_timestamp`) = CURDATE() AND product_id = %d",
+				$product_id
+			)
 		);
 	}
 

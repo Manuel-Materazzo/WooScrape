@@ -28,7 +28,10 @@ function custom_meta_box_markup( $post ) {
 	// get the url from DB (if the id extraction is successful)
 	if ( is_numeric($product_id) ) {
 		$product_on_db = $wpdb->get_results(
-			"SELECT url FROM $products_table_name WHERE id = $product_id ORDER BY id LIMIT 1"
+			$wpdb->prepare(
+				"SELECT url FROM $products_table_name WHERE id = %d ORDER BY id LIMIT 1",
+				$product_id
+			)
 		);
 		$product_url   = $product_on_db[0]->url;
 	}

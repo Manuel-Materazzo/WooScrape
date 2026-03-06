@@ -16,7 +16,7 @@ class Woo_scrape_product_service {
 		$products_table_name = $wpdb->prefix . self::$products_table_name;
 
 		return $wpdb->get_results(
-			"SELECT * FROM $products_table_name WHERE id = $id"
+			$wpdb->prepare( "SELECT * FROM $products_table_name WHERE id = %d", $id )
 		);
 	}
 
@@ -35,7 +35,8 @@ class Woo_scrape_product_service {
 		$start = $page * 30;
 
 		return $wpdb->get_results(
-			"SELECT $products_table_name.id, $products_table_name.name, translated_name, description,
+			$wpdb->prepare(
+				"SELECT $products_table_name.id, $products_table_name.name, translated_name, description,
        						translated_description, specifications, translated_specifications, suggested_price,
        						discounted_price, weight, length, width, height, has_variations, image_ids,
        						corresponding_woocommerce_category_id
@@ -43,7 +44,9 @@ class Woo_scrape_product_service {
             	ON $products_table_name.category_id = $pages_list_table_name.id
                 WHERE DATE(`item_updated_timestamp`) = CURDATE()
                 ORDER BY $products_table_name.id
-                LIMIT $start,30"
+                LIMIT %d,30",
+				$start
+			)
 		);
 	}
 
@@ -82,10 +85,13 @@ class Woo_scrape_product_service {
 		$start = $page * 30;
 
 		return $wpdb->get_results(
-			"SELECT id, has_variations FROM $products_table_name
+			$wpdb->prepare(
+				"SELECT id, has_variations FROM $products_table_name
                 WHERE DATE(`latest_crawl_timestamp`) != CURDATE()
                 ORDER BY id
-                LIMIT $start,30"
+                LIMIT %d,30",
+				$start
+			)
 		);
 	}
 
@@ -103,11 +109,14 @@ class Woo_scrape_product_service {
 		$start = $page * 30;
 
 		return $wpdb->get_results(
-			"SELECT id, url, image_urls, image_ids, suggested_price, discounted_price FROM $products_table_name
+			$wpdb->prepare(
+				"SELECT id, url, image_urls, image_ids, suggested_price, discounted_price FROM $products_table_name
                 WHERE DATE(`latest_crawl_timestamp`) = CURDATE()
                 and has_variations is true
                 ORDER BY id
-                LIMIT $start,30"
+                LIMIT %d,30",
+				$start
+			)
 		);
 	}
 
