@@ -144,7 +144,7 @@ class Woo_scrape_woocommerce_update_job {
 
 					self::$log_service->increase_completed_counter( JobType::Woocommerce_update );
 				} catch ( Exception $e ) {
-					error_log( $e );
+					error_log( $e->getMessage() );
 					self::$log_service->increase_failed_counter( JobType::Woocommerce_update );
 				}
 
@@ -169,7 +169,7 @@ class Woo_scrape_woocommerce_update_job {
 					self::$woocommerce_service->update_product( $product, $new_product );
 					self::$log_service->increase_completed_counter( JobType::Woocommerce_create );
 				} catch ( Exception $e ) {
-					error_log( $e );
+					error_log( $e->getMessage() );
 					self::$log_service->increase_failed_counter( JobType::Woocommerce_create );
 				}
 
@@ -217,7 +217,7 @@ class Woo_scrape_woocommerce_update_job {
 					}
 					self::$log_service->increase_completed_counter( JobType::Woocommerce_out_of_stock );
 				} catch ( Exception $e ) {
-					error_log( $e );
+					error_log( $e->getMessage() );
 					self::$log_service->increase_failed_counter( JobType::Woocommerce_out_of_stock );
 				}
 			}

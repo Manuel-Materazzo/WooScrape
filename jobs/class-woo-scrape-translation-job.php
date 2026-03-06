@@ -127,7 +127,7 @@ class Woo_Scrape_Translation_Job {
 					self::$log_service->increase_completed_counter( $job_type );
 
 				} catch ( Exception $e ) {
-					error_log( $e );
+					error_log( $e->getMessage() );
 					self::$log_service->increase_failed_counter( $job_type );
 				}
 
