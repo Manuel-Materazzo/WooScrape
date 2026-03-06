@@ -33,7 +33,9 @@ function woo_scrape_custom_meta_box_markup( $post ) {
 				$product_id
 			)
 		);
-		$product_url   = $product_on_db[0]->url;
+		if ( ! empty( $product_on_db ) ) {
+			$product_url = $product_on_db[0]->url;
+		}
 	}
 
 	?>
