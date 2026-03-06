@@ -422,7 +422,7 @@
         document.getElementById(id).style.display = "block";
 
         const tablinks = document.getElementsByClassName("woo-scrape-tab-link");
-        for (i = 0; i < x.length; i++) {
+        for (i = 0; i < tablinks.length; i++) {
             tablinks[i].className = tablinks[i].className.replace(" nav-tab-active", "");
         }
         evt.currentTarget.className += " nav-tab-active";
