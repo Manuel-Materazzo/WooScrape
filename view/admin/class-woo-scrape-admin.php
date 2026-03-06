@@ -61,6 +61,10 @@ class Woo_Scrape_Admin {
 	}
 
 	function run_orchestrator_job(): void {
+		check_ajax_referer( 'woo_scrape_nonce', 'nonce' );
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die( 'Unauthorized' );
+		}
 		include_once plugin_dir_path( __FILE__ ) . '../../jobs/class-woo-scrape-orchestrator.php';
 		error_log( "orchestrator job started" );
 		Woo_scrape_orchestrator::orchestrate_main_job();
@@ -68,6 +72,10 @@ class Woo_Scrape_Admin {
 	}
 
 	function run_crawling_job(): void {
+		check_ajax_referer( 'woo_scrape_nonce', 'nonce' );
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die( 'Unauthorized' );
+		}
 		include_once plugin_dir_path( __FILE__ ) . '../../jobs/class-woo-scrape-crawling-job.php';
 		error_log( "crawling job started" );
 		$job = new Woo_scrape_crawling_job();
@@ -76,6 +84,10 @@ class Woo_Scrape_Admin {
 	}
 
 	function run_product_crawling_job(): void {
+		check_ajax_referer( 'woo_scrape_nonce', 'nonce' );
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die( 'Unauthorized' );
+		}
 		include_once plugin_dir_path( __FILE__ ) . '../../jobs/class-woo-scrape-crawling-job.php';
 		error_log( "product crawling job started" );
 		$job = new Woo_scrape_crawling_job();
@@ -84,6 +96,10 @@ class Woo_Scrape_Admin {
 	}
 
 	function run_translate_job(): void {
+		check_ajax_referer( 'woo_scrape_nonce', 'nonce' );
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die( 'Unauthorized' );
+		}
 		include_once plugin_dir_path( __FILE__ ) . '../../jobs/class-woo-scrape-translation-job.php';
 		error_log( "translate job started" );
 		$job = new Woo_Scrape_Translation_Job();
@@ -92,6 +108,10 @@ class Woo_Scrape_Admin {
 	}
 
 	function run_wordpress_job(): void {
+		check_ajax_referer( 'woo_scrape_nonce', 'nonce' );
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die( 'Unauthorized' );
+		}
 		include_once plugin_dir_path( __FILE__ ) . '../../jobs/class-woo-scrape-woocommerce-update-job.php';
 		error_log( "wordpress update job started" );
 		$job = new Woo_scrape_woocommerce_update_job();
@@ -100,6 +120,10 @@ class Woo_Scrape_Admin {
 	}
 
 	function run_single_product_job() {
+		check_ajax_referer( 'woo_scrape_nonce', 'nonce' );
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die( 'Unauthorized' );
+		}
 		include_once plugin_dir_path( __FILE__ ) . '../../jobs/class-woo-scrape-crawling-job.php';
 		include_once plugin_dir_path( __FILE__ ) . '../../jobs/class-woo-scrape-woocommerce-update-job.php';
 		error_log( "single product crawl job started" );
@@ -409,6 +433,9 @@ class Woo_Scrape_Admin {
 		 */
 
 		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/woo-scrape-admin.js', array( 'jquery' ), $this->version, false );
+		wp_localize_script( $this->plugin_name, 'woo_scrape_ajax', array(
+			'nonce' => wp_create_nonce( 'woo_scrape_nonce' ),
+		) );
 
 	}
 
