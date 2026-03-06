@@ -30,7 +30,7 @@ jQuery(document).ready(function ($) {
      */
 
     $('#run-orchestrator-job-button').click(function () {
-        $.post(ajaxurl, {action: 'run_orchestrator_job'}, function (response) {
+        $.post(ajaxurl, {action: 'run_orchestrator_job', nonce: woo_scrape_ajax.nonce}, function (response) {
             $('#toast-hanger').append(
                 '<div class="notice notice-success is-dismissible"> ' +
                 '<p>Orchestrated job started successfully.</p> ' +
@@ -39,7 +39,7 @@ jQuery(document).ready(function ($) {
         });
     });
     $('#run-crawling-job-button').click(function () {
-        $.post(ajaxurl, {action: 'run_crawling_job'}, function (response) {
+        $.post(ajaxurl, {action: 'run_crawling_job', nonce: woo_scrape_ajax.nonce}, function (response) {
             $('#toast-hanger').append(
                 '<div class="notice notice-success is-dismissible"> ' +
                 '<p>Crawling job started successfully.</p> ' +
@@ -48,7 +48,7 @@ jQuery(document).ready(function ($) {
         });
     });
     $('#run-product-crawling-job-button').click(function () {
-        $.post(ajaxurl, {action: 'run_product_crawling_job'}, function (response) {
+        $.post(ajaxurl, {action: 'run_product_crawling_job', nonce: woo_scrape_ajax.nonce}, function (response) {
             $('#toast-hanger').append(
                 '<div class="notice notice-success is-dismissible"> ' +
                 '<p>Product Crawling job started successfully.</p> ' +
@@ -57,7 +57,7 @@ jQuery(document).ready(function ($) {
         });
     });
     $('#run-translate-job-button').click(function () {
-        $.post(ajaxurl, {action: 'run_translate_job'}, function (response) {
+        $.post(ajaxurl, {action: 'run_translate_job', nonce: woo_scrape_ajax.nonce}, function (response) {
             $('#toast-hanger').append(
                 '<div class="notice notice-success is-dismissible"> ' +
                 '<p>Translation job started successfully.</p> ' +
@@ -66,7 +66,7 @@ jQuery(document).ready(function ($) {
         });
     });
     $('#run-wordpress-job-button').click(function () {
-        $.post(ajaxurl, {action: 'run_wordpress_job'}, function (response) {
+        $.post(ajaxurl, {action: 'run_wordpress_job', nonce: woo_scrape_ajax.nonce}, function (response) {
             $('#toast-hanger').append(
                 '<div class="notice notice-success is-dismissible"> ' +
                 '<p>Wordpress update job started successfully.</p> ' +
@@ -76,7 +76,7 @@ jQuery(document).ready(function ($) {
     });
     $('#run-single-product-job').click(function () {
         const sku = $("#manual-crawl-sku").val();
-        $.post(ajaxurl, {action: 'run_single_product_job', sku: sku}, function (response) {
+        $.post(ajaxurl, {action: 'run_single_product_job', sku: sku, nonce: woo_scrape_ajax.nonce}, function (response) {
             $('#toast-hanger').append(
                 '<div class="notice notice-success is-dismissible"> ' +
                 '<p>Single product crawl job started successfully.</p> ' +
