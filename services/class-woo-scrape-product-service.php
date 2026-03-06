@@ -62,6 +62,11 @@ class Woo_scrape_product_service {
 		global $wpdb;
 		$products_table_name = $wpdb->prefix . self::$products_table_name;
 
+		$allowed_fields = array( 'name', 'specifications', 'description' );
+		if ( ! in_array( $field, $allowed_fields, true ) ) {
+			return array();
+		}
+
 		return $wpdb->get_results(
 			"SELECT id, brand, $field FROM $products_table_name
                 WHERE translated_$field is null

@@ -40,6 +40,11 @@ class Woo_Scrape_Variation_Service {
 		$products_table_name = $wpdb->prefix . self::$products_table_name;
 		$variations_table_name = $wpdb->prefix . self::$variations_table_name;
 
+		$allowed_fields = array( 'name' );
+		if ( ! in_array( $field, $allowed_fields, true ) ) {
+			return array();
+		}
+
 		return $wpdb->get_results(
 			"SELECT $variations_table_name.id, $products_table_name.brand, $variations_table_name.$field FROM $variations_table_name
                 INNER JOIN $products_table_name ON $variations_table_name.product_id = $products_table_name.id
