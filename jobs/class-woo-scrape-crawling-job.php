@@ -181,6 +181,11 @@ class Woo_scrape_crawling_job {
 		foreach ( $updated_products as $partial_product ) {
 			try {
 				// calculate price multiplier to get suggested price from discounted
+				if ( empty( $partial_product->discounted_price ) || $partial_product->discounted_price == '0.00' ) {
+					error_log( "Skipping product " . $partial_product->url . " — discounted price is zero" );
+					self::$log_service->increase_failed_counter( JobType::Products_crawl );
+					continue;
+				}
 				$suggested_price_multiplier = new WooScrapeDecimal( $partial_product->suggested_price );
 				$suggested_price_multiplier = $suggested_price_multiplier->divide( $partial_product->discounted_price );
 
