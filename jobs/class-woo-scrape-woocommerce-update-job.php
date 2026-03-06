@@ -66,6 +66,7 @@ class Woo_scrape_woocommerce_update_job {
 		// get product from woocommerce
 		$woocommerce_product = wc_get_product( $woocommerce_product_id );
 
+		$product_total_quantity = null;
 		// if the product has variations, update them
 		if ( $product->has_variations ) {
 			$product_total_quantity = $this->update_woocommerce_vatiarions( $product->id, $woocommerce_product );
@@ -103,6 +104,7 @@ class Woo_scrape_woocommerce_update_job {
 			// update each product on woocommerce
 			foreach ( $crawled_products as $crawled_product ) {
 				try {
+					$product_total_quantity = null;
 					$product_id = wc_get_product_id_by_sku( $sku_prefix . $crawled_product->id );
 					// if there is no such product on woocommerce, queue it for creation and go on
 					if ( ! $product_id ) {
