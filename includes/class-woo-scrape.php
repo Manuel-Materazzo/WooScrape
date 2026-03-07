@@ -122,6 +122,17 @@ class Woo_Scrape {
 		 */
 		require_once plugin_dir_path(dirname(__FILE__)) . 'view/public/class-woo-scrape-public.php';
 
+		/**
+		 * The class responsible for plugin activation and database schema.
+		 */
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-woo-scrape-activator.php';
+		add_action( 'plugins_loaded', array( 'Woo_Scrape_Activator', 'check_db_version' ) );
+
+		/**
+		 * Background job cron callbacks.
+		 */
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'jobs/class-woo-scrape-background-jobs.php';
+
 		$this->loader = new Woo_Scrape_Loader();
 
 	}

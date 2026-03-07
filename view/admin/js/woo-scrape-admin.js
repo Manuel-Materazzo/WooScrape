@@ -38,34 +38,36 @@ jQuery(document).ready(function ($) {
         );
     }
 
-    function runJob(action, data, successMessage) {
+    function runJob(action, data, fallbackMessage) {
         $.post(ajaxurl, $.extend({action: action, nonce: woo_scrape_ajax.nonce}, data))
-            .done(function () {
-                showToast(successMessage, 'success');
+            .done(function (response) {
+                var message = (response && response.data && response.data.message) ? response.data.message : fallbackMessage;
+                showToast(message, 'success');
             })
             .fail(function (jqXHR) {
-                showToast('Job failed: ' + (jqXHR.statusText || 'Unknown error'), 'error');
+                var message = (jqXHR.responseJSON && jqXHR.responseJSON.data && jqXHR.responseJSON.data.message) ? jqXHR.responseJSON.data.message : (jqXHR.statusText || 'Unknown error');
+                showToast('Job failed: ' + message, 'error');
             });
     }
 
     $('#run-orchestrator-job-button').click(function () {
-        runJob('run_orchestrator_job', {}, 'Orchestrated job completed successfully.');
+        runJob('run_orchestrator_job', {}, 'Orchestrator job started...');
     });
     $('#run-crawling-job-button').click(function () {
-        runJob('run_crawling_job', {}, 'Crawling job completed successfully.');
+        runJob('run_crawling_job', {}, 'Crawling job started...');
     });
     $('#run-product-crawling-job-button').click(function () {
-        runJob('run_product_crawling_job', {}, 'Product Crawling job completed successfully.');
+        runJob('run_product_crawling_job', {}, 'Product crawling job started...');
     });
     $('#run-translate-job-button').click(function () {
-        runJob('run_translate_job', {}, 'Translation job completed successfully.');
+        runJob('run_translate_job', {}, 'Translation job started...');
     });
     $('#run-wordpress-job-button').click(function () {
-        runJob('run_wordpress_job', {}, 'Wordpress update job completed successfully.');
+        runJob('run_wordpress_job', {}, 'WordPress update job started...');
     });
     $('#run-single-product-job').click(function () {
         var sku = $("#manual-crawl-sku").val();
-        runJob('run_single_product_job', {sku: sku}, 'Single product crawl job completed successfully.');
+        runJob('run_single_product_job', {sku: sku}, 'Single product job started...');
     });
     $('#clear-job-logs-button').click(function () {
         if (confirm('Are you sure you want to clear all job logs?')) {

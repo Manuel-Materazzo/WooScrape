@@ -60,97 +60,90 @@ class Woo_Scrape_Admin {
 
 	}
 
+	/**
+	 * Schedule a background job via WP Cron and send a JSON response.
+	 *
+	 * @param string $hook    The cron hook name.
+	 * @param array  $args    Arguments to pass to the cron callback.
+	 * @param string $message Success message to return.
+	 *
+	 * @return void
+	 */
+	private function schedule_job( string $hook, array $args = array(), string $message = 'Job started.' ): void {
+		if ( wp_next_scheduled( $hook, $args ) ) {
+			wp_send_json_success( array( 'message' => 'Job is already queued.' ) );
+		}
+
+		wp_schedule_single_event( time(), $hook, $args );
+
+		if ( function_exists( 'spawn_cron' ) ) {
+			spawn_cron( time() );
+		}
+
+		wp_send_json_success( array( 'message' => $message ) );
+	}
+
 	function run_orchestrator_job(): void {
 		check_ajax_referer( 'woo_scrape_nonce', 'nonce' );
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_die( 'Unauthorized' );
+			wp_send_json_error( array( 'message' => 'Unauthorized' ), 403 );
 		}
-		include_once plugin_dir_path( __FILE__ ) . '../../jobs/class-woo-scrape-orchestrator.php';
-		error_log( "orchestrator job started" );
-		Woo_scrape_orchestrator::orchestrate_main_job();
-		wp_die(); // this is required to terminate immediately and return a proper response
+		$this->schedule_job( 'woo_scrape_orchestration_job_hook', array(), 'Orchestrator job started. Processing in background.' );
 	}
 
 	function run_crawling_job(): void {
 		check_ajax_referer( 'woo_scrape_nonce', 'nonce' );
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_die( 'Unauthorized' );
+			wp_send_json_error( array( 'message' => 'Unauthorized' ), 403 );
 		}
-		include_once plugin_dir_path( __FILE__ ) . '../../jobs/class-woo-scrape-crawling-job.php';
-		error_log( "crawling job started" );
-		$job = new Woo_scrape_crawling_job();
-		$job->run();
-		wp_die(); // this is required to terminate immediately and return a proper response
+		$this->schedule_job( 'woo_scrape_crawling_job_hook', array(), 'Crawling job started. Processing in background.' );
 	}
 
 	function run_product_crawling_job(): void {
 		check_ajax_referer( 'woo_scrape_nonce', 'nonce' );
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_die( 'Unauthorized' );
+			wp_send_json_error( array( 'message' => 'Unauthorized' ), 403 );
 		}
-		include_once plugin_dir_path( __FILE__ ) . '../../jobs/class-woo-scrape-crawling-job.php';
-		error_log( "product crawling job started" );
-		$job = new Woo_scrape_crawling_job();
-		$job->run_products();
-		wp_die(); // this is required to terminate immediately and return a proper response
+		$this->schedule_job( 'woo_scrape_product_crawling_job_hook', array(), 'Product crawling job started. Processing in background.' );
 	}
 
 	function run_translate_job(): void {
 		check_ajax_referer( 'woo_scrape_nonce', 'nonce' );
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_die( 'Unauthorized' );
+			wp_send_json_error( array( 'message' => 'Unauthorized' ), 403 );
 		}
-		include_once plugin_dir_path( __FILE__ ) . '../../jobs/class-woo-scrape-translation-job.php';
-		error_log( "translate job started" );
-		$job = new Woo_Scrape_Translation_Job();
-		$job->run( true );
-		wp_die(); // this is required to terminate immediately and return a proper response
+		$this->schedule_job( 'woo_scrape_translate_job_hook', array(), 'Translation job started. Processing in background.' );
 	}
 
 	function run_wordpress_job(): void {
 		check_ajax_referer( 'woo_scrape_nonce', 'nonce' );
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_die( 'Unauthorized' );
+			wp_send_json_error( array( 'message' => 'Unauthorized' ), 403 );
 		}
-		include_once plugin_dir_path( __FILE__ ) . '../../jobs/class-woo-scrape-woocommerce-update-job.php';
-		error_log( "wordpress update job started" );
-		$job = new Woo_scrape_woocommerce_update_job();
-		$job->run();
-		wp_die(); // this is required to terminate immediately and return a proper response
+		$this->schedule_job( 'woo_scrape_wordpress_job_hook', array(), 'WordPress update job started. Processing in background.' );
 	}
 
 	function clear_job_logs(): void {
 		check_ajax_referer( 'woo_scrape_nonce', 'nonce' );
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_die( 'Unauthorized' );
+			wp_send_json_error( array( 'message' => 'Unauthorized' ), 403 );
 		}
 		global $wpdb;
 		$table = $wpdb->prefix . 'woo_scrape_job_logs';
 		$wpdb->query( "TRUNCATE TABLE $table" );
-		wp_die();
+		wp_send_json_success( array( 'message' => 'Job logs cleared successfully.' ) );
 	}
 
-	function run_single_product_job() {
+	function run_single_product_job(): void {
 		check_ajax_referer( 'woo_scrape_nonce', 'nonce' );
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_die( 'Unauthorized' );
+			wp_send_json_error( array( 'message' => 'Unauthorized' ), 403 );
 		}
-		include_once plugin_dir_path( __FILE__ ) . '../../jobs/class-woo-scrape-crawling-job.php';
-		include_once plugin_dir_path( __FILE__ ) . '../../jobs/class-woo-scrape-woocommerce-update-job.php';
-		error_log( "single product crawl job started" );
-
-		if (!isset($_POST['sku'])) {
-			error_log('Sku not specified');
-			wp_die( 'Sku not specified', 400 );
+		if ( ! isset( $_POST['sku'] ) ) {
+			wp_send_json_error( array( 'message' => 'SKU not specified.' ), 400 );
 		}
-
-		$sku = sanitize_text_field($_POST['sku']);
-
-		$job = new Woo_scrape_crawling_job();
-		$job->run_single($sku);
-		$job = new Woo_scrape_woocommerce_update_job();
-		$job->run_single($sku);
-		wp_die(); // this is required to terminate immediately and return a proper response
+		$sku = sanitize_text_field( $_POST['sku'] );
+		$this->schedule_job( 'woo_scrape_single_product_job_hook', array( $sku ), 'Single product job started. Processing in background.' );
 	}
 
 	public function display_plugin_dashboard(): void {
