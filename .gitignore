@@ -1,2 +1,12 @@
 .idea
 docs
+/vendor/composer/
+/vendor/autoload.php
+/vendor/bin/
+/vendor/myclabs/
+/vendor/nikic/
+/vendor/phar-io/
+/vendor/phpunit/
+/vendor/sebastian/
+/vendor/staabm/
+/vendor/theseer/
