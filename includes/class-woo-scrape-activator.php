@@ -22,15 +22,29 @@
  */
 class Woo_Scrape_Activator {
 
+	const DB_VERSION = '1.0.0';
+
 	/**
-	 * Short Description. (use period)
-	 *
-	 * Long Description.
+	 * Runs on plugin activation: creates database tables and stores DB version.
 	 *
 	 * @since    1.0.0
 	 */
 	public static function activate(): void {
 		self::create_database_tables();
+		update_option( 'woo_scrape_db_version', self::DB_VERSION );
+	}
+
+	/**
+	 * Checks if the database schema needs updating and runs migrations if needed.
+	 *
+	 * @since    1.0.0
+	 */
+	public static function check_db_version(): void {
+		$installed_version = get_option( 'woo_scrape_db_version', '0' );
+		if ( version_compare( $installed_version, self::DB_VERSION, '<' ) ) {
+			self::create_database_tables();
+			update_option( 'woo_scrape_db_version', self::DB_VERSION );
+		}
 	}
 
 	private static function create_database_tables(): void

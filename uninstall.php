@@ -18,6 +18,10 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 if ( get_option( 'woo_scrape_keep_data_on_uninstall' ) ) {
 	// Clear scheduled hooks only
 	wp_clear_scheduled_hook( 'woo_scrape_orchestration_job_hook' );
+	wp_clear_scheduled_hook( 'woo_scrape_crawling_job_hook' );
+	wp_clear_scheduled_hook( 'woo_scrape_product_crawling_job_hook' );
+	wp_clear_scheduled_hook( 'woo_scrape_translate_job_hook' );
+	wp_clear_scheduled_hook( 'woo_scrape_wordpress_job_hook' );
 	return;
 }
 
@@ -34,3 +38,7 @@ $wpdb->query( "DELETE FROM {$wpdb->options} WHERE option_name LIKE 'woo_scrape_%
 
 // Clear scheduled hooks
 wp_clear_scheduled_hook( 'woo_scrape_orchestration_job_hook' );
+wp_clear_scheduled_hook( 'woo_scrape_crawling_job_hook' );
+wp_clear_scheduled_hook( 'woo_scrape_product_crawling_job_hook' );
+wp_clear_scheduled_hook( 'woo_scrape_translate_job_hook' );
+wp_clear_scheduled_hook( 'woo_scrape_wordpress_job_hook' );
