@@ -18,32 +18,41 @@ abstract class Woo_Scrape_Abstract_Crawler_Service
         foreach ( $urls as $url ) {
             //TODO: search for duplicate images and avoid crawling them again
 
-            // generate file name
-            $exploded  = explode( '/', getimagesize( $url )['mime'] );
-            $imagetype = end( $exploded );
-            $filename  = uniqid($this->guidv4()) . '.' . $imagetype;
-
-			// free up memory
-	        unset($exploded);
-
-            // download and save file
-            $uploaddir  = wp_upload_dir();
-            $uploadfile = $uploaddir['path'] . '/' . $filename;
+            // download image
             $response = wp_remote_get( $proxy_url . $url, array( 'timeout' => 60 ) );
             if ( is_wp_error( $response ) || wp_remote_retrieve_response_code( $response ) !== 200 ) {
 	            error_log( "Failed to download image: " . $url );
 	            continue;
             }
             $contents = wp_remote_retrieve_body( $response );
+
+            // determine file extension from Content-Type header
+            $content_type = wp_remote_retrieve_header( $response, 'content-type' );
+            $imagetype = 'jpg';
+            if ( $content_type ) {
+	            $exploded  = explode( '/', $content_type );
+	            $imagetype = end( $exploded );
+	            // strip any parameters (e.g., "jpeg; charset=utf-8")
+	            $imagetype = explode( ';', $imagetype )[0];
+	            $imagetype = trim( $imagetype );
+	            unset( $exploded );
+            }
+
+            // generate file name
+            $filename  = uniqid( $this->guidv4() ) . '.' . $imagetype;
+
+            // save file
+            $uploaddir  = wp_upload_dir();
+            $uploadfile = $uploaddir['path'] . '/' . $filename;
             // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fopen
             $savefile = fopen( $uploadfile, 'w' );
             fwrite( $savefile, $contents );
             fclose( $savefile );
 
 			// free up memory
-			unset($contents);
-	        unset($savefile);
-	        unset($response);
+			unset( $contents );
+	        unset( $savefile );
+	        unset( $response );
 
             // prepare file
             $wp_filetype = wp_check_filetype( basename( $filename ), null );
