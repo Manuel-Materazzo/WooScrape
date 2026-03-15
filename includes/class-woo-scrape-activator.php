@@ -22,7 +22,7 @@
  */
 class Woo_Scrape_Activator {
 
-	const DB_VERSION = '1.0.0';
+	const DB_VERSION = '1.1.0';
 
 	/**
 	 * Runs on plugin activation: creates database tables and stores DB version.
@@ -43,7 +43,54 @@ class Woo_Scrape_Activator {
 		$installed_version = get_option( 'woo_scrape_db_version', '0' );
 		if ( version_compare( $installed_version, self::DB_VERSION, '<' ) ) {
 			self::create_database_tables();
+
+			if ( version_compare( $installed_version, '1.1.0', '<' ) ) {
+				self::migrate_1_1_0();
+			}
+
 			update_option( 'woo_scrape_db_version', self::DB_VERSION );
+		}
+	}
+
+	/**
+	 * Migration for 1.1.0: removes duplicate products by URL and adds a UNIQUE index.
+	 */
+	private static function migrate_1_1_0(): void {
+		global $wpdb;
+
+		$products_table    = $wpdb->prefix . 'woo_scrape_products';
+		$variations_table  = $wpdb->prefix . 'woo_scrape_variations';
+
+		// delete variations belonging to duplicate products (keep the oldest product per URL)
+		$wpdb->query(
+			"DELETE v FROM $variations_table v
+			 INNER JOIN $products_table p ON v.product_id = p.id
+			 WHERE p.id NOT IN (
+			     SELECT keep_id FROM (
+			         SELECT MIN(id) AS keep_id FROM $products_table GROUP BY url
+			     ) AS keeper
+			 )"
+		);
+
+		// delete duplicate products, keeping the one with the lowest id per URL
+		$wpdb->query(
+			"DELETE FROM $products_table
+			 WHERE id NOT IN (
+			     SELECT keep_id FROM (
+			         SELECT MIN(id) AS keep_id FROM $products_table GROUP BY url
+			     ) AS keeper
+			 )"
+		);
+
+		// add unique index on url to prevent future duplicates
+		$index_exists = $wpdb->get_var(
+			"SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS
+			 WHERE TABLE_SCHEMA = DATABASE()
+			 AND TABLE_NAME = '$products_table'
+			 AND INDEX_NAME = 'uq_url'"
+		);
+		if ( (int) $index_exists === 0 ) {
+			$wpdb->query( "ALTER TABLE $products_table ADD UNIQUE INDEX uq_url (url)" );
 		}
 	}
 

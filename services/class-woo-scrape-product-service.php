@@ -258,6 +258,25 @@ class Woo_scrape_product_service {
 			$date = current_time( 'mysql' );
 		}
 
+		$products_table_name = $wpdb->prefix . self::$products_table_name;
+
+		// check if a product matching the where clause exists, since $wpdb->update() returns 0
+		// both when no row matches AND when the row matches but values are unchanged
+		$conditions = array();
+		$values     = array();
+		foreach ( $where_clause as $column => $value ) {
+			$conditions[] = "`$column` = %s";
+			$values[]     = $value;
+		}
+		$conditions_sql = implode( ' AND ', $conditions );
+		$exists = (int) $wpdb->get_var(
+			$wpdb->prepare( "SELECT COUNT(*) FROM $products_table_name WHERE $conditions_sql", $values )
+		);
+
+		if ( $exists === 0 ) {
+			return false;
+		}
+
 		$parameters = array(
 			'latest_crawl_timestamp' => $date
 		);
@@ -271,16 +290,16 @@ class Woo_scrape_product_service {
 		}
 
 		// update products already on the table
-		$rows_updated = $wpdb->update(
-			$wpdb->prefix . 'woo_scrape_products', $parameters,
+		$wpdb->update(
+			$products_table_name, $parameters,
 			$where_clause
 		);
 
 		// if the product has no variations (and was already crawled once) we don't need additional data.
 		// ignore the $set_updated flag and set the item as updated anyway to avoid additional crawlings
 		if ( ! $set_updated_time ) {
-			$single_items_updated = $wpdb->update(
-				$wpdb->prefix . self::$products_table_name,
+			$wpdb->update(
+				$products_table_name,
 				array(
 					'item_updated_timestamp' => $date,
 				),
@@ -288,15 +307,14 @@ class Woo_scrape_product_service {
 			);
 		}
 
-
-		// there shouldn't be more than one row updated
-		if ( $rows_updated > 1 ) {
+		// there shouldn't be more than one row matched
+		if ( $exists > 1 ) {
 			error_log(
 				"More than one woo_scrape_product matched the clause " . json_encode( $where_clause )
 			);
 		}
 
-		return $rows_updated >= 1;
+		return true;
 	}
 
 	/**
